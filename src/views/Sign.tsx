@@ -2,7 +2,7 @@ import { Form, Formik } from "formik"
 import { useNavigate } from "react-router-dom"
 import * as yup from "yup"
 import { InputValidate } from "../components/InputValidate"
-import { auth, db } from "../firebase"
+import { auth, db, storage } from "../firebase"
 import { User } from "../types"
 import { v4 } from "uuid"
 import {
@@ -10,8 +10,9 @@ import {
 	signInWithEmailAndPassword,
 } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
-import { Collection } from "../constants"
+import { FirestoreCollection, StorageCollection } from "../constants"
 import { useState } from "react"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
 interface Props {
 	signIn: boolean
@@ -38,27 +39,44 @@ export function Sign(p: Props) {
 		}),
 	})
 
-	const onUserSignIn = async ({ email, password }: typeof initialValues) => {
+	const onSignIn = async ({ email, password }: typeof initialValues) => {
 		if (!p.signIn) return
 		await signInWithEmailAndPassword(auth, email, password)
 		navigate(`/`)
 	}
-	const onUserSignUp = async (formValues: typeof initialValues) => {
+	const onSignUp = async (formValues: typeof initialValues) => {
 		if (p.signIn) return
-		const UserData: User = {
-			createdAt: new Date().getTime(),
-			email: formValues.email,
-			id: v4(),
-			photoURL: null as null | string,
-			username: formValues.username!,
-		}
-
-		const authUser = await createUserWithEmailAndPassword(
+		const {
+			user: { uid },
+		} = await createUserWithEmailAndPassword(
 			auth,
 			formValues.email,
 			formValues.password
 		)
-		await setDoc(doc(db, `${Collection.Users}/${UserData.id}`), UserData)
+
+		let profileImageUrl: string | null = null
+
+		if (userAvatar) {
+			const profileImageRef = ref(
+				storage,
+				`${StorageCollection.ProfileImages}/${uid}`
+			)
+			const res = await uploadBytes(profileImageRef, userAvatar)
+			profileImageUrl = await getDownloadURL(profileImageRef)
+		}
+
+		const UserData: User = {
+			createdAt: new Date().getTime(),
+			email: formValues.email,
+			id: uid,
+			profileImageUrl,
+			username: formValues.username!,
+		}
+
+		await setDoc(
+			doc(db, `${FirestoreCollection.Users}/${UserData.id}`),
+			UserData
+		)
 
 		navigate(`/`)
 	}
@@ -73,7 +91,7 @@ export function Sign(p: Props) {
 		<Formik
 			validationSchema={validationSchema}
 			initialValues={initialValues}
-			onSubmit={p.signIn ? onUserSignIn : onUserSignUp}
+			onSubmit={p.signIn ? onSignIn : onSignUp}
 		>
 			<Form>
 				<div className="w-[500px] mx-auto mt-4 bg-white grid gap-4 p-4">
