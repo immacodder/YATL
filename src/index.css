@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+	background-color: #eee;
+}
+
+@layer components {
+	.button {
+		@apply bg-primary inline-block p-2 shadow hover:shadow-lg transition-shadow;
+		width: fit-content;
+	}
+}
