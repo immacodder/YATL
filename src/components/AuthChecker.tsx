@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useNavigate } from "react-router-dom"
-import { UserState } from "../constants"
+import { UserState } from "../types"
 import { useAppSelector } from "../hooks"
 
 export function AuthChecker() {

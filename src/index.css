@@ -8,7 +8,10 @@ html {
 
 @layer components {
 	.button {
-		@apply bg-primary inline-block p-2 shadow hover:shadow-lg transition-shadow;
+		@apply bg-primary inline-block p-2 shadow hover:shadow-lg transition-shadow disabled:opacity-70;
 		width: fit-content;
+	}
+	.input {
+		@apply border-2 p-2 rounded w-full disabled:opacity-70;
 	}
 }

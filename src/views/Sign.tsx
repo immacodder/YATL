@@ -4,13 +4,12 @@ import * as yup from "yup"
 import { InputValidate } from "../components/InputValidate"
 import { auth, db, storage } from "../firebase"
 import { User } from "../types"
-import { v4 } from "uuid"
 import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
-import { FirestoreCollection, StorageCollection } from "../constants"
+import { CollectionFire, CollectionStorage } from "../types"
 import { useState } from "react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
@@ -59,7 +58,7 @@ export function Sign(p: Props) {
 		if (userAvatar) {
 			const profileImageRef = ref(
 				storage,
-				`${StorageCollection.ProfileImages}/${uid}`
+				`${CollectionStorage.ProfileImages}/${uid}`
 			)
 			const res = await uploadBytes(profileImageRef, userAvatar)
 			profileImageUrl = await getDownloadURL(profileImageRef)
@@ -70,13 +69,11 @@ export function Sign(p: Props) {
 			email: formValues.email,
 			id: uid,
 			profileImageUrl,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			username: formValues.username!,
 		}
 
-		await setDoc(
-			doc(db, `${FirestoreCollection.Users}/${UserData.id}`),
-			UserData
-		)
+		await setDoc(doc(db, `${CollectionFire.Users}/${UserData.id}`), UserData)
 
 		navigate(`/`)
 	}
