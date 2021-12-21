@@ -1,10 +1,20 @@
 import { formatISO, isToday } from "date-fns"
 import { doc, setDoc } from "firebase/firestore"
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, Fragment } from "react"
+import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { Tag, FireCol, Todo, User } from "../types"
+import {
+	Tag,
+	FireCol,
+	Todo,
+	User,
+	Project,
+	Section,
+	UserSection,
+	DefaultProjects,
+} from "../types"
 import Popup from "./Popup"
 
 interface Props {
@@ -13,7 +23,6 @@ interface Props {
 		name: string
 	}>
 	setOpen: (open: boolean) => void
-	sectionId: string
 	defaultValues?: {
 		schedule?: PopupState
 		remind?: PopupState
@@ -21,6 +30,7 @@ interface Props {
 		priority?: Todo["priority"]
 		checked?: string[]
 		submitButtonText?: string
+		sectionId?: string
 	}
 	updateId?: string
 }
@@ -48,6 +58,19 @@ export default function TodoForm(p: Props) {
 	const [checked, setChecked] = useState<string[]>(
 		p.defaultValues?.checked ?? []
 	)
+	const params = useParams()
+
+	const projects = useAppSelector((s) => s.projects)
+	const projectId = params.projectId!
+	const currentProject = projects.find((proj) => proj.id === projectId)!
+	const projectButtonRef = useRef<HTMLButtonElement>(null)
+	const [projectSelectorOpen, setProjectSelectorOpen] = useState(false)
+	const [selectedSection, setSelectedSection] = useState<Section>(
+		currentProject.sections.find((sec) => sec.type === "default")!
+	)
+	const selectedSectionsProject = projects.find((proj) =>
+		proj.sections.find((sec) => sec.id === selectedSection.id)
+	)!
 
 	const popupStateDefault: PopupState = {
 		date: null,
@@ -128,7 +151,7 @@ export default function TodoForm(p: Props) {
 			tags,
 			scheduledAt: dueUntil,
 			remindAt,
-			sectionId: p.sectionId,
+			sectionId: selectedSection.id,
 		}
 
 		const ref = doc(
@@ -190,6 +213,71 @@ export default function TodoForm(p: Props) {
 						</button>
 					</div>
 					<div className="flex items-center">
+						<button
+							onClick={() => setProjectSelectorOpen(true)}
+							className="button"
+							ref={projectButtonRef}
+							type="button"
+						>
+							{selectedSection.type === "default"
+								? selectedSectionsProject.name
+								: `${selectedSectionsProject.name}/${selectedSection.name}`}
+						</button>
+						{projectSelectorOpen && (
+							<Popup
+								anchor={projectButtonRef.current}
+								setOpen={setProjectSelectorOpen}
+								type="anchor"
+							>
+								<ul>
+									{projects.map((proj) => {
+										const classNames =
+											"hover:bg-black p-1 flex items-center hover:bg-opacity-10 rounded hover:cursor-pointer"
+										return (
+											<Fragment key={proj.id}>
+												<li
+													className={classNames}
+													onClick={() =>
+														setSelectedSection(
+															proj.sections.find((s) => s.type === "default")!
+														)
+													}
+												>
+													{proj.type === "default" ? (
+														<span className="material-icons text-slate-700 mr-1">
+															{proj.icon}
+														</span>
+													) : (
+														<span
+															className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
+															style={{ backgroundColor: proj.color }}
+														/>
+													)}
+													{proj.name}
+												</li>
+												{proj.sections
+													.filter(
+														(sec): sec is UserSection =>
+															sec.type === "userCreated"
+													)
+													.map((section) => (
+														<li
+															onClick={() => setSelectedSection(section)}
+															key={section.id}
+															className={`ml-4 flex items-center ${classNames}`}
+														>
+															<span className="material-icons mr-1">
+																segment
+															</span>
+															{section.name}
+														</li>
+													))}
+											</Fragment>
+										)
+									})}
+								</ul>
+							</Popup>
+						)}
 						<select
 							className="button appearance-none mx-1"
 							onChange={({ target: { value } }) =>

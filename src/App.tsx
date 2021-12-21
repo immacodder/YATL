@@ -13,6 +13,7 @@ import {
 	DefaultProject,
 	DefaultProjects,
 	DefaultSection,
+	DefaultProjectsIcons,
 } from "./types"
 import { setUser } from "./slices/userSlice"
 import { User } from "./types"
@@ -21,14 +22,16 @@ import { useAppDispatch, useAppSelector } from "./hooks"
 import Todolist from "./views/Todolist"
 import Test from "./views/Test"
 import { v4 } from "uuid"
+import { setProjects } from "./slices/projectSlice"
 
 export function App() {
 	const [userId, setUserUid] = useState<null | string>(null)
 	const [tags, setTags] = useState<Tag[]>([])
 	const [todos, setTodos] = useState<Todo[]>([])
-	const [projects, setProjects] = useState<Project[]>([])
+	// const [projects, setProjects] = useState<Project[]>([])
 	const userState = useAppSelector((s) => s.user)
 	const dispatch = useAppDispatch()
+	const projects = useAppSelector((s) => s.projects)
 
 	useEffect(() => {
 		if (!userId) return
@@ -45,6 +48,7 @@ export function App() {
 					type: "default",
 					id: v4(),
 					name: DefaultProjects[key as keyof typeof DefaultProjects],
+					icon: DefaultProjectsIcons[key as keyof typeof DefaultProjects],
 					sections: [section],
 				}
 				return project
@@ -65,9 +69,9 @@ export function App() {
 				await createDefaultProjects()
 				return console.log("Successfully created default projects")
 			}
-			setProjects(projects)
+			dispatch(setProjects(projects))
 		})
-	}, [userId])
+	}, [dispatch, userId])
 
 	useEffect(() => {
 		return onAuthStateChanged(auth, (authSnapshot) => {

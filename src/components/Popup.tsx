@@ -6,10 +6,15 @@ interface P {
 	children: JSX.Element | JSX.Element[]
 	anchor: HTMLElement | null
 	setOpen: (open: boolean) => void
+	wrapperClassNames?: string
+	wrapperStyles?: React.CSSProperties
 }
 
 export default function Popup(p: P) {
-	const [position, setPosition] = useState({ x: 0, y: 0 })
+	const [position, setPosition] = useState({
+		x: null as number | null,
+		y: null as number | null,
+	})
 	type WrapperNode = HTMLDivElement | null
 	const [wrapperNode, setWrapperNode] = useState<WrapperNode>(null)
 	const [offsetBy, setOffsetBy] = useState(0)
@@ -38,7 +43,7 @@ export default function Popup(p: P) {
 		}
 	}
 
-	if (p.anchor && !(position.x && position.y)) {
+	if (p.anchor && !position.x && !position.y) {
 		const { left, bottom } = getCoords(p.anchor)
 		setPosition({ x: left, y: bottom })
 	}
@@ -52,14 +57,19 @@ export default function Popup(p: P) {
 		>
 			<div
 				ref={onWrapperNodeChange}
-				className={`absolute min-w-fit bg-white p-4 rounded`}
+				className={
+					p.wrapperClassNames
+						? `absolute rounded bg-white ${p.wrapperClassNames}`
+						: "absolute min-w-fit bg-white p-2 rounded"
+				}
 				style={
 					p.type === "anchor"
 						? {
-								top: position.y + "px",
-								left: position.x - (offsetBy ? offsetBy + 10 : 0) + "px",
+								top: (position.y ?? 0) + "px",
+								left: (position.x ?? 0) - (offsetBy ? offsetBy + 10 : 0) + "px",
+								...p.wrapperStyles,
 						  }
-						: undefined
+						: p.wrapperStyles
 				}
 				onClick={(e) => e.stopPropagation()}
 			>

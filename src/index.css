@@ -8,11 +8,12 @@ html {
 
 @layer components {
 	.button {
-		@apply bg-primary rounded inline-block p-2 shadow hover:shadow-lg transition-shadow disabled:opacity-70;
+		@apply bg-primary rounded inline-block p-2 shadow hover:shadow-lg transition-shadow disabled:opacity-70 min-w-[80px];
+		padding: calc(0.5rem + 2px);
 		width: fit-content;
 	}
 	.button-outline {
-		@apply inline-block p-2 hover:shadow-lg transition-shadow disabled:opacity-70 border-2 border-primary;
+		@apply hover:bg-primary inline-block p-2 hover:shadow-lg rounded transition-shadow disabled:opacity-70 border-2 border-primary min-w-[80px];
 	}
 	.highlight {
 		@apply hover:bg-black hover:bg-opacity-10;

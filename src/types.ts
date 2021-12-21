@@ -53,15 +53,21 @@ export enum ProjectColors {
 	Fuchsia = "#d946ef",
 	Pink = "#ec4899",
 }
-export enum DefaultProjects {
-	Today = "today",
+export enum DefaultProjectsIcons {
 	Inbox = "inbox",
-	Upcoming = "upcoming",
+	Today = "today",
+	Upcoming = "date_range",
+}
+export enum DefaultProjects {
+	Today = "Today",
+	Inbox = "Inbox",
+	Upcoming = "Upcoming",
 }
 export interface DefaultProject {
 	id: string
 	type: "default"
 	name: DefaultProjects
+	icon: DefaultProjectsIcons
 	sections: Section[]
 }
 export interface UserCreatedProject {

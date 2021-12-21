@@ -76,8 +76,9 @@ export default function Sidebar(p: P) {
 								>
 									<Link
 										to={`/project/${proj.id}`}
-										className="inline-block p-2 w-full"
+										className="p-2 w-full flex items-center"
 									>
+										<span className="material-icons mr-2">{proj.icon}</span>
 										{proj.name[0].toUpperCase() + proj.name.slice(1)}
 									</Link>
 								</li>

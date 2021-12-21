@@ -115,14 +115,14 @@ export default function TodoComp(p: P) {
 						</p>
 						<button
 							onClick={() => p.setGlobalFormOpen(todo.id, true)}
-							className="button bg-transparent rounded-full shadow-none material-icons ml-auto transition-colors hover:bg-primary hover:shadow-lg"
+							className="button bg-transparent rounded-full shadow-none material-icons ml-auto transition-colors hover:bg-primary hover:shadow-lg min-w-0"
 						>
 							edit
 						</button>
 						<button
 							onClick={() => setMoreOpen(!moreOpen)}
 							ref={moreAnchor}
-							className="button bg-transparent rounded-full shadow-none ml-2 material-icons transition-colors hover:bg-primary hover:shadow-lg"
+							className="button bg-transparent rounded-full shadow-none ml-2 material-icons transition-colors hover:bg-primary hover:shadow-lg min-w-0"
 						>
 							more_horiz
 						</button>
@@ -157,9 +157,6 @@ export default function TodoComp(p: P) {
 			{p.todoFormOpen.open && p.todoFormOpen.todoId === todo.id && (
 				<div className="mb-2">
 					<TodoForm
-						// TODO
-						// fix this after you've dealt with typings
-						sectionId={p.project.sections[0].id}
 						tags={Object.keys(todo.tags).map((key) => ({
 							id: key,
 							name: todo.tags[key],
@@ -184,6 +181,7 @@ export default function TodoComp(p: P) {
 									: null,
 								open: false,
 							},
+							sectionId: todo.sectionId,
 							remind: {
 								date: todo.remindAt
 									? formatISO(todo.remindAt, { representation: "date" })
