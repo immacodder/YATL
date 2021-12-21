@@ -1,74 +1,79 @@
-// if i don't do this, there will be an infinite rerendering loop
-/* eslint-disable react-hooks/exhaustive-deps */
-import { formatISO } from "date-fns"
+import { formatISO, isToday } from "date-fns"
 import { doc, setDoc } from "firebase/firestore"
-import React, { useState, useCallback } from "react"
+import React, { useState, useRef } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import {
-	Priority,
-	Tag,
-	CollectionFire,
-	Todo,
-	TodoType,
-	Indentation,
-	User,
-} from "../types"
+import { Tag, FireCol, Todo, User } from "../types"
 import Popup from "./Popup"
 
 interface Props {
-	tags: Tag[]
+	tags: Array<{
+		id: string
+		name: string
+	}>
+	setOpen: (open: boolean) => void
+	sectionId: string
+	defaultValues?: {
+		schedule?: PopupState
+		remind?: PopupState
+		todo?: TodoState
+		priority?: Todo["priority"]
+		checked?: string[]
+		submitButtonText?: string
+	}
+	updateId?: string
 }
-export default function (p: Props) {
+
+interface PopupState {
+	date: string | null
+	time: string | null
+	open: boolean
+}
+interface TodoState {
+	title: string
+	description: string
+}
+
+export default function TodoForm(p: Props) {
 	const timeInISO = formatISO(new Date(), { representation: "time" }).split(
 		"+"
 	)[0]
 	const dateInISO = formatISO(new Date(), { representation: "date" })
 	const user = useAppSelector((s) => s.user.user as User)
 
-	const [todo, setTodo] = useState({
-		title: "",
-		description: "",
-	})
-	const [checked, setChecked] = useState<string[]>([])
+	const [todo, setTodo] = useState<TodoState>(
+		p.defaultValues?.todo ?? { description: "", title: "" }
+	)
+	const [checked, setChecked] = useState<string[]>(
+		p.defaultValues?.checked ?? []
+	)
 
-	interface PopupState {
-		date: string | null
-		time: string | null
-		open: boolean
-		anchor: HTMLElement | null
-	}
 	const popupStateDefault: PopupState = {
 		date: null,
 		time: null,
 		open: false,
-		anchor: null,
 	}
-	const [due, setDue] = useState(popupStateDefault)
-	const [remind, setRemind] = useState(popupStateDefault)
+	const scheduleAnchor = useRef<HTMLButtonElement>(null)
+	const [schedule, setSchedule] = useState(
+		p.defaultValues?.schedule ?? popupStateDefault
+	)
 
-	const [priority, setPriority] = useState<Priority>(Priority.P4)
+	const remindAnchor = useRef<HTMLButtonElement>(null)
+	const [remind, setRemind] = useState(
+		p.defaultValues?.remind ?? popupStateDefault
+	)
+
+	const [priority, setPriority] = useState<Todo["priority"]>(
+		p.defaultValues?.priority ?? 4
+	)
+
 	const defaultTagInfo = {
 		open: false,
-		anchor: null as null | HTMLElement,
 		name: "",
 	}
 	const [tagInfo, setTagInfo] = useState(defaultTagInfo)
-
-	const onRemindButtonAnchorChange = useCallback(
-		(node: PopupState["anchor"]) => setRemind({ ...remind, anchor: node }),
-		[]
-	)
-	const onDueButtonAnchorChange = useCallback(
-		(node: PopupState["anchor"]) => setDue({ ...due, anchor: node }),
-		[]
-	)
-	const onTagAnchorChange = useCallback(
-		(node: typeof tagInfo["anchor"]) =>
-			setTagInfo({ ...tagInfo, anchor: node }),
-		[]
-	)
+	const tagAnchor = useRef<HTMLButtonElement>(null)
 
 	const onCheckboxClick = (id: string) => {
 		if (checked.includes(id)) {
@@ -84,7 +89,7 @@ export default function (p: Props) {
 		}
 		const ref = doc(
 			db,
-			`${CollectionFire.Users}/${user.id}/${CollectionFire.Tags}/${newTag.id}`
+			`${FireCol.Users}/${user.id}/${FireCol.Tags}/${newTag.id}`
 		)
 		setDoc(ref, newTag)
 
@@ -92,57 +97,68 @@ export default function (p: Props) {
 	}
 
 	const onAddTodoFormSubmit = async () => {
-		debugger
 		let dueUntil: number | null = null
 		let remindAt: number | null = null
 
-		if (due.date && !due.time) dueUntil = new Date(due.date).getTime()
-		if (due.date && due.time)
-			dueUntil = new Date(due.date + " " + due.time).getTime()
+		if (schedule.date && !schedule.time)
+			dueUntil = new Date(schedule.date).getTime()
+		if (schedule.date && schedule.time)
+			dueUntil = new Date(schedule.date + " " + schedule.time).getTime()
 
 		if (remind.date && remind.time)
 			remindAt = new Date(remind.date + " " + remind.time).getTime()
 
+		const tags: Todo["tags"] = {}
+		checked.forEach((tagId) => {
+			tags[tagId] = p.tags.filter((tag) => tag.id === tagId)[0].name
+		})
+
 		const newTodo: Todo = {
-			type: TodoType.Default,
+			type: "default",
 			createdAt: new Date().getTime(),
 			description: todo.description.trim() || null,
 			title: todo.title.trim(),
 			children: [],
-			id: v4(),
-			indentation: Indentation.Level0,
+			id: p.updateId ?? v4(),
+			indentation: 0,
 			parentTodo: null,
 			priority,
 			// TODO: implement natural language date recognition
 			repeatedAt: "",
-			tags: checked,
-			dueUntil,
+			tags,
+			scheduledAt: dueUntil,
 			remindAt,
+			sectionId: p.sectionId,
 		}
 
 		const ref = doc(
 			db,
-			`${CollectionFire.Users}/${user.id}/${CollectionFire.Todos}/${newTodo.id}`
+			`${FireCol.Users}/${user.id}/${FireCol.Todos}/${newTodo.id}`
 		)
-		await setDoc(ref, newTodo)
 
-		// reset everything to default values
-		setDue({ ...popupStateDefault, anchor: due.anchor })
-		setRemind({ ...popupStateDefault, anchor: remind.anchor })
-		setTodo({ description: "", title: "" })
-		setPriority(Priority.P4)
-		setTagInfo({ ...defaultTagInfo, anchor: tagInfo.anchor })
-		setChecked([])
+		await setDoc(ref, newTodo)
+		resetState()
+
+		if (p.updateId) p.setOpen(false)
+
+		function resetState() {
+			setSchedule({ ...popupStateDefault })
+			setRemind({ ...popupStateDefault })
+			setTodo({ description: "", title: "" })
+			setPriority(4)
+			setTagInfo({ ...defaultTagInfo })
+			setChecked([])
+		}
 	}
 
 	return (
-		<div className="">
+		<div>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
 					onAddTodoFormSubmit()
 				}}
-				className="bg-white m-2 p-2 border-2 shadow"
+				className="bg-white p-2 border-2 shadow"
 			>
 				<input
 					className="input mb-2"
@@ -157,49 +173,78 @@ export default function (p: Props) {
 					placeholder="Description"
 				/>
 				<div className="flex justify-between">
-					<button
-						disabled={!todo.title.trim()}
-						className="button"
-						type="submit"
-					>
-						Add todo
-					</button>
+					<div>
+						<button
+							disabled={!todo.title.trim()}
+							className="button mr-2"
+							type="submit"
+						>
+							{p.defaultValues?.submitButtonText ?? "Add todo"}
+						</button>
+						<button
+							onClick={() => p.setOpen(false)}
+							className="button text-white bg-secondary hover:bg-red-500"
+							type="button"
+						>
+							Cancel
+						</button>
+					</div>
 					<div className="flex items-center">
 						<select
 							className="button appearance-none mx-1"
 							onChange={({ target: { value } }) =>
-								setPriority(Priority[value as keyof typeof Priority])
+								setPriority(+value as Todo["priority"])
 							}
 							value={priority}
 						>
-							<option value={Priority.P1}>P1</option>
-							<option value={Priority.P2}>P2</option>
-							<option value={Priority.P3}>P3</option>
-							<option value={Priority.P4}>Priority</option>
+							<option value={1}>P1</option>
+							<option value={2}>P2</option>
+							<option value={3}>P3</option>
+							<option value={4}>Priority</option>
 						</select>
 
 						<button
 							type="button"
-							onClick={() => setDue((prev) => ({ ...prev, open: !prev.open }))}
+							onClick={() =>
+								setSchedule((prev) => ({ ...prev, open: !prev.open }))
+							}
 							className="flex itmes-center mx-1 button"
-							ref={onDueButtonAnchorChange}
+							ref={scheduleAnchor}
 						>
-							Due date
+							{schedule.date && isToday(new Date(schedule.date))
+								? `Today`
+								: `Schedule`}
 							<span className="material-icons ml-1">event</span>
 						</button>
 
-						{due.open && (
+						{schedule.open && (
 							<Popup
-								setOpen={(open) => setDue({ ...due, open })}
-								anchor={due.anchor}
+								type="anchor"
+								setOpen={(open) => setSchedule({ ...schedule, open })}
+								anchor={scheduleAnchor.current}
 							>
+								<div className="flex items-center">
+									<button
+										className="button bg-secondary text-white mr-2"
+										onClick={() =>
+											setSchedule({ ...schedule, date: dateInISO })
+										}
+									>
+										Today
+									</button>
+									<button className="button bg-secondary text-white">
+										Tomorrow
+									</button>
+								</div>
 								<label htmlFor="dueDatePicker">Date: </label>
 								<input
 									id="dueDatePicker"
 									type="date"
 									className="button m-1"
-									value={due.date ?? dateInISO}
-									onChange={(e) => setDue({ ...due, date: e.target.value })}
+									value={schedule.date ?? dateInISO}
+									onChange={(e) =>
+										setSchedule({ ...schedule, date: e.target.value })
+									}
 									min={dateInISO}
 								/>
 								<br />
@@ -208,8 +253,10 @@ export default function (p: Props) {
 									id="dueTimePicker"
 									type="time"
 									className="button m-1"
-									value={due.time ?? timeInISO}
-									onChange={(e) => setDue({ ...due, time: e.target.value })}
+									value={schedule.time ?? timeInISO}
+									onChange={(e) =>
+										setSchedule({ ...schedule, time: e.target.value })
+									}
 									min={timeInISO}
 								/>
 							</Popup>
@@ -217,7 +264,7 @@ export default function (p: Props) {
 						<button
 							type="button"
 							onClick={() => setRemind({ ...remind, open: !remind.open })}
-							ref={onRemindButtonAnchorChange}
+							ref={remindAnchor}
 							className="button mx-1 flex items-center"
 						>
 							Reminder
@@ -225,8 +272,9 @@ export default function (p: Props) {
 						</button>
 						{remind.open && (
 							<Popup
+								type="anchor"
 								setOpen={(open) => setRemind({ ...remind, open })}
-								anchor={remind.anchor}
+								anchor={remindAnchor.current}
 							>
 								<div className="flex items-center justify-start">
 									<label htmlFor="remindDatePicker">Date: </label>
@@ -259,17 +307,18 @@ export default function (p: Props) {
 							</Popup>
 						)}
 						<button
-							ref={onTagAnchorChange}
+							ref={tagAnchor}
 							onClick={() => setTagInfo({ ...tagInfo, open: true })}
 							type="button"
 							className="button mx-1 flex items-center"
 						>
-							<span className="material-icons">new_label</span>
 							Tags
+							<span className="material-icons ml-1">new_label</span>
 						</button>
 						{tagInfo.open && (
 							<Popup
-								anchor={tagInfo.anchor}
+								type="anchor"
+								anchor={tagAnchor.current}
 								setOpen={(open) => setTagInfo({ ...tagInfo, open })}
 							>
 								<>

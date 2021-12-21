@@ -9,8 +9,8 @@ import {
 	signInWithEmailAndPassword,
 } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
-import { CollectionFire, CollectionStorage } from "../types"
-import { useState } from "react"
+import { FireCol, StorageCol } from "../types"
+import React, { useState } from "react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
 interface Props {
@@ -56,10 +56,7 @@ export function Sign(p: Props) {
 		let profileImageUrl: string | null = null
 
 		if (userAvatar) {
-			const profileImageRef = ref(
-				storage,
-				`${CollectionStorage.ProfileImages}/${uid}`
-			)
+			const profileImageRef = ref(storage, `${StorageCol.ProfileImages}/${uid}`)
 			const res = await uploadBytes(profileImageRef, userAvatar)
 			profileImageUrl = await getDownloadURL(profileImageRef)
 		}
@@ -73,7 +70,7 @@ export function Sign(p: Props) {
 			username: formValues.username!,
 		}
 
-		await setDoc(doc(db, `${CollectionFire.Users}/${UserData.id}`), UserData)
+		await setDoc(doc(db, `${FireCol.Users}/${UserData.id}`), UserData)
 
 		navigate(`/`)
 	}

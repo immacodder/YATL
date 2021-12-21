@@ -1,21 +1,20 @@
 import { useField } from "formik"
 
-interface Props {
+interface Props
+	extends React.DetailedHTMLProps<
+		React.InputHTMLAttributes<HTMLInputElement>,
+		HTMLInputElement
+	> {
 	name: string
-	placeholder: string
-	type?: "password" | "text" | "email"
-	className?: string
-	[key: string]: any
 }
 
-export function InputValidate({ placeholder, ...props }: Props) {
+export function InputValidate({ ...props }: Props) {
 	const [field, meta] = useField(props.name)
 	const error: string = meta.error && meta.touched ? meta.error : ""
 
 	return (
 		<div>
 			<input
-				placeholder={placeholder}
 				{...field}
 				{...props}
 				className={`border-2 p-2 rounded w-full ${

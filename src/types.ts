@@ -1,15 +1,11 @@
-export enum CollectionFire {
+export enum FireCol {
 	Users = "users",
 	Todos = "todos",
+	Projects = "projects",
 	Tags = "tags",
 }
-export enum CollectionStorage {
+export enum StorageCol {
 	ProfileImages = "profileImages",
-}
-export enum UserState {
-	Initializing = "initializing",
-	NotSigned = "not signed",
-	Signed = "signed",
 }
 
 export interface User {
@@ -20,36 +16,23 @@ export interface User {
 	profileImageUrl: string | null
 }
 
-export enum TodoType {
-	Default = "default",
-	Completed = "completed",
-}
-export enum Priority {
-	P1 = "P1",
-	P2 = "P2",
-	P3 = "P3",
-	P4 = "P4",
-}
-export enum Indentation {
-	Level0,
-	Level1,
-	Level2,
-	Level3,
-}
 export interface Todo {
 	id: string
-	type: TodoType
+	type: "completed" | "default"
 	createdAt: number
 	repeatedAt: string
 	children: Todo[]
 	title: string
 	description: string | null
-	priority: Priority
-	tags: string[]
+	sectionId: string
+	priority: 1 | 2 | 3 | 4
+	tags: {
+		[id: string]: string
+	}
 	parentTodo: null | string
-	indentation: Indentation
+	indentation: 0 | 1 | 2 | 3
 	remindAt: number | null
-	dueUntil: number | null
+	scheduledAt: number | null
 }
 export interface Tag {
 	id: string
@@ -57,26 +40,54 @@ export interface Tag {
 	name: string
 }
 
-export enum ProjectType {
-	Today,
-	Upcoming,
-	Inbox,
-	UserCreated,
-	Archived,
+export enum ProjectColors {
+	Emerald = "#34d399",
+	Slate = "#94a3b8",
+	Red = "#f87171",
+	Amber = "#fb923c",
+	Yellow = "#facc15",
+	Green = "#4ade80",
+	Cyan = "#22d3ee",
+	Blue = "#60a5fa",
+	Violet = "#a78bfa",
+	Fuchsia = "#d946ef",
+	Pink = "#ec4899",
 }
-export interface Section {
-	id: string
-	todos: Todo[]
-	title: string
+export enum DefaultProjects {
+	Today = "today",
+	Inbox = "inbox",
+	Upcoming = "upcoming",
 }
-
-export interface Project {
+export interface DefaultProject {
 	id: string
-	type: ProjectType
-	createdAt: number
-	title: string
-	comment: string
+	type: "default"
+	name: DefaultProjects
 	sections: Section[]
+}
+export interface UserCreatedProject {
+	id: string
+	type: "userCreated" | "archived"
+	name: string
+	color: ProjectColors
+	comment: string | null
+	sections: Section[]
+}
+export interface DefaultSection {
+	id: string
+	type: "default"
+}
+export interface UserSection {
+	id: string
+	type: "userCreated"
+	name: string
+}
+export type Section = DefaultSection | UserSection
+export type Project = DefaultProject | UserCreatedProject
+
+export enum UserState {
+	Initializing = "initializing",
+	NotSigned = "not signed",
+	Signed = "signed",
 }
 
 export interface UserSliceState {
