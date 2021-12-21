@@ -1,6 +1,6 @@
 import { doc, setDoc } from "firebase/firestore"
-import { Fragment, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { useState } from "react"
+import { Link, useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
@@ -59,24 +59,33 @@ export default function Sidebar(p: P) {
 
 	return (
 		<>
-			<div className="bg-white p-2 flex flex-col items-start justify-start">
-				{p.projects
-					.filter(
-						(project): project is DefaultProject => project.type === "default"
-					)
-					.map((proj) => (
-						<Link
-							to={`/project/${proj.id}`}
-							key={proj.id}
-							className={`p-2 w-full ${
-								proj.id === selectedProjectId ? "selected" : ""
-							}`}
-						>
-							{proj.name[0].toUpperCase() + proj.name.slice(1)}
-						</Link>
-					))}
+			<aside className="bg-white p-2 flex flex-col items-start justify-start">
+				<section className="w-full">
+					<ul className="flex flex-col items-start list-none">
+						{p.projects
+							.filter(
+								(project): project is DefaultProject =>
+									project.type === "default"
+							)
+							.map((proj) => (
+								<li
+									key={proj.id}
+									className={` w-full ${
+										proj.id === selectedProjectId ? "selected" : ""
+									}`}
+								>
+									<Link
+										to={`/project/${proj.id}`}
+										className="inline-block p-2 w-full"
+									>
+										{proj.name[0].toUpperCase() + proj.name.slice(1)}
+									</Link>
+								</li>
+							))}
+					</ul>
+				</section>
 
-				<div className="mt-4 w-full p-2">
+				<section className="mt-4 w-full p-2">
 					<p className="text-lg">Projects</p>
 					{p.projects
 						.filter(
@@ -92,7 +101,7 @@ export default function Sidebar(p: P) {
 								to={`/project/${proj.id}`}
 							>
 								<div
-									className="w-3 h-3 rounded-full mr-2"
+									className="min-h-[.75rem] min-w-[.75rem] rounded-full mr-2"
 									style={{ backgroundColor: proj.color }}
 								/>
 								{proj.name}
@@ -105,12 +114,14 @@ export default function Sidebar(p: P) {
 						<p>New project</p>
 						<span className="material-icons">add</span>
 					</button>
-				</div>
-			</div>
+				</section>
+			</aside>
 			{projectOpen && (
 				<Popup type="dialog" anchor={null} setOpen={setProjectOpen}>
-					<div>
-						<h3 className="text-lg mb-2">Create a new project</h3>
+					<form onSubmit={(e) => e.preventDefault()}>
+						<header>
+							<h3 className="text-lg mb-2">Create a new project</h3>
+						</header>
 						<label className="mt-2" htmlFor="projectColor w-full">
 							Select a color
 						</label>
@@ -119,7 +130,7 @@ export default function Sidebar(p: P) {
 							<div
 								style={{ backgroundColor: projectColor }}
 								className="w-4 h-4 rounded-full"
-							></div>
+							/>
 							<select
 								value={projectColor}
 								id="projectColor"
@@ -146,22 +157,24 @@ export default function Sidebar(p: P) {
 							onChange={(e) => setProjectName(e.target.value)}
 							className="input w-[300px]"
 						/>
-						<div className="flex justify-end mt-2">
-							<button
-								onClick={resetNewProject}
-								className="button bg-secondary text-white mr-2"
-							>
-								Cancel
-							</button>
-							<button
-								className="button"
-								onClick={onNewProjectAdd}
-								disabled={projectName.trim().length < 2}
-							>
-								Add
-							</button>
-						</div>
-					</div>
+						<footer>
+							<div className="flex justify-end mt-2">
+								<button
+									onClick={resetNewProject}
+									className="button bg-secondary text-white mr-2"
+								>
+									Cancel
+								</button>
+								<button
+									className="button"
+									onClick={onNewProjectAdd}
+									disabled={projectName.trim().length < 2}
+								>
+									Add
+								</button>
+							</div>
+						</footer>
+					</form>
 				</Popup>
 			)}
 		</>

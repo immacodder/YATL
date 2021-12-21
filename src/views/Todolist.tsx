@@ -62,39 +62,43 @@ export default function Todolist(p: P) {
 			}}
 		>
 			{/* APPBAR */}
-			<div className="bg-red-400 col-span-full h-12 w-full"></div>
+			<header className="bg-red-400 col-span-full h-12 w-full"></header>
 			<Sidebar projects={p.projects} />
 			{/* MAIN */}
-			<div className="m-4">
-				<div className="flex justify-end">
-					<button className="m-2 button">Comment</button>
-					<button className="m-2 button">Project actions</button>
-					<button className="m-2 button">View</button>
-				</div>
-				{filteredTodos.map((todo) => (
-					<TodoComp
-						project={currentProject}
-						todoFormOpen={todoEditOpen}
-						setGlobalFormOpen={onTodoEdit}
-						todo={todo}
-						key={todo.id}
-					/>
-				))}
-				{open ? (
-					<TodoForm
-						sectionId={
-							currentProject &&
-							currentProject.sections.find((s) => s.type === "default")!.id
-						}
-						setOpen={setOpen}
-						tags={p.tags}
-					/>
-				) : (
-					<button className="button" onClick={() => setOpen(true)}>
-						Add todo
-					</button>
-				)}
-			</div>
+			<main>
+				<section className="m-4 mb-2">
+					<div className="flex justify-end">
+						<button className="m-2 button">Comment</button>
+						<button className="m-2 button">Project actions</button>
+						<button className="m-2 button mr-0">View</button>
+					</div>
+				</section>
+				<section className="m-4 mt-0">
+					{filteredTodos.map((todo) => (
+						<TodoComp
+							project={currentProject}
+							todoFormOpen={todoEditOpen}
+							setGlobalFormOpen={onTodoEdit}
+							todo={todo}
+							key={todo.id}
+						/>
+					))}
+					{open ? (
+						<TodoForm
+							sectionId={
+								currentProject &&
+								currentProject.sections.find((s) => s.type === "default")!.id
+							}
+							setOpen={setOpen}
+							tags={p.tags}
+						/>
+					) : (
+						<button className="button" onClick={() => setOpen(true)}>
+							Add todo
+						</button>
+					)}
+				</section>
+			</main>
 		</div>
 	)
 }
