@@ -209,6 +209,29 @@ export default function Todolist(p: P) {
 			)
 		})
 		todosJsx.push(...newTodos)
+		if (!todosJsx.length)
+			todosJsx.push(
+				<Fragment
+					key={"I have to include this, otherwise it will raise an error..."}
+				>
+					<button
+						className="button"
+						onClick={() => {
+							setCurrentAddTodoSectionId(defSection.id)
+							setTodoFormOpen(true)
+						}}
+					>
+						Add todo
+					</button>
+					{todoFormOpen && (
+						<TodoForm
+							defaultValues={{ sectionId: defSection.id }}
+							setOpen={setTodoFormOpen}
+							tags={p.tags}
+						/>
+					)}
+				</Fragment>
+			)
 	}
 
 	return (
@@ -251,11 +274,6 @@ export default function Todolist(p: P) {
 
 				<section className="m-4 mt-0">
 					{todosJsx}
-					{!todosJsx.length && <button>replace me later</button>}
-					{/* {todoFormOpen && (
-						// TODO add default section here
-						<TodoForm setOpen={setTodoFormOpen} tags={p.tags} />
-					)} */}
 					{sectionFormOpen ? (
 						<form
 							className="p-4 mt-2 bg-white"
