@@ -1,4 +1,10 @@
-import { formatISO, isToday } from "date-fns"
+import {
+	format,
+	formatISO,
+	hoursToMilliseconds,
+	isToday,
+	isTomorrow,
+} from "date-fns"
 import { doc, setDoc } from "firebase/firestore"
 import React, { useState, useRef, Fragment } from "react"
 import { useParams } from "react-router-dom"
@@ -179,6 +185,26 @@ export default function TodoForm(p: Props) {
 		}
 	}
 
+	let formattedSchedule = schedule.date
+		? format(new Date(schedule.date), `d MMM`)
+		: `No date`
+	if (schedule.date) {
+		if (isToday(new Date(schedule.date))) formattedSchedule = "Today"
+		if (isTomorrow(new Date(schedule.date))) formattedSchedule = "Tomorrow"
+	}
+
+	let formattedReminder = remind.date
+		? format(
+				new Date(
+					`${remind.date} ${
+						remind.time ??
+						formatISO(new Date(2020, 11, 12, 12), { representation: "time" })
+					}`
+				),
+				`d MMM 'at' kk':'mm`
+		  )
+		: `No reminder`
+
 	return (
 		<div>
 			<form
@@ -297,7 +323,7 @@ export default function TodoForm(p: Props) {
 							</Popup>
 						)}
 						<select
-							className="button appearance-none mx-1"
+							className="button appearance-none ml-2 mr-1"
 							onChange={({ target: { value } }) =>
 								setPriority(+value as Todo["priority"])
 							}
@@ -317,9 +343,7 @@ export default function TodoForm(p: Props) {
 							className="flex itmes-center mx-1 button"
 							ref={scheduleAnchor}
 						>
-							{schedule.date && isToday(new Date(schedule.date))
-								? `Today`
-								: `Schedule`}
+							{formattedSchedule}
 							<span className="material-icons ml-1">event</span>
 						</button>
 
@@ -338,7 +362,19 @@ export default function TodoForm(p: Props) {
 									>
 										Today
 									</button>
-									<button className="button bg-secondary text-white">
+									<button
+										onClick={() =>
+											setSchedule({
+												...schedule,
+												date: formatISO(
+													new Date(dateInISO).getTime() +
+														hoursToMilliseconds(24),
+													{ representation: "date" }
+												),
+											})
+										}
+										className="button bg-secondary text-white"
+									>
 										Tomorrow
 									</button>
 								</div>
@@ -373,7 +409,7 @@ export default function TodoForm(p: Props) {
 							ref={remindAnchor}
 							className="button mx-1 flex items-center"
 						>
-							Reminder
+							{formattedReminder}
 							<span className="material-icons ml-1">alarm_add</span>
 						</button>
 						{remind.open && (
@@ -445,6 +481,7 @@ export default function TodoForm(p: Props) {
 									<form
 										onSubmit={(e) => {
 											e.preventDefault()
+											e.stopPropagation()
 											onCreateTag()
 										}}
 										className="flex items-center justify-start"
