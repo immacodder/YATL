@@ -22,6 +22,8 @@ export default function Sidebar(p: P) {
 	const [projectName, setProjectName] = useState("")
 	const [projectColor, setProjectColor] = useState(ProjectColors.Cyan)
 	const { id: userId } = useAppSelector((s) => s.user.user as User)
+	const [projectListExpanded, setProjectListExpanded] = useState(true)
+
 	const { projectId: selectedProjectId } = useParams()
 	if (!selectedProjectId) throw new Error("no project id found")
 
@@ -87,27 +89,36 @@ export default function Sidebar(p: P) {
 				</section>
 
 				<section className="mt-4 w-full p-2">
-					<p className="text-lg">Projects</p>
-					{p.projects
-						.filter(
-							(project): project is UserCreatedProject =>
-								project.type === "userCreated"
-						)
-						.map((proj) => (
-							<Link
-								className={`flex items-center my-2 w-full p-1 pl-0 highlight ${
-									proj.id === selectedProjectId ? "selected" : ""
-								}`}
-								key={proj.id}
-								to={`/project/${proj.id}`}
-							>
-								<div
-									className="min-h-[.75rem] min-w-[.75rem] rounded-full mr-2"
-									style={{ backgroundColor: proj.color }}
-								/>
-								{proj.name}
-							</Link>
-						))}
+					<p
+						className="text-lg flex justify-between select-none"
+						onClick={() => setProjectListExpanded(!projectListExpanded)}
+					>
+						Projects
+						<button className="material-icons">
+							{projectListExpanded ? "expand_less" : "expand_more"}
+						</button>
+					</p>
+					{projectListExpanded &&
+						p.projects
+							.filter(
+								(project): project is UserCreatedProject =>
+									project.type === "userCreated"
+							)
+							.map((proj) => (
+								<Link
+									className={`flex items-center my-2 w-full p-1 pl-0 highlight ${
+										proj.id === selectedProjectId ? "selected" : ""
+									}`}
+									key={proj.id}
+									to={`/project/${proj.id}`}
+								>
+									<div
+										className="min-h-[.75rem] min-w-[.75rem] rounded-full mr-2"
+										style={{ backgroundColor: proj.color }}
+									/>
+									{proj.name}
+								</Link>
+							))}
 					<button
 						onClick={() => setProjectOpen(true)}
 						className="flex mt-2 justify-between w-full items-center"
