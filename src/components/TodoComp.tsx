@@ -5,7 +5,8 @@ import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
 import { FireCol, Project, Todo, User } from "../types"
-import { Menu, MenuTypeDefault, MenuTypeCustom } from "./Menu"
+import Dialog from "./Dialog"
+import { Menu, MenuType } from "./Menu"
 import Popup from "./Popup"
 import TodoForm from "./TodoForm"
 
@@ -25,7 +26,7 @@ export default function TodoComp(p: P) {
 	const todo = p.todo
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
-	const menuData: (MenuTypeDefault | MenuTypeCustom)[] = [
+	const menuData: MenuType[] = [
 		{
 			name: "Edit",
 			action: () => p.setGlobalFormOpen(todo.id, true),
@@ -73,33 +74,17 @@ export default function TodoComp(p: P) {
 	return (
 		<>
 			{deleteDialogOpen && (
-				<Popup type="dialog" anchor={null} setOpen={setDeleteDialogOpen}>
-					<p className="text-lg">
-						Are you sure you want to delete {todo.title}?
-					</p>
-					<div className="flex justify-end mt-2">
-						<button
-							onClick={() => setDeleteDialogOpen(false)}
-							className="button"
-						>
-							Cancel
-						</button>
-						<button
-							onClick={async () => {
-								await deleteDoc(
-									doc(
-										db,
-										`${FireCol.Users}/${user.id}/${FireCol.Todos}/${todo.id}`
-									)
-								)
-								setDeleteDialogOpen(false)
-							}}
-							className="ml-2 button bg-red-500"
-						>
-							Delete it
-						</button>
-					</div>
-				</Popup>
+				<Dialog
+					action={async () => {
+						await deleteDoc(
+							doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${todo.id}`)
+						)
+					}}
+					setOpen={setDeleteDialogOpen}
+					text={`Are you sure you want to delete ${todo.title}`}
+					danger
+					confirmText="Delete it"
+				/>
 			)}
 			{!(p.todoFormOpen.open && p.todoFormOpen.todoId === todo.id) && (
 				<div className="bg-white p-2 mb-2">

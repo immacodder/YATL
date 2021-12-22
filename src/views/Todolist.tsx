@@ -1,8 +1,11 @@
 import { endOfDay, isAfter, isBefore, isToday } from "date-fns"
-import { arrayUnion, doc, updateDoc } from "firebase/firestore"
-import { Fragment, useState } from "react"
+import { arrayUnion, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { Fragment, useRef, useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { v4 } from "uuid"
+import Dialog from "../components/Dialog"
+import { Menu, MenuType } from "../components/Menu"
+import Popup from "../components/Popup"
 import Sidebar from "../components/Sidebar"
 import TodoComp from "../components/TodoComp"
 import TodoForm from "../components/TodoForm"
@@ -30,12 +33,21 @@ export default function Todolist(p: P) {
 		todoId: null as null | string,
 		open: false,
 	})
-	const [sectionFormOpen, setSectionFormOpen] = useState(false)
+
 	const params = useParams()
+
 	const user = useAppSelector((s) => s.user.user as User)
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+	const [showCompleted, setShowCompleted] = useState(false)
+
 	const projectId = params.projectId as string
 	const [projectIdCheck, setProjectIdCheck] = useState(projectId)
+	const [projectActionsOpen, setProjectActionsOpen] = useState(false)
+	const projectActionsRef = useRef<HTMLButtonElement>(null)
+
+	const [sectionFormOpen, setSectionFormOpen] = useState(false)
 	const [sectionName, setSectionName] = useState("")
+	const [selectedSection, setSelectedSection] = useState<Section | null>(null)
 
 	if (projectIdCheck !== projectId) {
 		setTodoFormOpen(false)
@@ -50,6 +62,49 @@ export default function Todolist(p: P) {
 	const currentProject: Project = p.projects.find(
 		(proj) => proj.id === projectId
 	)!
+	const defSection = currentProject.sections.find(
+		(sec) => sec.type === "default"
+	)!
+
+	if (!selectedSection) setSelectedSection(defSection)
+
+	const deleteProject = async () => {
+		const todoIDs: string[] = p.todos
+			.filter((todo) => {
+				return currentProject.sections.find((sec) => sec.id === todo.sectionId)
+			})
+			.map((todo) => todo.id)
+
+		await Promise.all(
+			todoIDs.map(async (id) => {
+				await deleteDoc(
+					doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${id}`)
+				)
+			})
+		)
+
+		await deleteDoc(
+			doc(
+				db,
+				`${FireCol.Users}/${user.id}/${FireCol.Projects}/${currentProject.id}`
+			)
+		)
+	}
+
+	const projectActionsData: MenuType[] = [
+		{
+			name: showCompleted ? "Hide completed" : "Show completed",
+			icon: showCompleted ? "remove_done" : "done",
+			action: () => setShowCompleted(!showCompleted),
+		},
+		{
+			icon: "delete_forever",
+			name: "Delete project",
+			danger: true,
+			separatorBefore: true,
+			action: () => setDeleteDialogOpen(true),
+		},
+	]
 
 	type SectionMap = Map<Section, Todo[]>
 	const newSectionMap: SectionMap = new Map()
@@ -100,27 +155,35 @@ export default function Todolist(p: P) {
 		})
 	}
 
-	console.log(newSectionMap)
 	const todosJsx: JSX.Element[] = []
 	for (let [section, todos] of newSectionMap) {
-		const newTodos = todos.map((todo) => (
-			<Fragment key={todo.id}>
-				{section.type !== "default" && (
+		let sectionUsed = false
+		const newTodos = todos.map((todo) => {
+			let sectionJSX: JSX.Element = <></>
+			if (!sectionUsed && section.type !== "default") {
+				sectionJSX = (
 					<Fragment>
-						<h3 className="text-lg font-bold">{section.name}</h3>
+						<h3 className="text-lg font-bold mt-4">{section.name}</h3>
 						<hr />
-						<br />
 					</Fragment>
-				)}
-				<TodoComp
-					project={currentProject}
-					todoFormOpen={todoEditOpen}
-					setGlobalFormOpen={onTodoEdit}
-					todo={todo}
-					key={todo.id}
-				/>
-			</Fragment>
-		))
+				)
+				sectionUsed = true
+			}
+			return (
+				<Fragment key={todo.id}>
+					{sectionJSX}
+					{(todo.type !== "completed" || showCompleted) && (
+						<TodoComp
+							project={currentProject}
+							todoFormOpen={todoEditOpen}
+							setGlobalFormOpen={onTodoEdit}
+							todo={todo}
+							key={todo.id}
+						/>
+					)}
+				</Fragment>
+			)
+		})
 		todosJsx.push(...newTodos)
 	}
 
@@ -135,17 +198,37 @@ export default function Todolist(p: P) {
 			<nav className="bg-red-400 col-span-full h-12 w-full"></nav>
 			<Sidebar projects={p.projects} />
 			<main>
-				<section className="m-4 mb-2">
-					<div className="flex justify-end">
-						<button className="m-2 button">Comment</button>
-						<button className="m-2 button">Project actions</button>
-						<button className="m-2 button mr-0">View</button>
-					</div>
+				<section className="m-4 flex justify-end mb-2">
+					<button
+						onClick={() => setProjectActionsOpen(true)}
+						ref={projectActionsRef}
+						className="m-2 button mr-0"
+					>
+						Project actions
+					</button>
+					{projectActionsOpen && (
+						<Menu
+							anchor={projectActionsRef.current}
+							data={projectActionsData}
+							setOpen={setProjectActionsOpen}
+						/>
+					)}
+					{deleteDialogOpen && (
+						<Dialog
+							action={deleteProject}
+							setOpen={setDeleteDialogOpen}
+							text={`Are you sure you want to delete ${currentProject.name}`}
+							confirmText="Delete"
+							danger
+						/>
+					)}
+					<button className="m-2 button mr-0">View</button>
 				</section>
 
 				<section className="m-4 mt-0">
 					{todosJsx}
 					{todoFormOpen ? (
+						// TODO add default section here
 						<TodoForm setOpen={setTodoFormOpen} tags={p.tags} />
 					) : (
 						<button className="button" onClick={() => setTodoFormOpen(true)}>
@@ -165,6 +248,7 @@ export default function Todolist(p: P) {
 								id="sectionName"
 								className="input"
 								placeholder="Section name"
+								autoFocus
 								type="text"
 								onChange={(e) => setSectionName(e.target.value)}
 								value={sectionName}

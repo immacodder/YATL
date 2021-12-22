@@ -185,6 +185,7 @@ export default function TodoForm(p: Props) {
 			>
 				<input
 					className="input mb-2"
+					autoFocus
 					onChange={(e) => setTodo({ ...todo, title: e.target.value })}
 					value={todo.title}
 					placeholder="Todo name"
