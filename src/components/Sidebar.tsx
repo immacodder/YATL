@@ -44,6 +44,7 @@ export default function Sidebar(p: P) {
 			type: "userCreated",
 			color: projectColor,
 			comment: null,
+			createdAt: new Date().getTime(),
 			id: v4(),
 			name: projectName.trim(),
 			sections: [{ id: v4(), type: "default" }],

@@ -1,13 +1,12 @@
 import { format, formatISO, isBefore, startOfDay } from "date-fns"
 import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore"
-import React, { useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
 import { FireCol, Project, Todo, User } from "../types"
 import Dialog from "./Dialog"
 import { Menu, MenuType } from "./Menu"
-import Popup from "./Popup"
 import TodoForm from "./TodoForm"
 
 interface P {

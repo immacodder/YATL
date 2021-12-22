@@ -115,15 +115,15 @@ export default function Todolist(p: P) {
 	currentProject.sections.forEach((section) => {
 		let filteredTodos: Todo[] = []
 
-		if (currentProject.name === DefaultProjects.Inbox) {
+		if (currentProject.name === DefaultProjects[0]) {
 			filteredTodos = p.todos.filter((todo) => todo.scheduledAt === null)
-		} else if (currentProject.name === DefaultProjects.Today) {
+		} else if (currentProject.name === DefaultProjects[1]) {
 			filteredTodos = p.todos.filter(
 				(todo) =>
 					todo.scheduledAt &&
 					(isToday(todo.scheduledAt) || isBefore(todo.scheduledAt, new Date()))
 			)
-		} else if (currentProject.name === DefaultProjects.Upcoming) {
+		} else if (currentProject.name === DefaultProjects[2]) {
 			filteredTodos = p.todos.filter(
 				(todo) =>
 					todo.scheduledAt && isAfter(todo.scheduledAt, endOfDay(new Date()))

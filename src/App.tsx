@@ -1,7 +1,14 @@
 import { Sign } from "./views/Sign"
 import { Routes, Route, Navigate } from "react-router-dom"
-import React, { useEffect, useState } from "react"
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore"
+import { useEffect, useState } from "react"
+import {
+	collection,
+	doc,
+	onSnapshot,
+	orderBy,
+	query,
+	setDoc,
+} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "./firebase"
 import {
@@ -37,9 +44,7 @@ export function App() {
 		if (!userId) return
 
 		const createDefaultProjects = async () => {
-			const defaultProjects: DefaultProject[] = Object.keys(
-				DefaultProjects
-			).map((key) => {
+			const defaultProjects: DefaultProject[] = DefaultProjects.map((key) => {
 				const section: DefaultSection = {
 					type: "default",
 					id: v4(),
@@ -47,22 +52,32 @@ export function App() {
 				const project: DefaultProject = {
 					type: "default",
 					id: v4(),
-					name: DefaultProjects[key as keyof typeof DefaultProjects],
-					icon: DefaultProjectsIcons[key as keyof typeof DefaultProjects],
+					createdAt: new Date().getTime(),
+					name: key,
+					icon: DefaultProjectsIcons[key],
 					sections: [section],
 				}
 				return project
 			})
+			let delay = 0
 			for (let project of defaultProjects) {
 				const ref = doc(
 					db,
 					`${FireCol.Users}/${userId}/${FireCol.Projects}/${project.id}`
 				)
-				await setDoc(ref, project)
+				delay += 100
+
+				setTimeout(() => {
+					project.createdAt = new Date().getTime()
+					setDoc(ref, project)
+				}, delay)
 			}
 		}
 
-		const ref = collection(db, `${FireCol.Users}/${userId}/${FireCol.Projects}`)
+		const ref = query(
+			collection(db, `${FireCol.Users}/${userId}/${FireCol.Projects}`),
+			orderBy("createdAt", "asc")
+		)
 		return onSnapshot(ref, async (snap) => {
 			const projects = snap.docs.map((doc) => doc.data() as Project)
 			if (!projects.length) {

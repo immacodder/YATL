@@ -58,21 +58,20 @@ export enum DefaultProjectsIcons {
 	Today = "today",
 	Upcoming = "date_range",
 }
-export enum DefaultProjects {
-	Today = "Today",
-	Inbox = "Inbox",
-	Upcoming = "Upcoming",
-}
+export const DefaultProjects = ["Inbox", "Today", "Upcoming"] as const
+
 export interface DefaultProject {
 	id: string
+	createdAt: number
 	type: "default"
-	name: DefaultProjects
+	name: "Today" | "Inbox" | "Upcoming"
 	icon: DefaultProjectsIcons
 	sections: Section[]
 }
 export interface UserCreatedProject {
 	id: string
 	type: "userCreated" | "archived"
+	createdAt: number
 	name: string
 	color: ProjectColors
 	comment: string | null

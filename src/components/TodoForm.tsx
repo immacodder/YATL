@@ -11,17 +11,7 @@ import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import {
-	Tag,
-	FireCol,
-	Todo,
-	User,
-	Project,
-	Section,
-	UserSection,
-	DefaultProjects,
-	DefaultSection,
-} from "../types"
+import { Tag, FireCol, Todo, User, Section, UserSection } from "../types"
 import Popup from "./Popup"
 
 interface Props {
