@@ -33,6 +33,9 @@ export default function Todolist(p: P) {
 		todoId: null as null | string,
 		open: false,
 	})
+	const [currentAddTodoSectionId, setCurrentAddTodoSectionId] = useState<
+		string | null
+	>(null)
 
 	const params = useParams()
 
@@ -158,7 +161,7 @@ export default function Todolist(p: P) {
 	const todosJsx: JSX.Element[] = []
 	for (let [section, todos] of newSectionMap) {
 		let sectionUsed = false
-		const newTodos = todos.map((todo) => {
+		const newTodos = todos.map((todo, index, arr) => {
 			let sectionJSX: JSX.Element = <></>
 			if (!sectionUsed && section.type !== "default") {
 				sectionJSX = (
@@ -180,6 +183,27 @@ export default function Todolist(p: P) {
 							todo={todo}
 							key={todo.id}
 						/>
+					)}
+					{todoFormOpen &&
+						currentAddTodoSectionId === section.id &&
+						todo.id === arr[arr.length - 1].id && (
+							// TODO add default section here
+							<TodoForm
+								setOpen={setTodoFormOpen}
+								defaultValues={{ sectionId: section.id }}
+								tags={p.tags}
+							/>
+						)}
+					{todo.id === arr[arr.length - 1].id && !todoFormOpen && (
+						<button
+							className="button"
+							onClick={() => {
+								setCurrentAddTodoSectionId(section.id)
+								setTodoFormOpen(true)
+							}}
+						>
+							Add todo
+						</button>
 					)}
 				</Fragment>
 			)
@@ -227,14 +251,11 @@ export default function Todolist(p: P) {
 
 				<section className="m-4 mt-0">
 					{todosJsx}
-					{todoFormOpen ? (
+					{!todosJsx.length && <button>replace me later</button>}
+					{/* {todoFormOpen && (
 						// TODO add default section here
 						<TodoForm setOpen={setTodoFormOpen} tags={p.tags} />
-					) : (
-						<button className="button" onClick={() => setTodoFormOpen(true)}>
-							Add todo
-						</button>
-					)}
+					)} */}
 					{sectionFormOpen ? (
 						<form
 							className="p-4 mt-2 bg-white"

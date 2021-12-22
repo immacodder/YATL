@@ -14,6 +14,7 @@ import {
 	Section,
 	UserSection,
 	DefaultProjects,
+	DefaultSection,
 } from "../types"
 import Popup from "./Popup"
 
@@ -65,8 +66,12 @@ export default function TodoForm(p: Props) {
 	const currentProject = projects.find((proj) => proj.id === projectId)!
 	const projectButtonRef = useRef<HTMLButtonElement>(null)
 	const [projectSelectorOpen, setProjectSelectorOpen] = useState(false)
+
 	const [selectedSection, setSelectedSection] = useState<Section>(
-		currentProject.sections.find((sec) => sec.type === "default")!
+		currentProject.sections.find((sec) => {
+			if (!p.defaultValues?.sectionId) return sec.type === "default"
+			return sec.id === p.defaultValues.sectionId
+		})!
 	)
 	const selectedSectionsProject = projects.find((proj) =>
 		proj.sections.find((sec) => sec.id === selectedSection.id)
@@ -230,14 +235,21 @@ export default function TodoForm(p: Props) {
 								setOpen={setProjectSelectorOpen}
 								type="anchor"
 							>
-								<ul>
+								<ul onClick={() => setProjectSelectorOpen(false)}>
 									{projects.map((proj) => {
 										const classNames =
-											"hover:bg-black p-1 flex items-center hover:bg-opacity-10 rounded hover:cursor-pointer"
+											"hover:bg-black p-1 flex items-center hover:bg-opacity-10 rounded hover:cursor-pointer my-1"
 										return (
 											<Fragment key={proj.id}>
 												<li
-													className={classNames}
+													role="button"
+													className={`${classNames} ${
+														proj.sections.find(
+															(s) => s.id === selectedSection.id
+														)
+															? "bg-primary bg-opacity-50"
+															: ""
+													}`}
 													onClick={() =>
 														setSelectedSection(
 															proj.sections.find((s) => s.type === "default")!
@@ -263,9 +275,14 @@ export default function TodoForm(p: Props) {
 													)
 													.map((section) => (
 														<li
+															role="button"
 															onClick={() => setSelectedSection(section)}
+															className={`ml-4 flex items-center ${classNames} ${
+																section.id === selectedSection.id
+																	? " bg-primary bg-opacity-50"
+																	: ""
+															}`}
 															key={section.id}
-															className={`ml-4 flex items-center ${classNames}`}
 														>
 															<span className="material-icons mr-1">
 																segment

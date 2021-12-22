@@ -16,7 +16,7 @@ html {
 		@apply hover:bg-primary inline-block p-2 hover:shadow-lg rounded transition-shadow disabled:opacity-70 border-2 border-primary;
 	}
 	.highlight {
-		@apply hover:bg-black hover:bg-opacity-10;
+		@apply hover:bg-black hover:bg-opacity-5;
 	}
 	.input {
 		@apply border-2 p-2 rounded w-full disabled:opacity-70;
