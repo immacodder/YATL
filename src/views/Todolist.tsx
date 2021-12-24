@@ -1,11 +1,10 @@
 import { endOfDay, isAfter, isBefore, isToday } from "date-fns"
 import { arrayUnion, deleteDoc, doc, updateDoc } from "firebase/firestore"
 import { Fragment, useRef, useState } from "react"
-import { Navigate, useNavigate, useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import Dialog from "../components/Dialog"
 import { Menu, MenuType } from "../components/Menu"
-import Popup from "../components/Popup"
 import Sidebar from "../components/Sidebar"
 import TodoComp from "../components/TodoComp"
 import TodoForm from "../components/TodoFormWrapper"
@@ -243,7 +242,7 @@ export default function Todolist(p: P) {
 			}}
 		>
 			<nav className="bg-red-400 col-span-full h-12 w-full"></nav>
-			<Sidebar projects={p.projects} />
+			<Sidebar />
 			<main>
 				<section className="m-4 flex justify-end mb-2">
 					<button
