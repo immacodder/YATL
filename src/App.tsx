@@ -30,12 +30,12 @@ import Todolist from "./views/Todolist"
 import Test from "./views/Test"
 import { v4 } from "uuid"
 import { setProjects } from "./slices/projectSlice"
+import AppRouter from "./components/Router"
 
 export function App() {
 	const [userId, setUserUid] = useState<null | string>(null)
 	const [tags, setTags] = useState<Tag[]>([])
 	const [todos, setTodos] = useState<Todo[]>([])
-	// const [projects, setProjects] = useState<Project[]>([])
 	const userState = useAppSelector((s) => s.user)
 	const dispatch = useAppDispatch()
 	const projects = useAppSelector((s) => s.projects)
@@ -121,37 +121,5 @@ export function App() {
 		)
 	}, [userId])
 
-	return (
-		<Routes>
-			<Route path="/" element={<AuthChecker projects={projects} />}>
-				<Route index element={<Navigate to="project" />} />
-				<Route path="project">
-					<Route
-						index
-						element={
-							<Navigate
-								to={
-									projects.find((project) => project.type === "default")?.id ??
-									"/404/not-found"
-								}
-							/>
-						}
-					/>
-					<Route
-						path=":projectId"
-						element={<Todolist projects={projects} tags={tags} todos={todos} />}
-					/>
-				</Route>
-			</Route>
-			<Route path="/signin" element={<Sign signIn />} />
-			<Route path="/signup" element={<Sign signIn={false} />} />
-			<Route path="/test" element={<Test />} />
-			<Route
-				path="*"
-				element={
-					<h1 className="text-3xl text-red-500">{"404 No such page :("}</h1>
-				}
-			/>
-		</Routes>
-	)
+	return <AppRouter tags={tags} todos={todos} />
 }
