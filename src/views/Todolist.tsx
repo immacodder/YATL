@@ -8,7 +8,7 @@ import { Menu, MenuType } from "../components/Menu"
 import Popup from "../components/Popup"
 import Sidebar from "../components/Sidebar"
 import TodoComp from "../components/TodoComp"
-import TodoForm from "../components/TodoForm"
+import TodoForm from "../components/TodoFormWrapper"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
 import {
@@ -190,7 +190,7 @@ export default function Todolist(p: P) {
 							// TODO add default section here
 							<TodoForm
 								setOpen={setTodoFormOpen}
-								defaultValues={{ sectionId: section.id }}
+								defValues={{ sectionId: section.id }}
 								tags={p.tags}
 							/>
 						)}
@@ -225,7 +225,7 @@ export default function Todolist(p: P) {
 					</button>
 					{todoFormOpen && (
 						<TodoForm
-							defaultValues={{ sectionId: defSection.id }}
+							defValues={{ sectionId: defSection.id }}
 							setOpen={setTodoFormOpen}
 							tags={p.tags}
 						/>

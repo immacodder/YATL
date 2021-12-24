@@ -7,7 +7,7 @@ import { useAppSelector } from "../hooks"
 import { FireCol, Project, Todo, User } from "../types"
 import Dialog from "./Dialog"
 import { Menu, MenuType } from "./Menu"
-import TodoForm from "./TodoForm"
+import TodoForm from "./TodoFormWrapper"
 
 interface P {
 	todo: Todo
@@ -146,7 +146,7 @@ export default function TodoComp(p: P) {
 							name: todo.tags[key],
 						}))}
 						updateId={todo.id}
-						defaultValues={{
+						defValues={{
 							submitButtonText: "Update todo",
 							checked: Object.keys(todo.tags),
 							priority: todo.priority,
