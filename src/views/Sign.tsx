@@ -66,7 +66,6 @@ export function Sign(p: Props) {
 			email: formValues.email,
 			id: uid,
 			profileImageUrl,
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			username: formValues.username!,
 		}
 

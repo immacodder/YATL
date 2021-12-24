@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "../hooks"
+import { useAppSelector } from "../hooks"
 import { Tag, Todo } from "../types"
 import { Sign } from "../views/Sign"
 import Test from "../views/Test"
-import Todolist from "../views/Todolist"
+import Todolist from "../views/MainView"
 import { AuthChecker } from "./AuthChecker"
 
 interface P {
