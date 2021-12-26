@@ -3,12 +3,11 @@ import React, { useRef, useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, Tag, User } from "../types"
+import { FireCol, TagProject, User } from "../types"
 import Popup from "./Popup"
 import { DefValues } from "./TodoFormWrapper"
 
 interface P {
-	tags: { id: string; name: string }[]
 	defValues?: DefValues
 	tagInfo: {
 		open: boolean
@@ -21,6 +20,9 @@ export default function TagSelector(p: P) {
 	const tagAnchor = useRef<HTMLButtonElement>(null)
 	const [checked, setChecked] = useState<string[]>(p.defValues?.checked ?? [])
 	const user = useAppSelector((s) => s.user.user as User)
+	const tagProjects = useAppSelector((s) => s.projects).filter(
+		(proj): proj is TagProject => proj.type === "tag"
+	)
 
 	const onCheckboxClick = (id: string) => {
 		if (checked.includes(id)) {
@@ -30,14 +32,17 @@ export default function TagSelector(p: P) {
 	}
 
 	const onCreateTag = async () => {
-		const newTag: Tag = {
+		const newTag: TagProject = {
+			type: "tag",
 			id: v4(),
 			name: p.tagInfo.name,
-			todos: [],
+			todoIds: [],
+			createdAt: new Date().getTime(),
+			sections: [{ type: "default", id: v4() }],
 		}
 		const ref = doc(
 			db,
-			`${FireCol.Users}/${user.id}/${FireCol.Tags}/${newTag.id}`
+			`${FireCol.Users}/${user.id}/${FireCol.Projects}/${newTag.id}`
 		)
 		setDoc(ref, newTag)
 
@@ -62,8 +67,8 @@ export default function TagSelector(p: P) {
 					setOpen={(open) => p.setTagInfo({ ...p.tagInfo, open })}
 				>
 					<>
-						{!!p.tags.length && <p className="text-lg">Select tags</p>}
-						{p.tags.map((tag) => (
+						{!!tagProjects.length && <p className="text-lg">Select tags</p>}
+						{tagProjects.map((tag) => (
 							<React.Fragment key={tag.id}>
 								<input
 									type="checkbox"

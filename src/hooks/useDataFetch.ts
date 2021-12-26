@@ -14,7 +14,6 @@ import { db, auth } from "../firebase"
 import { setProjects } from "../slices/projectSlice"
 import { setUser } from "../slices/userSlice"
 import {
-	Tag,
 	Todo,
 	DefaultProject,
 	DefaultProjects,
@@ -28,7 +27,6 @@ import {
 
 export default function useDataFetch() {
 	const [userId, setUserUid] = useState<null | string>(null)
-	const [tags, setTags] = useState<Tag[]>([])
 	const [todos, setTodos] = useState<Todo[]>([])
 	const userState = useAppSelector((s) => s.user)
 	const dispatch = useAppDispatch()
@@ -100,19 +98,11 @@ export default function useDataFetch() {
 
 	useEffect(() => {
 		if (!userId) return
-		const ref = collection(db, `${FireCol.Users}/${userId}/${FireCol.Tags}`)
-		return onSnapshot(ref, (snap) =>
-			setTags(snap.docs.map((doc) => doc.data() as Tag))
-		)
-	}, [userId])
-
-	useEffect(() => {
-		if (!userId) return
 		const ref = collection(db, `${FireCol.Users}/${userId}/${FireCol.Todos}`)
 		return onSnapshot(ref, (snap) =>
 			setTodos(snap.docs.map((doc) => doc.data() as Todo))
 		)
 	}, [userId])
 
-	return { todos, tags }
+	return { todos }
 }

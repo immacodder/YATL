@@ -1,23 +1,27 @@
 import { formatISO } from "date-fns"
-import { Todo } from "../types"
-import TodoForm from "./TodoFormWrapper"
+import { useAppSelector } from "../hooks"
+import { TagProject, Todo } from "../types"
+import TodoFormWrapper from "./TodoFormWrapper"
 
 interface P {
 	todo: Todo
 	setGlobalFormOpen: (id: string, open: boolean) => void
 }
 export default function TodoFormWithDefValues({ todo, setGlobalFormOpen }: P) {
+	const tagProjs = useAppSelector((s) => s.projects).filter(
+		(proj): proj is TagProject => proj.type === "tag"
+	)
+	const tagProjectsFiltered = tagProjs.filter((proj) =>
+		proj.todoIds.includes(todo.id)
+	)
+
 	return (
 		<div className="mb-2">
-			<TodoForm
-				tags={Object.keys(todo.tags).map((key) => ({
-					id: key,
-					name: todo.tags[key],
-				}))}
+			<TodoFormWrapper
 				updateId={todo.id}
 				defValues={{
 					submitButtonText: "Update todo",
-					checked: Object.keys(todo.tags),
+					checked: tagProjectsFiltered.map((tag) => tag.id),
 					priority: todo.priority,
 					todo: {
 						title: todo.title,

@@ -2,7 +2,6 @@ export enum FireCol {
 	Users = "users",
 	Todos = "todos",
 	Projects = "projects",
-	Tags = "tags",
 }
 export enum StorageCol {
 	ProfileImages = "profileImages",
@@ -26,20 +25,11 @@ export interface Todo {
 	description: string | null
 	sectionId: string
 	priority: 1 | 2 | 3 | 4
-	tags: {
-		[id: string]: string
-	}
 	parentTodo: null | string
 	indentation: 0 | 1 | 2 | 3
 	remindAt: number | null
 	scheduledAt: number | null
 }
-export interface Tag {
-	id: string
-	todos: string[]
-	name: string
-}
-
 export enum ProjectColors {
 	Emerald = "#34d399",
 	Slate = "#94a3b8",
@@ -60,23 +50,28 @@ export enum DefaultProjectsIcons {
 }
 export const DefaultProjects = ["Inbox", "Today", "Upcoming"] as const
 
-export interface DefaultProject {
+interface BaseProject {
 	id: string
 	createdAt: number
+	name: string
+	sections: Section[]
+}
+export interface DefaultProject extends BaseProject {
 	type: "default"
 	name: "Today" | "Inbox" | "Upcoming"
 	icon: DefaultProjectsIcons
-	sections: Section[]
 }
-export interface UserCreatedProject {
-	id: string
+export interface UserCreatedProject extends BaseProject {
 	type: "userCreated" | "archived"
-	createdAt: number
-	name: string
 	color: ProjectColors
-	comment: string | null
-	sections: Section[]
 }
+export interface TagProject extends BaseProject {
+	type: "tag"
+	todoIds: string[]
+	name: string
+	id: string
+}
+
 export interface DefaultSection {
 	id: string
 	type: "default"
@@ -87,7 +82,7 @@ export interface UserSection {
 	name: string
 }
 export type Section = DefaultSection | UserSection
-export type Project = DefaultProject | UserCreatedProject
+export type Project = DefaultProject | UserCreatedProject | TagProject
 
 export enum UserState {
 	Initializing = "initializing",

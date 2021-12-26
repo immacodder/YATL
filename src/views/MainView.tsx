@@ -3,11 +3,10 @@ import { Navigate, useParams } from "react-router-dom"
 import ProjectActions from "../components/ProjectActions"
 import SectionForm from "../components/SectionForm"
 import Sidebar from "../components/Sidebar"
-import { Project, Tag, Todo } from "../types"
+import { Project, Todo } from "../types"
 import Todolist from "../components/Todolist"
 
 interface P {
-	tags: Tag[]
 	todos: Todo[]
 	projects: Project[]
 }
@@ -46,7 +45,6 @@ export default function MainView(p: P) {
 
 				<section className="m-4 mt-0">
 					<Todolist
-						tags={p.tags}
 						showCompleted={showCompleted}
 						setShowCompleted={setShowCompleted}
 						todos={p.todos}

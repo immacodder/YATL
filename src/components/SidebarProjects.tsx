@@ -32,7 +32,6 @@ export default function SidebarProjects() {
 		const newProject: UserCreatedProject = {
 			type: "userCreated",
 			color: projectColor,
-			comment: null,
 			createdAt: new Date().getTime(),
 			id: v4(),
 			name: projectName.trim(),

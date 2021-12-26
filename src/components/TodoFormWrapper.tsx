@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
@@ -22,10 +22,6 @@ export interface DefValues {
 }
 
 interface P {
-	tags: Array<{
-		id: string
-		name: string
-	}>
 	setOpen: (open: boolean) => void
 	defValues?: DefValues
 	updateId?: string
@@ -54,7 +50,6 @@ export default function TodoForm(p: P) {
 	const [todo, setTodo] = useState<TodoState>(
 		p.defValues?.todo ?? { description: "", title: "" }
 	)
-	const [checked, setChecked] = useState<string[]>(p.defValues?.checked ?? [])
 	const params = useParams()
 
 	const projects = useAppSelector((s) => s.projects)
@@ -98,11 +93,6 @@ export default function TodoForm(p: P) {
 		if (remind.date && remind.time)
 			remindAt = new Date(remind.date + " " + remind.time).getTime()
 
-		const tags: Todo["tags"] = {}
-		checked.forEach((tagId) => {
-			tags[tagId] = p.tags.filter((tag) => tag.id === tagId)[0].name
-		})
-
 		const newTodo: Todo = {
 			type: "default",
 			createdAt: new Date().getTime(),
@@ -115,7 +105,6 @@ export default function TodoForm(p: P) {
 			priority,
 			// TODO: implement natural language date recognition
 			repeatedAt: "",
-			tags,
 			scheduledAt: dueUntil,
 			remindAt,
 			sectionId: selectedSection.id,
@@ -137,7 +126,6 @@ export default function TodoForm(p: P) {
 			setTodo({ description: "", title: "" })
 			setPriority(4)
 			setTagInfo({ ...defaultTagInfo })
-			setChecked([])
 		}
 	}
 
@@ -203,7 +191,6 @@ export default function TodoForm(p: P) {
 						<TagSelector
 							tagInfo={tagInfo}
 							setTagInfo={setTagInfo}
-							tags={p.tags}
 							defValues={p.defValues}
 						/>
 					</div>

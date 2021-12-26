@@ -2,13 +2,12 @@ import { isToday, isBefore, isAfter, endOfDay } from "date-fns"
 import { Fragment, useState } from "react"
 import TodoComp from "../components/TodoComp"
 import TodoForm from "../components/TodoFormWrapper"
-import { DefaultProjects, Project, Section, Tag, Todo } from "../types"
+import { DefaultProjects, Project, Section, Todo } from "../types"
 
 interface P {
 	currentProject: Project
 	todos: Todo[]
 	showCompleted: boolean
-	tags: Tag[]
 	setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>
 }
 export default function Todolist(p: P) {
@@ -96,7 +95,6 @@ export default function Todolist(p: P) {
 							<TodoForm
 								setOpen={setTodoFormOpen}
 								defValues={{ sectionId: section.id }}
-								tags={p.tags}
 							/>
 						)}
 					{todo.id === arr[arr.length - 1].id && !todoFormOpen && (
@@ -132,7 +130,6 @@ export default function Todolist(p: P) {
 						<TodoForm
 							defValues={{ sectionId: defSection.id }}
 							setOpen={setTodoFormOpen}
-							tags={p.tags}
 						/>
 					)}
 				</Fragment>

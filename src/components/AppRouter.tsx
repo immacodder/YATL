@@ -1,16 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom"
 import { useAppSelector } from "../hooks"
-import { Tag, Todo } from "../types"
+import { Todo } from "../types"
 import { Sign } from "../views/Sign"
 import Test from "../views/Test"
 import Todolist from "../views/MainView"
 import { AuthChecker } from "./AuthChecker"
 
 interface P {
-	tags: Tag[]
 	todos: Todo[]
 }
-export default function AppRouter({ tags, todos }: P) {
+export default function AppRouter({ todos }: P) {
 	const projects = useAppSelector((s) => s.projects)
 
 	return (
@@ -31,7 +30,7 @@ export default function AppRouter({ tags, todos }: P) {
 					/>
 					<Route
 						path=":projectId"
-						element={<Todolist projects={projects} tags={tags} todos={todos} />}
+						element={<Todolist projects={projects} todos={todos} />}
 					/>
 				</Route>
 			</Route>

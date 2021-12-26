@@ -60,11 +60,15 @@ export default function ProjectSelector(p: P) {
 											<span className="material-icons text-slate-700 mr-1">
 												{proj.icon}
 											</span>
-										) : (
+										) : proj.type === "userCreated" ? (
 											<span
 												className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
 												style={{ backgroundColor: proj.color }}
 											/>
+										) : (
+											proj.type === "tag" && (
+												<span className="material-icons mr-1">local_offer</span>
+											)
 										)}
 										{proj.name}
 									</li>
