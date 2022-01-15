@@ -54,7 +54,7 @@ interface BaseProject {
 	id: string
 	createdAt: number
 	name: string
-	sections: Section[]
+	sections: [DefaultSection, ...Section[]]
 }
 export interface DefaultProject extends BaseProject {
 	type: "default"

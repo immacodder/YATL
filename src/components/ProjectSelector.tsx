@@ -1,6 +1,6 @@
 import { useRef, useState, Fragment } from "react"
 import { useAppSelector } from "../hooks"
-import { Section, UserSection } from "../types"
+import { DefaultProjects, Section, UserSection } from "../types"
 import Popup from "./Popup"
 import { DefValues } from "./TodoFormWrapper"
 
@@ -19,6 +19,14 @@ export default function ProjectSelector(p: P) {
 		proj.sections.find((sec) => sec.id === p.selectedSection.id)
 	)!
 
+	let projectName = ""
+	projectName =
+		p.selectedSection.type === "default"
+			? selectedSectionsProject.name
+			: `${selectedSectionsProject.name}/${p.selectedSection.name}`
+
+	if (selectedSectionsProject.type === "tag") projectName = DefaultProjects[0]
+
 	return (
 		<>
 			<button
@@ -27,9 +35,7 @@ export default function ProjectSelector(p: P) {
 				ref={projectButtonRef}
 				type="button"
 			>
-				{p.selectedSection.type === "default"
-					? selectedSectionsProject.name
-					: `${selectedSectionsProject.name}/${p.selectedSection.name}`}
+				{projectName}
 			</button>
 			{projectSelectorOpen && (
 				<Popup
@@ -43,33 +49,35 @@ export default function ProjectSelector(p: P) {
 								"hover:bg-black p-1 flex items-center hover:bg-opacity-10 rounded hover:cursor-pointer my-1"
 							return (
 								<Fragment key={proj.id}>
-									<li
-										role="button"
-										className={`${classNames} ${
-											proj.sections.find((s) => s.id === p.selectedSection.id)
-												? "bg-primary bg-opacity-50"
-												: ""
-										}`}
-										onClick={() =>
-											p.setSelectedSection(
-												proj.sections.find((s) => s.type === "default")!
-											)
-										}
-									>
-										{proj.type === "default" ? (
-											<span className="material-icons text-slate-700 mr-1">
-												{proj.icon}
-											</span>
-										) : (
-											proj.type === "userCreated" && (
-												<span
-													className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
-													style={{ backgroundColor: proj.color }}
-												/>
-											)
-										)}
-										{proj.name}
-									</li>
+									{proj.type !== "tag" && (
+										<li
+											role="button"
+											className={`${classNames} ${
+												proj.sections.find((s) => s.id === p.selectedSection.id)
+													? "bg-primary bg-opacity-50"
+													: ""
+											}`}
+											onClick={() =>
+												p.setSelectedSection(
+													proj.sections.find((s) => s.type === "default")!
+												)
+											}
+										>
+											{proj.type === "default" ? (
+												<span className="material-icons text-slate-700 mr-1">
+													{proj.icon}
+												</span>
+											) : (
+												proj.type === "userCreated" && (
+													<span
+														className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
+														style={{ backgroundColor: proj.color }}
+													/>
+												)
+											)}
+											{proj.name}
+										</li>
+									)}
 									{proj.sections
 										.filter(
 											(sec): sec is UserSection => sec.type === "userCreated"

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, Todo, User, Section } from "../types"
+import { FireCol, Todo, User, Section, DefaultProjects } from "../types"
 import DateSelector from "./DateSelector"
 import PrioritySelector from "./PrioritySelector"
 import ProjectSelector from "./ProjectSelector"
@@ -114,6 +114,11 @@ export default function TodoFormWrapper(p: P) {
 			scheduledAt: dueUntil,
 			remindAt,
 			sectionId: selectedSection.id,
+		}
+		if (currentProject.type === "tag") {
+			newTodo.sectionId = projects.find(
+				(proj) => proj.name === DefaultProjects[0]
+			)!.sections[0].id
 		}
 
 		const todoRef = doc(
