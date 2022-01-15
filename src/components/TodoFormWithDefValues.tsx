@@ -8,12 +8,10 @@ interface P {
 	setGlobalFormOpen: (id: string, open: boolean) => void
 }
 export default function TodoFormWithDefValues({ todo, setGlobalFormOpen }: P) {
-	const tagProjs = useAppSelector((s) => s.projects).filter(
+	const tags = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"
 	)
-	const tagProjectsFiltered = tagProjs.filter((proj) =>
-		proj.todoIds.includes(todo.id)
-	)
+	const tagsFiltered = tags.filter((tag) => tag.todoIds.includes(todo.id))
 
 	return (
 		<div className="mb-2">
@@ -21,7 +19,7 @@ export default function TodoFormWithDefValues({ todo, setGlobalFormOpen }: P) {
 				updateId={todo.id}
 				defValues={{
 					submitButtonText: "Update todo",
-					checked: tagProjectsFiltered.map((tag) => tag.id),
+					checked: tagsFiltered.map((tag) => tag.id),
 					priority: todo.priority,
 					todo: {
 						title: todo.title,

@@ -14,7 +14,6 @@ import Popup from "./Popup"
 import { DefValues } from "./TodoFormWrapper"
 
 interface P {
-	defValues?: DefValues
 	tagInfo: {
 		open: boolean
 		name: string

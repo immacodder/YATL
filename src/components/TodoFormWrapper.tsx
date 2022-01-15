@@ -78,7 +78,9 @@ export default function TodoFormWrapper(p: P) {
 	)
 
 	const [checkedTags, setCheckedTags] = useState<string[]>(
-		p.defValues?.checked ?? []
+		p.defValues?.checked ?? currentProject.type === "tag"
+			? [currentProject.id]
+			: []
 	)
 
 	const defaultTagInfo = {
@@ -219,7 +221,6 @@ export default function TodoFormWrapper(p: P) {
 							currentTodoId={todoId}
 							tagInfo={tagInfo}
 							setTagInfo={setTagInfo}
-							defValues={p.defValues}
 						/>
 					</div>
 				</div>
