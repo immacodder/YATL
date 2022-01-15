@@ -1,7 +1,7 @@
 import { isToday, isBefore, isAfter, endOfDay } from "date-fns"
 import { Fragment, useState } from "react"
 import TodoComp from "../components/TodoComp"
-import TodoForm from "../components/TodoFormWrapper"
+import TodoFormWrapper from "../components/TodoFormWrapper"
 import { DefaultProjects, Project, Section, TagProject, Todo } from "../types"
 
 interface P {
@@ -103,7 +103,7 @@ export default function Todolist(p: P) {
 						currentAddTodoSectionId === section.id &&
 						todo.id === arr[arr.length - 1].id && (
 							// TODO add default section here
-							<TodoForm
+							<TodoFormWrapper
 								setOpen={setTodoFormOpen}
 								defValues={{ sectionId: section.id }}
 							/>
@@ -138,7 +138,7 @@ export default function Todolist(p: P) {
 						Add todo
 					</button>
 					{todoFormOpen && (
-						<TodoForm
+						<TodoFormWrapper
 							defValues={{ sectionId: defSection.id }}
 							setOpen={setTodoFormOpen}
 						/>

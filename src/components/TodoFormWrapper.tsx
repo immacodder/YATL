@@ -1,4 +1,5 @@
-import { doc, setDoc } from "firebase/firestore"
+import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"
+import { ref } from "firebase/storage"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
@@ -44,7 +45,7 @@ interface TodoState {
 	description: string
 }
 
-export default function TodoForm(p: P) {
+export default function TodoFormWrapper(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 
 	const [todo, setTodo] = useState<TodoState>(
@@ -76,13 +77,17 @@ export default function TodoForm(p: P) {
 		p.defValues?.priority ?? 4
 	)
 
+	const [checkedTags, setCheckedTags] = useState<string[]>(
+		p.defValues?.checked ?? []
+	)
+
 	const defaultTagInfo = {
 		open: false,
 		name: "",
 	}
 	const [tagInfo, setTagInfo] = useState(defaultTagInfo)
 
-	const onAddTodoSubmit = async () => {
+	const onCreateTodo = async () => {
 		let dueUntil: number | null = null
 		let remindAt: number | null = null
 
@@ -111,15 +116,29 @@ export default function TodoForm(p: P) {
 			sectionId: selectedSection.id,
 		}
 
-		const ref = doc(
+		const todoRef = doc(
 			db,
 			`${FireCol.Users}/${user.id}/${FireCol.Todos}/${newTodo.id}`
 		)
 
-		await setDoc(ref, newTodo)
+		await setDoc(todoRef, newTodo)
+		await updateTags()
+
 		resetState()
 
 		if (p.updateId) p.setOpen(false)
+
+		async function updateTags() {
+			await Promise.all(
+				checkedTags.map(async (tagId) => {
+					const tagRef = doc(
+						db,
+						`${FireCol.Users}/${user.id}/${FireCol.Projects}/${tagId}`
+					)
+					await updateDoc(tagRef, { todoIds: arrayUnion(newTodo.id) })
+				})
+			)
+		}
 
 		function resetState() {
 			setSchedule({ ...popupStateDefault })
@@ -135,7 +154,7 @@ export default function TodoForm(p: P) {
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
-					onAddTodoSubmit()
+					onCreateTodo()
 				}}
 				className="bg-white p-2 border-2 shadow"
 			>
@@ -190,6 +209,8 @@ export default function TodoForm(p: P) {
 							defValues={p.defValues}
 						/>
 						<TagSelector
+							checked={checkedTags}
+							setChecked={setCheckedTags}
 							currentTodoId={todoId}
 							tagInfo={tagInfo}
 							setTagInfo={setTagInfo}

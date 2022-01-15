@@ -21,11 +21,12 @@ interface P {
 	}
 	setTagInfo: (info: P["tagInfo"]) => void
 	currentTodoId: string
+	checked: string[]
+	setChecked: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 export default function TagSelector(p: P) {
 	const tagAnchor = useRef<HTMLButtonElement>(null)
-	const [checked, setChecked] = useState<string[]>(p.defValues?.checked ?? [])
 	const user = useAppSelector((s) => s.user.user as User)
 	const tagProjects = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"
@@ -33,11 +34,11 @@ export default function TagSelector(p: P) {
 
 	const onCheckboxClick = (id: string) => {
 		let data: object
-		if (checked.includes(id)) {
-			setChecked(checked.filter((v) => v !== id))
+		if (p.checked.includes(id)) {
+			p.setChecked(p.checked.filter((v) => v !== id))
 			data = { todoIds: arrayRemove(p.currentTodoId) }
 		} else {
-			setChecked([...checked, id])
+			p.setChecked([...p.checked, id])
 			data = { todoIds: arrayUnion(p.currentTodoId) }
 		}
 
@@ -90,7 +91,7 @@ export default function TagSelector(p: P) {
 									type="checkbox"
 									id={tag.id}
 									onChange={() => onCheckboxClick(tag.id)}
-									checked={checked.includes(tag.id)}
+									checked={p.checked.includes(tag.id)}
 									className="mr-2"
 								/>
 								<label htmlFor={tag.id}>{tag.name}</label>
