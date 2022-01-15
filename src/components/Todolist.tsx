@@ -2,7 +2,7 @@ import { isToday, isBefore, isAfter, endOfDay } from "date-fns"
 import { Fragment, useState } from "react"
 import TodoComp from "../components/TodoComp"
 import TodoForm from "../components/TodoFormWrapper"
-import { DefaultProjects, Project, Section, Todo } from "../types"
+import { DefaultProjects, Project, Section, TagProject, Todo } from "../types"
 
 interface P {
 	currentProject: Project
@@ -32,40 +32,51 @@ export default function Todolist(p: P) {
 
 	if (!selectedSection) setSelectedSection(defSection)
 
-	type SectionMap = Map<Section, Todo[]>
-	const newSectionMap: SectionMap = new Map()
+	const newSectionMap: Map<Section, Todo[]> = new Map()
 
 	p.currentProject.sections.forEach((section) => {
-		let filteredTodos: Todo[] = []
+		let defaultProjectFilteredTodos: Todo[] = []
 
 		if (p.currentProject.name === DefaultProjects[0]) {
-			filteredTodos = p.todos.filter((todo) => todo.scheduledAt === null)
+			defaultProjectFilteredTodos = p.todos.filter(
+				(todo) => todo.scheduledAt === null
+			)
 		} else if (p.currentProject.name === DefaultProjects[1]) {
-			filteredTodos = p.todos.filter(
+			defaultProjectFilteredTodos = p.todos.filter(
 				(todo) =>
 					todo.scheduledAt &&
 					(isToday(todo.scheduledAt) || isBefore(todo.scheduledAt, new Date()))
 			)
 		} else if (p.currentProject.name === DefaultProjects[2]) {
-			filteredTodos = p.todos.filter(
+			defaultProjectFilteredTodos = p.todos.filter(
 				(todo) =>
 					todo.scheduledAt && isAfter(todo.scheduledAt, endOfDay(new Date()))
 			)
 		}
+
 		if (p.currentProject.type === "default") {
-			return newSectionMap.set(section, filteredTodos)
+			return newSectionMap.set(section, defaultProjectFilteredTodos)
 		}
 
-		newSectionMap.set(
-			section,
-			p.todos.filter((todo) => todo.sectionId === section.id)
-		)
+		let filteredTodos: Todo[] = []
+
+		if (p.currentProject.type === "tag") {
+			filteredTodos = p.todos.filter((todo) => {
+				return (p.currentProject as TagProject).todoIds.find(
+					(id) => id === todo.id
+				)
+			})
+		} else {
+			filteredTodos = p.todos.filter((todo) => todo.sectionId === section.id)
+		}
+
+		newSectionMap.set(section, filteredTodos)
 	})
 
 	const todosJsx: JSX.Element[] = []
 	for (let [section, todos] of newSectionMap) {
 		let sectionUsed = false
-		const newTodos = todos.map((todo, index, arr) => {
+		const newTodos = todos.map((todo, _i, arr) => {
 			let sectionJSX: JSX.Element = <></>
 			if (!sectionUsed && section.type !== "default") {
 				sectionJSX = (

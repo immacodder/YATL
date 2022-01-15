@@ -49,15 +49,15 @@ export default function SectionForm(p: P) {
 						value={sectionName}
 					/>
 					<br />
+					<button type="submit" className="button mr-2 mt-2">
+						Add
+					</button>
 					<button
 						onClick={() => setSectionFormOpen(false)}
 						type="button"
 						className="button-outline"
 					>
 						Cancel
-					</button>
-					<button type="submit" className="button m-2">
-						Add
 					</button>
 				</form>
 			) : (

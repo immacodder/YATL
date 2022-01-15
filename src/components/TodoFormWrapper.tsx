@@ -55,6 +55,7 @@ export default function TodoForm(p: P) {
 	const projects = useAppSelector((s) => s.projects)
 	const projectId = params.projectId!
 	const currentProject = projects.find((proj) => proj.id === projectId)!
+	const todoId = p.updateId ?? v4()
 
 	const selectedSectionDefault = currentProject.sections.find((sec) => {
 		if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
@@ -81,7 +82,7 @@ export default function TodoForm(p: P) {
 	}
 	const [tagInfo, setTagInfo] = useState(defaultTagInfo)
 
-	const onAddTodoFormSubmit = async () => {
+	const onAddTodoSubmit = async () => {
 		let dueUntil: number | null = null
 		let remindAt: number | null = null
 
@@ -99,7 +100,7 @@ export default function TodoForm(p: P) {
 			description: todo.description.trim() || null,
 			title: todo.title.trim(),
 			children: [],
-			id: p.updateId ?? v4(),
+			id: todoId,
 			indentation: 0,
 			parentTodo: null,
 			priority,
@@ -134,7 +135,7 @@ export default function TodoForm(p: P) {
 			<form
 				onSubmit={(e) => {
 					e.preventDefault()
-					onAddTodoFormSubmit()
+					onAddTodoSubmit()
 				}}
 				className="bg-white p-2 border-2 shadow"
 			>
@@ -189,6 +190,7 @@ export default function TodoForm(p: P) {
 							defValues={p.defValues}
 						/>
 						<TagSelector
+							currentTodoId={todoId}
 							tagInfo={tagInfo}
 							setTagInfo={setTagInfo}
 							defValues={p.defValues}

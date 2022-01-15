@@ -68,8 +68,6 @@ export interface UserCreatedProject extends BaseProject {
 export interface TagProject extends BaseProject {
 	type: "tag"
 	todoIds: string[]
-	name: string
-	id: string
 }
 
 export interface DefaultSection {

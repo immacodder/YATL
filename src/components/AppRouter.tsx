@@ -3,7 +3,7 @@ import { useAppSelector } from "../hooks"
 import { Todo } from "../types"
 import { Sign } from "../views/Sign"
 import Test from "../views/Test"
-import Todolist from "../views/MainView"
+import MainView from "../views/MainView"
 import { AuthChecker } from "./AuthChecker"
 
 interface P {
@@ -30,7 +30,24 @@ export default function AppRouter({ todos }: P) {
 					/>
 					<Route
 						path=":projectId"
-						element={<Todolist projects={projects} todos={todos} />}
+						element={<MainView projects={projects} todos={todos} />}
+					/>
+				</Route>
+				<Route path="tag">
+					<Route
+						index
+						element={
+							<Navigate
+								to={
+									projects.find((project) => project.type === "tag")?.id ??
+									"/404/not-found"
+								}
+							/>
+						}
+					/>
+					<Route
+						path=":projectId"
+						element={<MainView projects={projects} todos={todos} />}
 					/>
 				</Route>
 			</Route>

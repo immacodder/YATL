@@ -1,9 +1,15 @@
-import { doc, setDoc } from "firebase/firestore"
+import {
+	arrayRemove,
+	arrayUnion,
+	doc,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore"
 import React, { useRef, useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, TagProject, User } from "../types"
+import { FireCol, TagProject, Todo, User } from "../types"
 import Popup from "./Popup"
 import { DefValues } from "./TodoFormWrapper"
 
@@ -14,6 +20,7 @@ interface P {
 		name: string
 	}
 	setTagInfo: (info: P["tagInfo"]) => void
+	currentTodoId: string
 }
 
 export default function TagSelector(p: P) {
@@ -25,10 +32,19 @@ export default function TagSelector(p: P) {
 	)
 
 	const onCheckboxClick = (id: string) => {
+		let data: object
 		if (checked.includes(id)) {
-			return setChecked(checked.filter((v) => v !== id))
+			setChecked(checked.filter((v) => v !== id))
+			data = { todoIds: arrayRemove(p.currentTodoId) }
+		} else {
+			setChecked([...checked, id])
+			data = { todoIds: arrayUnion(p.currentTodoId) }
 		}
-		setChecked([...checked, id])
+
+		updateDoc(
+			doc(db, `${FireCol.Users}/${user.id}/${FireCol.Projects}/${id}`),
+			data
+		)
 	}
 
 	const onCreateTag = async () => {
