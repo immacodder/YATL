@@ -10,8 +10,9 @@ import {
 } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { FireCol, StorageCol } from "../types"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { Snackbar, SnackbarProps } from "../components/Snackbar"
 
 interface Props {
 	signIn: boolean
@@ -20,6 +21,11 @@ interface Props {
 export function Sign(p: Props) {
 	const navigate = useNavigate()
 	const [userAvatar, setUserAvatar] = useState<File | null>(null)
+	const [snackbarProps, setSnackbarProps] = useState<SnackbarProps | null>(null)
+	const [shown, setShown] = useState(false)
+	useEffect(() => {
+		if (shown) setTimeout(() => setShown(false), 2000)
+	}, [shown])
 
 	const initialValues = {
 		email: "",
@@ -40,8 +46,16 @@ export function Sign(p: Props) {
 
 	const onSignIn = async ({ email, password }: typeof initialValues) => {
 		if (!p.signIn) return
-		await signInWithEmailAndPassword(auth, email, password)
-		navigate(`/`)
+		try {
+			await signInWithEmailAndPassword(auth, email, password)
+			navigate(`/`)
+		} catch (e) {
+			setShown(true)
+			setSnackbarProps({
+				message: "Incorrect login information",
+				variant: "Error",
+			})
+		}
 	}
 	const onSignUp = async (formValues: typeof initialValues) => {
 		if (p.signIn) return
@@ -87,6 +101,7 @@ export function Sign(p: Props) {
 			onSubmit={p.signIn ? onSignIn : onSignUp}
 		>
 			<Form>
+				{snackbarProps && shown && <Snackbar {...snackbarProps} />}
 				<div className="w-[500px] mx-auto mt-4 bg-white grid gap-4 p-4">
 					<h2 className="text-2xl">{getTerm()}</h2>
 					<InputValidate type="email" name="email" placeholder="Email" />

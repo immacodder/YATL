@@ -1,15 +1,19 @@
+import { useState } from "react"
 import { createPortal } from "react-dom"
 
-interface P {
-	action?: {
-		handler: () => void
-		message: string
-	}
+export interface SnackbarProps {
+	action?: SnackbarAction
+	timeout?: number
 	message: string
 	variant: "Success" | "Error" | "Warning" | "Notification"
 }
 
-export function Snackbar(p: P) {
+export interface SnackbarAction {
+	handler: () => void
+	message: string
+}
+
+export function Snackbar(p: SnackbarProps) {
 	let color =
 		p.variant === "Success"
 			? "bg-green-300"
