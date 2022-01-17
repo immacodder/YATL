@@ -5,7 +5,14 @@ import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, Todo, User, Section, DefaultProjects } from "../types"
+import {
+	FireCol,
+	Todo,
+	User,
+	Section,
+	RegularProject,
+	DefaultSection,
+} from "../types"
 import DateSelector from "./DateSelector"
 import PrioritySelector from "./PrioritySelector"
 import ProjectSelector from "./ProjectSelector"
@@ -58,10 +65,15 @@ export default function TodoFormWrapper(p: P) {
 	const currentProject = projects.find((proj) => proj.id === projectId)!
 	const todoId = p.updateId ?? v4()
 
-	const selectedSectionDefault = currentProject.sections.find((sec) => {
-		if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
-		return sec.type === "default"
-	})!
+	let selectedSectionDefault: DefaultSection = projects.find(
+		(proj): proj is RegularProject => "isInbox" in proj
+	)!.sections[0]
+
+	if (currentProject.type === "regular")
+		currentProject.sections.find((sec) => {
+			if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
+			return sec.type === "default"
+		})!
 
 	const [selectedSection, setSelectedSection] = useState<Section>(
 		selectedSectionDefault
@@ -117,11 +129,12 @@ export default function TodoFormWrapper(p: P) {
 			remindAt,
 			sectionId: selectedSection.id,
 		}
-		if (currentProject.type === "tag") {
-			newTodo.sectionId = projects.find(
-				(proj) => proj.name === DefaultProjects[0]
-			)!.sections[0].id
-		}
+		// TODO fix it
+		// if (currentProject.type === "tag") {
+		// 	newTodo.sectionId = projects.find(
+		// 		(proj) => proj.name === DefaultProjects[0]
+		// 	)!.sections[0].id
+		// }
 
 		const todoRef = doc(
 			db,

@@ -1,6 +1,6 @@
 import { useRef, useState, Fragment } from "react"
 import { useAppSelector } from "../hooks"
-import { DefaultProjects, Section, UserSection } from "../types"
+import { Section, UserSection } from "../types"
 import Popup from "./Popup"
 import { DefValues } from "./TodoFormWrapper"
 
@@ -16,7 +16,9 @@ export default function ProjectSelector(p: P) {
 	const projects = useAppSelector((s) => s.projects)
 
 	const selectedSectionsProject = projects.find((proj) =>
-		proj.sections.find((sec) => sec.id === p.selectedSection.id)
+		"sections" in proj
+			? proj.sections?.find((sec) => sec.id === p.selectedSection.id)
+			: false
 	)!
 
 	let projectName = ""
@@ -25,7 +27,7 @@ export default function ProjectSelector(p: P) {
 			? selectedSectionsProject.name
 			: `${selectedSectionsProject.name}/${p.selectedSection.name}`
 
-	if (selectedSectionsProject.type === "tag") projectName = DefaultProjects[0]
+	if (selectedSectionsProject.type === "tag") projectName = "Inbox"
 
 	return (
 		<>
@@ -45,11 +47,12 @@ export default function ProjectSelector(p: P) {
 				>
 					<ul onClick={() => setProjectSelectorOpen(false)}>
 						{projects.map((proj) => {
+							if (proj.type !== "regular") return null
 							const classNames =
 								"hover:bg-black p-1 flex items-center hover:bg-opacity-10 rounded hover:cursor-pointer my-1"
 							return (
 								<Fragment key={proj.id}>
-									{proj.type !== "tag" && (
+									{
 										<li
 											role="button"
 											className={`${classNames} ${
@@ -63,21 +66,15 @@ export default function ProjectSelector(p: P) {
 												)
 											}
 										>
-											{proj.type === "default" ? (
-												<span className="material-icons text-slate-700 mr-1">
-													{proj.icon}
-												</span>
-											) : (
-												proj.type === "userCreated" && (
-													<span
-														className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
-														style={{ backgroundColor: proj.color }}
-													/>
-												)
-											)}
+											{
+												<span
+													className="min-w-[.75rem] min-h-[.75rem] m-1 rounded-full"
+													style={{ backgroundColor: proj.color }}
+												/>
+											}
 											{proj.name}
 										</li>
-									)}
+									}
 									{proj.sections
 										.filter(
 											(sec): sec is UserSection => sec.type === "userCreated"

@@ -22,7 +22,7 @@ export default function AppRouter({ todos }: P) {
 						element={
 							<Navigate
 								to={
-									projects.find((project) => project.type === "default")?.id ??
+									projects.find((project) => "isInbox" in project)?.id ??
 									"/404/not-found"
 								}
 							/>

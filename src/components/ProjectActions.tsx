@@ -2,7 +2,7 @@ import { deleteDoc, doc } from "firebase/firestore"
 import { useRef, useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { User, FireCol, Project, Todo } from "../types"
+import { User, FireCol, Project, Todo, RegularProject } from "../types"
 import Dialog from "./Dialog"
 import { MenuType, Menu } from "./Menu"
 
@@ -20,10 +20,12 @@ export function ProjectActions(p: P) {
 	const [showCompleted, setShowCompleted] = useState(false)
 	const user = useAppSelector((s) => s.user.user as User)
 
+	if (p.currentProject.type !== "regular") return null
+
 	const deleteProject = async () => {
 		const todoIDs: string[] = p.todos
 			.filter((todo) => {
-				return p.currentProject.sections.find(
+				return (p.currentProject as RegularProject).sections.find(
 					(sec) => sec.id === todo.sectionId
 				)
 			})

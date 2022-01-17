@@ -2,7 +2,7 @@ import { doc, updateDoc } from "firebase/firestore"
 import { useState, useEffect } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { DefaultProjects, FireCol, Project, SortBy, User } from "../types"
+import { FireCol, Project, SortBy, User } from "../types"
 
 export function ProjectViewSort(p: { currentProject: Project }) {
 	const user = useAppSelector((s) => s.user.user as User)
@@ -27,14 +27,6 @@ export function ProjectViewSort(p: { currentProject: Project }) {
 				onChange={(e) => setSelected(e.target.value as any)}
 			>
 				{Object.keys(SortBy).map((key) => {
-					if (
-						key === "project" &&
-						!(
-							p.currentProject.type === "default" &&
-							p.currentProject.name === DefaultProjects[1]
-						)
-					)
-						return null
 					return (
 						<option key={key} value={key}>
 							{SortBy[key as keyof typeof SortBy]}

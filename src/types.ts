@@ -74,22 +74,22 @@ export enum DefaultProjectsIcons {
 	Today = "today",
 	Upcoming = "date_range",
 }
-export const DefaultProjects = ["Inbox", "Today", "Upcoming"] as const
 
 interface BaseProject {
 	id: string
-	createdAt: number
 	name: string
-	sections: [DefaultSection, ...Section[]]
 }
-export interface DefaultProject extends BaseProject {
-	type: "default"
-	name: "Today" | "Inbox" | "Upcoming"
+export interface GeneratedProject extends BaseProject {
+	type: "generated"
+	name: "Today" | "Upcoming"
 	icon: DefaultProjectsIcons
 }
-export interface UserCreatedProject extends BaseProject {
-	type: "userCreated" | "archived"
+export interface RegularProject extends BaseProject {
+	type: "regular" | "archived"
+	createdAt: number
+	sections: [DefaultSection, ...Section[]]
 	color: ProjectColors
+	isInbox?: true
 }
 export interface TagProject extends BaseProject {
 	type: "tag"
@@ -106,7 +106,7 @@ export interface UserSection {
 	name: string
 }
 export type Section = DefaultSection | UserSection
-export type Project = DefaultProject | UserCreatedProject | TagProject
+export type Project = GeneratedProject | RegularProject | TagProject
 
 export enum UserState {
 	Initializing = "initializing",

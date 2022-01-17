@@ -5,13 +5,12 @@ import {
 	setDoc,
 	updateDoc,
 } from "firebase/firestore"
-import React, { useRef, useState } from "react"
+import React, { useRef } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, TagProject, Todo, User } from "../types"
+import { FireCol, TagProject, User } from "../types"
 import Popup from "./Popup"
-import { DefValues } from "./TodoFormWrapper"
 
 interface P {
 	tagInfo: {
@@ -48,21 +47,21 @@ export default function TagSelector(p: P) {
 	}
 
 	const onCreateTag = async () => {
-		const newTag: TagProject = {
-			type: "tag",
-			id: v4(),
-			name: p.tagInfo.name,
-			todoIds: [],
-			createdAt: new Date().getTime(),
-			sections: [{ type: "default", id: v4() }],
-		}
-		const ref = doc(
-			db,
-			`${FireCol.Users}/${user.id}/${FireCol.Projects}/${newTag.id}`
-		)
-		setDoc(ref, newTag)
-
-		p.setTagInfo({ ...p.tagInfo, name: "" })
+		// TODO fix it
+		// const newTag: TagProject = {
+		// 	type: "tag",
+		// 	id: v4(),
+		// 	name: p.tagInfo.name,
+		// 	todoIds: [],
+		// 	createdAt: new Date().getTime(),
+		// 	sections: [{ type: "default", id: v4() }],
+		// }
+		// const ref = doc(
+		// 	db,
+		// 	`${FireCol.Users}/${user.id}/${FireCol.Projects}/${newTag.id}`
+		// )
+		// setDoc(ref, newTag)
+		// p.setTagInfo({ ...p.tagInfo, name: "" })
 	}
 
 	return (

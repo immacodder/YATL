@@ -15,14 +15,12 @@ import { setProjects } from "../slices/projectSlice"
 import { setUser } from "../slices/userSlice"
 import {
 	Todo,
-	DefaultProject,
-	DefaultProjects,
-	DefaultSection,
-	DefaultProjectsIcons,
 	FireCol,
 	Project,
 	UserState,
 	User,
+	RegularProject,
+	ProjectColors,
 } from "../types"
 
 export default function useDataFetch() {
@@ -34,37 +32,6 @@ export default function useDataFetch() {
 	useEffect(() => {
 		if (!userId) return
 
-		async function createDefaultProjects() {
-			const defaultProjects: DefaultProject[] = DefaultProjects.map((key) => {
-				const section: DefaultSection = {
-					type: "default",
-					id: v4(),
-				}
-				const project: DefaultProject = {
-					type: "default",
-					id: v4(),
-					createdAt: new Date().getTime(),
-					name: key,
-					icon: DefaultProjectsIcons[key],
-					sections: [section],
-				}
-				return project
-			})
-			let delay = 0
-			for (let project of defaultProjects) {
-				const ref = doc(
-					db,
-					`${FireCol.Users}/${userId}/${FireCol.Projects}/${project.id}`
-				)
-				delay += 100
-
-				setTimeout(() => {
-					project.createdAt = new Date().getTime()
-					setDoc(ref, project)
-				}, delay)
-			}
-		}
-
 		const ref = query(
 			collection(db, `${FireCol.Users}/${userId}/${FireCol.Projects}`),
 			orderBy("createdAt", "asc")
@@ -72,8 +39,20 @@ export default function useDataFetch() {
 		return onSnapshot(ref, async (snap) => {
 			const projects = snap.docs.map((doc) => doc.data() as Project)
 			if (!projects.length) {
-				await createDefaultProjects()
-				return console.log("Successfully created default projects")
+				const inbox: RegularProject = {
+					type: "regular",
+					isInbox: true,
+					color: ProjectColors.Pink,
+					createdAt: Date.now(),
+					sections: [{ id: v4(), type: "default" }],
+					id: v4(),
+					name: "Inbox",
+				}
+				await setDoc(
+					doc(db, `${FireCol.Users}/${userId}/${FireCol.Projects}/${inbox.id}`),
+					inbox
+				)
+				return console.log("Created Inbox")
 			}
 			dispatch(setProjects(projects))
 		})

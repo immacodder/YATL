@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { UserCreatedProject, ProjectColors, FireCol, User } from "../types"
+import { RegularProject, ProjectColors, FireCol, User } from "../types"
 import Popup from "./Popup"
 
 export default function SidebarProjects() {
@@ -29,8 +29,8 @@ export default function SidebarProjects() {
 		)
 			return
 
-		const newProject: UserCreatedProject = {
-			type: "userCreated",
+		const newProject: RegularProject = {
+			type: "regular",
 			color: projectColor,
 			createdAt: new Date().getTime(),
 			id: v4(),
@@ -63,24 +63,26 @@ export default function SidebarProjects() {
 				{projectListExpanded &&
 					projects
 						.filter(
-							(project): project is UserCreatedProject =>
-								project.type === "userCreated"
+							(project): project is RegularProject => project.type === "regular"
 						)
-						.map((proj) => (
-							<Link
-								className={`flex items-center my-2 w-full p-1 pl-0 highlight ${
-									proj.id === selectedProjectId ? "selected" : ""
-								}`}
-								key={proj.id}
-								to={`/project/${proj.id}`}
-							>
-								<div
-									className="min-h-[.75rem] min-w-[.75rem] rounded-full mr-2"
-									style={{ backgroundColor: proj.color }}
-								/>
-								{proj.name}
-							</Link>
-						))}
+						.map((proj) => {
+							if (proj.isInbox) return null
+							return (
+								<Link
+									className={`flex items-center my-2 w-full p-1 pl-0 highlight ${
+										proj.id === selectedProjectId ? "selected" : ""
+									}`}
+									key={proj.id}
+									to={`/project/${proj.id}`}
+								>
+									<div
+										className="min-h-[.75rem] min-w-[.75rem] rounded-full mr-2"
+										style={{ backgroundColor: proj.color }}
+									/>
+									{proj.name}
+								</Link>
+							)
+						})}
 				<button
 					onClick={() => setProjectOpen(true)}
 					className="flex mt-2 justify-between w-full items-center"

@@ -19,12 +19,25 @@ export default function MainView(p: P) {
 
 	const projectId = params.projectId as string
 
-	if (!p.projects.find((proj) => proj.id === projectId))
+	if (
+		!p.projects.find((proj) => proj.id === projectId) &&
+		projectId !== "today" &&
+		projectId !== "upcoming"
+	)
 		return <Navigate to={"/project"} />
 
-	const currentProject: Project = p.projects.find(
+	let currentProject: Project = p.projects.find(
 		(proj) => proj.id === projectId
 	)!
+
+	if (projectId === "today")
+		currentProject = p.projects.find(
+			(proj) => proj.type === "generated" && proj.name === "Today"
+		)!
+	if (projectId === "upcoming")
+		currentProject = p.projects.find(
+			(proj) => proj.type === "generated" && proj.name === "Upcoming"
+		)!
 
 	return (
 		<div

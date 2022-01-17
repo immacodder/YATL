@@ -61,7 +61,7 @@ export default function SectionForm(p: P) {
 					</button>
 				</form>
 			) : (
-				p.currentProject.type !== "default" && (
+				p.currentProject.type !== "generated" && (
 					<div className="flex items-center justify-center w-full mt-2">
 						<hr className="w-full border-black mr-2" />
 						<button
