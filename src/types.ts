@@ -7,12 +7,38 @@ export enum StorageCol {
 	ProfileImages = "profileImages",
 }
 
+export interface UserSliceState {
+	type: UserState
+	user: User | null
+}
+export enum SortBy {
+	alphabetically = "Alphabetically",
+	date_added = "Date added",
+	due_date = "Due date",
+	priority = "Priority",
+	project = "Project",
+}
+export enum GroupBy {
+	default = "Default",
+	date_added = "Date added",
+	due_date = "Due date",
+	priority = "Priority",
+	label = "Label",
+	project = "Project",
+}
+
 export interface User {
 	username: string
 	email: string
 	createdAt: number
 	id: string
 	profileImageUrl: string | null
+	preferences: UserPrefs
+}
+
+export interface UserPrefs {
+	sortBy: { [projectId: string]: keyof typeof SortBy }
+	groupBy: { [projectId: string]: keyof typeof GroupBy }
 }
 
 export interface Todo {
@@ -86,9 +112,4 @@ export enum UserState {
 	Initializing = "initializing",
 	NotSigned = "not signed",
 	Signed = "signed",
-}
-
-export interface UserSliceState {
-	type: UserState
-	user: User | null
 }

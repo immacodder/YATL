@@ -2,7 +2,15 @@ import { isToday, isBefore, isAfter, endOfDay } from "date-fns"
 import { Fragment, useState } from "react"
 import TodoComp from "../components/TodoComp"
 import TodoFormWrapper from "../components/TodoFormWrapper"
-import { DefaultProjects, Project, Section, TagProject, Todo } from "../types"
+import { useAppSelector } from "../hooks"
+import {
+	DefaultProjects,
+	Project,
+	Section,
+	TagProject,
+	Todo,
+	User,
+} from "../types"
 
 interface P {
 	currentProject: Project
@@ -20,6 +28,7 @@ export default function Todolist(p: P) {
 		string | null
 	>(null)
 	const [selectedSection, setSelectedSection] = useState<Section | null>(null)
+	const user = useAppSelector((s) => s.user.user as User)
 
 	const defSection = p.currentProject.sections.find(
 		(sec) => sec.type === "default"
@@ -68,6 +77,28 @@ export default function Todolist(p: P) {
 			})
 		} else {
 			filteredTodos = p.todos.filter((todo) => todo.sectionId === section.id)
+		}
+
+		if (Object.keys(user.preferences.sortBy).includes(p.currentProject.id)) {
+			filteredTodos.sort((a, b) => {
+				switch (user.preferences.sortBy[p.currentProject.id]) {
+					case "alphabetically":
+						return a.title.localeCompare(b.title)
+					case "date_added":
+						return b.createdAt - a.createdAt
+					case "due_date":
+						return (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0)
+					case "priority":
+						return a.priority - b.priority
+					case "project":
+						// TODO
+						// test first the ones above, and then do the project grouping
+						// This should only be available in Today project, because it doesn't make any sense for other projects
+						return 0
+					default:
+						throw new Error("Case not handled")
+				}
+			})
 		}
 
 		newSectionMap.set(section, filteredTodos)

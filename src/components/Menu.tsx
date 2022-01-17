@@ -8,6 +8,7 @@ export interface MenuType {
 	separatorAfter?: true
 	separatorBefore?: true
 	noCloseAfterClick?: true
+	ref?: React.RefObject<HTMLButtonElement>
 }
 
 interface P {
@@ -27,6 +28,7 @@ export const Menu = (p: P) => (
 					>
 						{data.separatorBefore && <hr />}
 						<button
+							ref={data.ref}
 							onClick={() => {
 								if (!data.noCloseAfterClick) p.setOpen(false)
 								data.action()

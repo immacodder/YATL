@@ -81,6 +81,10 @@ export function Sign(p: Props) {
 			id: uid,
 			profileImageUrl,
 			username: formValues.username!,
+			preferences: {
+				sortBy: {},
+				groupBy: {},
+			},
 		}
 
 		await setDoc(doc(db, `${FireCol.Users}/${UserData.id}`), UserData)

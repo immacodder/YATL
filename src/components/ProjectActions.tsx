@@ -13,7 +13,7 @@ interface P {
 	currentProject: Project
 }
 
-export default function ProjectActions(p: P) {
+export function ProjectActions(p: P) {
 	const projectActionsRef = useRef<HTMLButtonElement>(null)
 	const [projectActionsOpen, setProjectActionsOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -61,7 +61,7 @@ export default function ProjectActions(p: P) {
 	]
 
 	return (
-		<section className="m-4 flex justify-end mb-2">
+		<>
 			<button
 				onClick={() => setProjectActionsOpen(true)}
 				ref={projectActionsRef}
@@ -85,7 +85,6 @@ export default function ProjectActions(p: P) {
 					danger
 				/>
 			)}
-			<button className="m-2 button mr-0">View</button>
-		</section>
+		</>
 	)
 }

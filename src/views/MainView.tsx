@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import ProjectActions from "../components/ProjectActions"
+import { ProjectActions } from "../components/ProjectActions"
 import SectionForm from "../components/SectionForm"
 import Sidebar from "../components/Sidebar"
 import { Project, Todo } from "../types"
 import Todolist from "../components/Todolist"
+import { ProjectView } from "../components/ProjectView"
 
 interface P {
 	todos: Todo[]
@@ -36,12 +37,15 @@ export default function MainView(p: P) {
 			<nav className="bg-red-400 col-span-full h-12 w-full"></nav>
 			<Sidebar />
 			<main>
-				<ProjectActions
-					currentProject={currentProject}
-					showCompleted={showCompleted}
-					setShowCompleted={setShowCompleted}
-					todos={p.todos}
-				/>
+				<section className="m-4 flex justify-end mb-2">
+					<ProjectActions
+						currentProject={currentProject}
+						showCompleted={showCompleted}
+						setShowCompleted={setShowCompleted}
+						todos={p.todos}
+					/>
+					<ProjectView currentProject={currentProject} />
+				</section>
 
 				<section className="m-4 mt-0">
 					<Todolist
