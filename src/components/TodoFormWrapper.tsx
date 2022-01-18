@@ -1,5 +1,4 @@
 import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"
-import { ref } from "firebase/storage"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
@@ -22,11 +21,12 @@ import TagSelector from "./TagSelector"
 export interface DefValues {
 	schedule?: PopupState
 	remind?: PopupState
-	todo?: TodoState
+	todoState?: TodoState
 	priority?: Todo["priority"]
 	checked?: string[]
 	submitButtonText?: string
 	sectionId?: string
+	originalTodo?: Todo
 }
 
 interface P {
@@ -56,24 +56,29 @@ export default function TodoFormWrapper(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 
 	const [todo, setTodo] = useState<TodoState>(
-		p.defValues?.todo ?? { description: "", title: "" }
+		p.defValues?.todoState ?? { description: "", title: "" }
 	)
 	const params = useParams()
 
 	const projects = useAppSelector((s) => s.projects)
-	const projectId = params.projectId!
-	const currentProject = projects.find((proj) => proj.id === projectId)!
-	const todoId = p.updateId ?? v4()
+	const projectId =
+		params.projectId! === "today"
+			? projects.find((proj) => "isInbox" in proj)!.id
+			: params.projectId
 
-	let selectedSectionDefault: DefaultSection = projects.find(
-		(proj): proj is RegularProject => "isInbox" in proj
-	)!.sections[0]
+	let currentProject = projects.find((proj) => proj.id === projectId)!
+
+	const todoId = p.updateId ?? v4()
 
 	if (currentProject.type === "regular")
 		currentProject.sections.find((sec) => {
 			if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
 			return sec.type === "default"
 		})!
+
+	let selectedSectionDefault: DefaultSection = projects.find(
+		(proj): proj is RegularProject => "isInbox" in proj
+	)!.sections[0]
 
 	const [selectedSection, setSelectedSection] = useState<Section>(
 		selectedSectionDefault
@@ -129,12 +134,6 @@ export default function TodoFormWrapper(p: P) {
 			remindAt,
 			sectionId: selectedSection.id,
 		}
-		// TODO fix it
-		// if (currentProject.type === "tag") {
-		// 	newTodo.sectionId = projects.find(
-		// 		(proj) => proj.name === DefaultProjects[0]
-		// 	)!.sections[0].id
-		// }
 
 		const todoRef = doc(
 			db,

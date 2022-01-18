@@ -1,11 +1,9 @@
-import { useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import { ProjectActions } from "../components/ProjectActions"
-import SectionForm from "../components/SectionForm"
 import Sidebar from "../components/Sidebar"
-import { Project, Todo } from "../types"
-import Todolist from "../components/Todolist"
-import { ProjectView } from "../components/ProjectView"
+import { GeneratedProject, Project, RegularProject, Todo } from "../types"
+import { ProjectRender } from "../components/RegularProjectRender"
+import { TodayRender } from "../components/TodayRender"
+import { Upcoming } from "../components/UpcomingRender"
 
 interface P {
 	todos: Todo[]
@@ -14,8 +12,6 @@ interface P {
 
 export default function MainView(p: P) {
 	const params = useParams()
-
-	const [showCompleted, setShowCompleted] = useState(false)
 
 	const projectId = params.projectId as string
 
@@ -49,27 +45,23 @@ export default function MainView(p: P) {
 		>
 			<nav className="bg-red-400 col-span-full h-12 w-full"></nav>
 			<Sidebar />
-			<main>
-				<section className="m-4 flex justify-end mb-2">
-					<ProjectActions
-						currentProject={currentProject}
-						showCompleted={showCompleted}
-						setShowCompleted={setShowCompleted}
-						todos={p.todos}
-					/>
-					<ProjectView currentProject={currentProject} />
-				</section>
-
-				<section className="m-4 mt-0">
-					<Todolist
-						showCompleted={showCompleted}
-						setShowCompleted={setShowCompleted}
-						todos={p.todos}
-						currentProject={currentProject}
-					/>
-					<SectionForm currentProject={currentProject} />
-				</section>
-			</main>
+			{(() => {
+				if (projectId === "today")
+					return (
+						<TodayRender
+							currentProject={currentProject as GeneratedProject}
+							todos={p.todos}
+						/>
+					)
+				else if (projectId === "upcoming") return <Upcoming />
+				else
+					return (
+						<ProjectRender
+							currentProject={currentProject as RegularProject}
+							todos={p.todos}
+						/>
+					)
+			})()}
 		</div>
 	)
 }

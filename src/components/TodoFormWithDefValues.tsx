@@ -21,10 +21,8 @@ export default function TodoFormWithDefValues({ todo, setGlobalFormOpen }: P) {
 					submitButtonText: "Update todo",
 					checked: tagsFiltered.map((tag) => tag.id),
 					priority: todo.priority,
-					todo: {
-						title: todo.title,
-						description: todo.description ?? "",
-					},
+					originalTodo: todo,
+					todoState: { description: todo.description ?? "", title: todo.title },
 					schedule: {
 						date: todo.scheduledAt
 							? formatISO(todo.scheduledAt, { representation: "date" })

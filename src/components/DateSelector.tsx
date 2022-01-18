@@ -83,7 +83,7 @@ export default function DateSelector(p: P) {
 						onChange={(e) =>
 							p.setSchedule({ ...p.schedule, date: e.target.value })
 						}
-						min={dateInISO}
+						// min={dateInISO}
 					/>
 					<br />
 					<label htmlFor="dueTimePicker">Time: </label>
