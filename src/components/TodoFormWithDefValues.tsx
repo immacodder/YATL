@@ -5,9 +5,14 @@ import TodoFormWrapper from "./TodoFormWrapper"
 
 interface P {
 	todo: Todo
+	isToday?: true
 	setGlobalFormOpen: (id: string, open: boolean) => void
 }
-export default function TodoFormWithDefValues({ todo, setGlobalFormOpen }: P) {
+export default function TodoFormWithDefValues({
+	todo,
+	setGlobalFormOpen,
+	isToday,
+}: P) {
 	const tags = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"
 	)

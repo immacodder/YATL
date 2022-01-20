@@ -78,6 +78,7 @@ export enum DefaultProjectsIcons {
 interface BaseProject {
 	id: string
 	name: string
+	createdAt: number
 }
 export interface GeneratedProject extends BaseProject {
 	type: "generated"
@@ -86,7 +87,6 @@ export interface GeneratedProject extends BaseProject {
 }
 export interface RegularProject extends BaseProject {
 	type: "regular" | "archived"
-	createdAt: number
 	sections: [DefaultSection, ...Section[]]
 	color: ProjectColors
 	isInbox?: true

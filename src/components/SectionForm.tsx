@@ -61,7 +61,8 @@ export default function SectionForm(p: P) {
 					</button>
 				</form>
 			) : (
-				p.currentProject.type !== "generated" && (
+				p.currentProject.type !== "generated" &&
+				!("isInbox" in p.currentProject) && (
 					<div className="flex items-center justify-center w-full mt-2">
 						<hr className="w-full border-black mr-2" />
 						<button

@@ -5,25 +5,22 @@ import {
 	isToday,
 	isTomorrow,
 } from "date-fns"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import Popup from "./Popup"
-import type {
-	DefValues,
-	PopupState,
-	popupStateDefault,
-} from "./TodoFormWrapper"
+import type { PopupState } from "./TodoFormWrapper"
 
 interface P {
-	defValues?: DefValues
 	schedule: PopupState
 	setSchedule: (schedule: PopupState) => void
 }
 
 export default function DateSelector(p: P) {
-	const dateInISO = formatISO(new Date(), { representation: "date" })
-	const timeInISO = formatISO(new Date(), { representation: "time" }).split(
-		"+"
-	)[0]
+	const dateInISO = formatISO(Date.now(), {
+		representation: "date",
+	})
+	const timeInISO = formatISO(Date.now(), {
+		representation: "time",
+	}).split("+")[0]
 
 	const scheduleAnchor = useRef<HTMLButtonElement>(null)
 

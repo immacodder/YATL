@@ -17,7 +17,7 @@ export default function ProjectSelector(p: P) {
 
 	const selectedSectionsProject = projects.find((proj) =>
 		"sections" in proj
-			? proj.sections?.find((sec) => sec.id === p.selectedSection.id)
+			? proj.sections.find((sec) => sec.id === p.selectedSection.id)
 			: false
 	)!
 
@@ -26,8 +26,6 @@ export default function ProjectSelector(p: P) {
 		p.selectedSection.type === "default"
 			? selectedSectionsProject.name
 			: `${selectedSectionsProject.name}/${p.selectedSection.name}`
-
-	if (selectedSectionsProject.type === "tag") projectName = "Inbox"
 
 	return (
 		<>

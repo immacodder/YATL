@@ -21,6 +21,8 @@ import {
 	User,
 	RegularProject,
 	ProjectColors,
+	DefaultProjectsIcons,
+	GeneratedProject,
 } from "../types"
 
 export default function useDataFetch() {
@@ -48,11 +50,36 @@ export default function useDataFetch() {
 					id: v4(),
 					name: "Inbox",
 				}
+				const today: GeneratedProject = {
+					type: "generated",
+					icon: DefaultProjectsIcons.Today,
+					id: v4(),
+					name: "Today",
+					createdAt: Date.now(),
+				}
+				const upcoming: GeneratedProject = {
+					icon: DefaultProjectsIcons.Upcoming,
+					createdAt: Date.now(),
+					id: v4(),
+					name: "Upcoming",
+					type: "generated",
+				}
 				await setDoc(
 					doc(db, `${FireCol.Users}/${userId}/${FireCol.Projects}/${inbox.id}`),
 					inbox
 				)
-				return console.log("Created Inbox")
+				await setDoc(
+					doc(db, `${FireCol.Users}/${userId}/${FireCol.Projects}/${today.id}`),
+					today
+				)
+				await setDoc(
+					doc(
+						db,
+						`${FireCol.Users}/${userId}/${FireCol.Projects}/${upcoming.id}`
+					),
+					upcoming
+				)
+				return console.log("Default projects generated")
 			}
 			dispatch(setProjects(projects))
 		})

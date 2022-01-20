@@ -1,7 +1,9 @@
-import { isToday, isBefore, startOfDay, format } from "date-fns"
+import { isToday, isBefore, startOfDay, format, formatISO } from "date-fns"
+import { doc, updateDoc } from "firebase/firestore"
 import { Fragment, useState } from "react"
+import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { GeneratedProject, Todo } from "../types"
+import { FireCol, GeneratedProject, Todo, User } from "../types"
 import TodoComp from "./TodoComp"
 import TodoFormWithDefValues from "./TodoFormWithDefValues"
 import TodoFormWrapper from "./TodoFormWrapper"
@@ -17,17 +19,72 @@ export function TodayTodolist(p: P) {
 		open: false,
 	})
 	const projects = useAppSelector((s) => s.projects)
+	const user = useAppSelector((s) => s.user.user as User)
 
 	function onTodoEdit(todoId: string, open: boolean) {
 		setTodoFormOpen(false)
 		setTodoEditOpen({ id: todoId, open })
 	}
 
-	const filteredTodos = p.todos.filter(
+	let filteredTodos = p.todos.filter(
 		(todo) =>
 			todo.scheduledAt &&
 			(isToday(todo.scheduledAt) || isBefore(todo.scheduledAt, new Date()))
 	)
+	if (Object.keys(user.preferences.sortBy).includes(p.currentProject.id)) {
+		const getProject = (sectionId: string) =>
+			projects.find(
+				(proj) =>
+					proj.type === "regular" &&
+					proj.sections.find((section) => section.id === sectionId)
+			)!
+
+		function getFilteredByProject(todos: Todo[]) {
+			let projectList = new Set<string>()
+			const sortedTodos: Todo[] = []
+
+			filteredTodos.forEach((todo) =>
+				projectList.add(getProject(todo.sectionId).id)
+			)
+
+			// order by alphabet
+			projectList = new Set(
+				[...projectList].sort((a, b) => {
+					const getProjectById = (id: string) =>
+						projects.find((proj) => proj.id === id)!
+					return getProjectById(a).name.localeCompare(getProjectById(b).name)
+				})
+			)
+
+			for (let projectId of projectList) {
+				todos.forEach((todo) => {
+					if (getProject(todo.sectionId).id === projectId)
+						sortedTodos.push(todo)
+				})
+			}
+
+			return sortedTodos
+		}
+
+		filteredTodos.sort((a, b) => {
+			switch (user.preferences.sortBy[p.currentProject.id]) {
+				case "alphabetically":
+					return a.title.localeCompare(b.title)
+				case "date_added":
+					return b.createdAt - a.createdAt
+				case "due_date":
+					return (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0)
+				case "priority":
+					return a.priority - b.priority
+				case "project":
+					filteredTodos = getFilteredByProject(filteredTodos)
+					return 0
+
+				default:
+					throw new Error("Case not handled")
+			}
+		})
+	}
 
 	let overdueSectionShowed = false
 	let regularSectionShowed = false
@@ -55,12 +112,25 @@ export function TodayTodolist(p: P) {
 				proj.sections.find((section) => section.id === todo.sectionId)
 		)!
 
+	function onRescheduleClick() {
+		return Promise.all(
+			overdueTodos.map((todo) =>
+				updateDoc(
+					doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${todo.id}`),
+					{ scheduledAt: Date.now() }
+				)
+			)
+		)
+	}
+
 	return (
 		<>
 			{overdueSectionShowed && (
 				<div className="flex items-center justify-between mb-2">
 					<p className="text-lg font-bold text-[#db1421]">Overdue</p>
-					<button className="hover:underline ">Reschedule</button>
+					<button className="hover:underline" onClick={onRescheduleClick}>
+						Reschedule
+					</button>
 				</div>
 			)}
 			{overdueTodos.map((todo) => (
@@ -87,21 +157,30 @@ export function TodayTodolist(p: P) {
 					{todoEditOpen.open && todoEditOpen.id === todo.id && (
 						<TodoFormWithDefValues setGlobalFormOpen={onTodoEdit} todo={todo} />
 					)}
-					{todoFormOpen && todo.id === p.todos[p.todos.length - 1].id && (
-						<TodoFormWrapper setOpen={setTodoFormOpen} />
-					)}
-					{todo.id === p.todos[p.todos.length - 1].id && !todoFormOpen && (
-						<button
-							className="button"
-							onClick={() => {
-								setTodoFormOpen(true)
-							}}
-						>
-							Add todo
-						</button>
-					)}
 				</Fragment>
 			))}
+			{todoFormOpen && (
+				<TodoFormWrapper
+					defValues={{
+						schedule: {
+							date: formatISO(Date.now(), { representation: "date" }),
+							time: null,
+							open: false,
+						},
+					}}
+					setOpen={setTodoFormOpen}
+				/>
+			)}
+			{!todoFormOpen && (
+				<button
+					className="button"
+					onClick={() => {
+						setTodoFormOpen(true)
+					}}
+				>
+					Add todo
+				</button>
+			)}
 		</>
 	)
 }

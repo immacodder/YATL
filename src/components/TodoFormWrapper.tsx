@@ -19,6 +19,8 @@ import RemindSelector from "./RemindSelector"
 import TagSelector from "./TagSelector"
 
 export interface DefValues {
+	date?: Date
+	time?: Date
 	schedule?: PopupState
 	remind?: PopupState
 	todoState?: TodoState
@@ -62,7 +64,7 @@ export default function TodoFormWrapper(p: P) {
 
 	const projects = useAppSelector((s) => s.projects)
 	const projectId =
-		params.projectId! === "today"
+		params.projectId === "today"
 			? projects.find((proj) => "isInbox" in proj)!.id
 			: params.projectId
 
@@ -70,15 +72,17 @@ export default function TodoFormWrapper(p: P) {
 
 	const todoId = p.updateId ?? v4()
 
-	if (currentProject.type === "regular")
-		currentProject.sections.find((sec) => {
-			if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
-			return sec.type === "default"
-		})!
-
 	let selectedSectionDefault: DefaultSection = projects.find(
 		(proj): proj is RegularProject => "isInbox" in proj
 	)!.sections[0]
+
+	if (currentProject.type === "regular")
+		selectedSectionDefault = currentProject.sections.find(
+			(sec): sec is DefaultSection => {
+				if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
+				return sec.type === "default"
+			}
+		)!
 
 	const [selectedSection, setSelectedSection] = useState<Section>(
 		selectedSectionDefault
@@ -217,11 +221,7 @@ export default function TodoFormWrapper(p: P) {
 							priority={priority}
 							setPriority={(prio: any) => setPriority(prio)}
 						/>
-						<DateSelector
-							schedule={schedule}
-							setSchedule={setSchedule}
-							defValues={p.defValues}
-						/>
+						<DateSelector schedule={schedule} setSchedule={setSchedule} />
 						<RemindSelector
 							remind={remind}
 							setRemind={setRemind}
