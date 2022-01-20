@@ -123,6 +123,21 @@ export function TodayTodolist(p: P) {
 		)
 	}
 
+	const renderTodo = (todo: Todo) => (
+		<Fragment key={todo.id}>
+			{!(todoEditOpen.open && todoEditOpen.id === todo.id) && (
+				<TodoComp
+					project={getTodoProject(todo)}
+					setGlobalFormOpen={onTodoEdit}
+					todo={todo}
+				/>
+			)}
+			{todoEditOpen.open && todoEditOpen.id === todo.id && (
+				<TodoFormWithDefValues setGlobalFormOpen={onTodoEdit} todo={todo} />
+			)}
+		</Fragment>
+	)
+
 	return (
 		<>
 			{overdueSectionShowed && (
@@ -133,32 +148,14 @@ export function TodayTodolist(p: P) {
 					</button>
 				</div>
 			)}
-			{overdueTodos.map((todo) => (
-				<TodoComp
-					project={getTodoProject(todo)}
-					setGlobalFormOpen={onTodoEdit}
-					todo={todo}
-					key={todo.id}
-				/>
-			))}
+			{overdueTodos.map((todo) => renderTodo(todo))}
 			{regularSectionShowed && overdueSectionShowed && (
 				<p className="text-lg font-bold mt-4 mb-2">{`Today, ${format(
 					Date.now(),
 					`d MMM`
 				)}`}</p>
 			)}
-			{regularTodos.map((todo) => (
-				<Fragment key={todo.id}>
-					<TodoComp
-						project={getTodoProject(todo)}
-						setGlobalFormOpen={onTodoEdit}
-						todo={todo}
-					/>
-					{todoEditOpen.open && todoEditOpen.id === todo.id && (
-						<TodoFormWithDefValues setGlobalFormOpen={onTodoEdit} todo={todo} />
-					)}
-				</Fragment>
-			))}
+			{regularTodos.map((todo) => renderTodo(todo))}
 			{todoFormOpen && (
 				<TodoFormWrapper
 					defValues={{
