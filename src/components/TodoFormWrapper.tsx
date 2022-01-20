@@ -76,13 +76,20 @@ export default function TodoFormWrapper(p: P) {
 		(proj): proj is RegularProject => "isInbox" in proj
 	)!.sections[0]
 
-	if (currentProject.type === "regular")
-		selectedSectionDefault = currentProject.sections.find(
-			(sec): sec is DefaultSection => {
-				if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
-				return sec.type === "default"
+	if (currentProject.type === "regular") {
+		selectedSectionDefault = projects.find((proj): proj is RegularProject => {
+			if (proj.type === "regular") {
+				const defaultSection = proj.sections.find(
+					(sec): sec is DefaultSection => {
+						if (p.defValues?.sectionId) return sec.id === p.defValues.sectionId
+						return sec.type === "default"
+					}
+				)
+				return !!defaultSection
 			}
-		)!
+			return false
+		})!.sections[0]
+	}
 
 	const [selectedSection, setSelectedSection] = useState<Section>(
 		selectedSectionDefault
