@@ -4,6 +4,7 @@ import { GeneratedProject, Project, RegularProject, Todo } from "../types"
 import { ProjectRender } from "../components/RegularProjectRender"
 import { TodayRender } from "../components/TodayRender"
 import { Upcoming } from "../components/UpcomingRender"
+import { useState } from "react"
 
 interface P {
 	todos: Todo[]
@@ -12,6 +13,7 @@ interface P {
 
 export default function MainView(p: P) {
 	const params = useParams()
+	const [sidebarOpen, setSidebarOpen] = useState(!(window.innerWidth < 700))
 
 	const projectId = params.projectId as string
 
@@ -39,12 +41,19 @@ export default function MainView(p: P) {
 		<div
 			className="grid w-[100vw] h-[100vh]"
 			style={{
-				gridTemplateColumns: `200px auto`,
+				gridTemplateColumns: sidebarOpen ? `200px auto` : undefined,
 				gridTemplateRows: `3rem auto`,
 			}}
 		>
-			<nav className="bg-red-400 col-span-full h-12 w-full"></nav>
-			<Sidebar />
+			<nav className="bg-red-400 flex items-center px-2 col-span-full h-12 w-full">
+				<button
+					className="material-icons rounded-full p-2 hover:bg-[rgba(0,0,0,0.15)]"
+					onClick={() => setSidebarOpen(!sidebarOpen)}
+				>
+					menu
+				</button>
+			</nav>
+			{sidebarOpen && <Sidebar />}
 			{(() => {
 				if (projectId === "today")
 					return (
