@@ -6,6 +6,10 @@ html {
 	background-color: #eee;
 }
 
+.todo-form-options-wrapper > button {
+	@apply my-1;
+}
+
 @layer components {
 	.button {
 		@apply bg-primary rounded inline-block p-2 shadow hover:shadow-lg transition-shadow disabled:opacity-70;

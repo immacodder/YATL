@@ -201,11 +201,11 @@ export default function TodoFormWrapper(p: P) {
 					className="input"
 					placeholder="Description"
 				/>
-				<div className="flex justify-between">
+				<div className="flex justify-between flex-wrap">
 					<div>
 						<button
 							disabled={!todo.title.trim()}
-							className="button mr-2"
+							className="button mr-2 mb-1"
 							type="submit"
 						>
 							{p.defValues?.submitButtonText ?? "Add todo"}
@@ -218,7 +218,7 @@ export default function TodoFormWrapper(p: P) {
 							Cancel
 						</button>
 					</div>
-					<div className="flex items-center">
+					<div className="todo-form-options-wrapper flex items-center flex-wrap">
 						<ProjectSelector
 							selectedSection={selectedSection}
 							setSelectedSection={setSelectedSection}

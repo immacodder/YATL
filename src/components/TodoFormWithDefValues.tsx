@@ -23,7 +23,7 @@ export default function TodoFormWithDefValues({
 			<TodoFormWrapper
 				updateId={todo.id}
 				defValues={{
-					submitButtonText: "Update todo",
+					submitButtonText: "Update",
 					checked: tagsFiltered.map((tag) => tag.id),
 					priority: todo.priority,
 					originalTodo: todo,
