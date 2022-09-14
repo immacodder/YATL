@@ -106,7 +106,7 @@ export function Sign(p: Props) {
 		>
 			<Form>
 				{snackbarProps && shown && <Snackbar {...snackbarProps} />}
-				<div className="w-[500px] mx-auto mt-4 bg-white grid gap-4 p-4">
+				<div className="md:w-[500px] mx-auto mt-4 bg-white grid gap-4 p-4">
 					<h2 className="text-2xl">{getTerm()}</h2>
 					<InputValidate type="email" name="email" placeholder="Email" />
 					<InputValidate
