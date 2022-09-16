@@ -6,7 +6,7 @@ export function useWindowResize() {
   const [width, setWidth] = useState(window.innerWidth)
 
   useEffect(() => {
-    const debounced = debounce(setDimentions, 100)
+    const debounced = debounce(setDimentions, 50)
     function setDimentions() {
       setHeight(innerHeight)
       setWidth(innerWidth)

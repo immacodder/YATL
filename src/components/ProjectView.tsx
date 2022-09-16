@@ -31,12 +31,7 @@ export function ProjectView(p: P) {
 				View
 			</button>
 			{open && (
-				<Popup
-					anchor={anchor.current}
-					setOpen={setOpen}
-					type="anchor"
-					offsetRight={100}
-				>
+				<Popup anchor={anchor.current} setOpen={setOpen} type="anchor">
 					<div className="flex flex-row items-start">
 						<ProjectViewSort currentProject={p.currentProject} />
 					</div>

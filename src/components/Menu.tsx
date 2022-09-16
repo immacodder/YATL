@@ -18,7 +18,7 @@ interface P {
 }
 
 export const Menu = (p: P) => (
-	<Popup offsetRight={16} type="anchor" anchor={p.anchor} setOpen={p.setOpen}>
+	<Popup type="anchor" anchor={p.anchor} setOpen={p.setOpen}>
 		<div className="flex flex-col justify-start items-start">
 			{p.data.map((data) => {
 				return (

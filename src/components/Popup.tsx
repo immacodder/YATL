@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import ReactDOM from "react-dom"
+import { useWindowResize } from "../hooks/useWindowResize"
 
 interface P {
 	type: "dialog" | "anchor"
@@ -13,16 +14,29 @@ interface P {
 
 export default function Popup(p: P) {
 	const [position, setPosition] = useState({
-		x: null as number | null,
-		y: null as number | null,
+		offsetRight: null as number | null,
+		bottom: null as number | null,
 	})
 	type WrapperNode = HTMLDivElement | null
 	const [wrapperNode, setWrapperNode] = useState<WrapperNode>(null)
-	const [offsetBy, setOffsetBy] = useState(0)
 	const onWrapperNodeChange = useCallback(
 		(el: WrapperNode) => setWrapperNode(el),
 		[]
 	)
+	const { width: windowWidth } = useWindowResize()
+
+	useEffect(() => {
+		if (p.anchor) {
+			const { right, bottom } = getCoords(p.anchor)
+			let offsetFromRight = innerWidth - right
+			const wrapperLeft = wrapperNode?.getBoundingClientRect().left ?? 0
+			if (wrapperLeft < 0) {
+				offsetFromRight = offsetFromRight - (Math.abs(wrapperLeft) + 16)
+			}
+
+			setPosition({ offsetRight: offsetFromRight, bottom })
+		}
+	}, [p, windowWidth, wrapperNode])
 
 	function getCoords(elem: HTMLElement) {
 		const box = elem.getBoundingClientRect()
@@ -33,21 +47,6 @@ export default function Popup(p: P) {
 			bottom: box.bottom + window.pageYOffset,
 			left: box.left + window.pageXOffset,
 		}
-	}
-
-	if (wrapperNode !== null && offsetBy === 0) {
-		const { right } = wrapperNode.getBoundingClientRect()
-		const diff =
-			right - document.documentElement.clientWidth + (p.offsetRight ?? 0)
-
-		if (diff > 0) {
-			setOffsetBy(diff)
-		}
-	}
-
-	if (p.anchor && !position.x && !position.y) {
-		const { left, bottom } = getCoords(p.anchor)
-		setPosition({ x: left, y: bottom })
 	}
 
 	return ReactDOM.createPortal(
@@ -67,11 +66,8 @@ export default function Popup(p: P) {
 				style={
 					p.type === "anchor"
 						? {
-								top: (position.y ?? 0) + "px",
-								left:
-									(position.x ?? 0) -
-									(offsetBy ? offsetBy : 0) /* put the stuff in */ +
-									"px",
+								top: (position.bottom ?? 0) + "px",
+								right: `${position.offsetRight}px`,
 								...p.wrapperStyles,
 						  }
 						: p.wrapperStyles
