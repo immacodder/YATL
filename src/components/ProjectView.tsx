@@ -35,7 +35,7 @@ export function ProjectView(p: P) {
 					anchor={anchor.current}
 					setOpen={setOpen}
 					type="anchor"
-					additionalWrapperWidth={100}
+					offsetRight={100}
 				>
 					<div className="flex flex-row items-start">
 						<ProjectViewSort currentProject={p.currentProject} />

@@ -6,7 +6,7 @@ interface P {
 	children: JSX.Element | JSX.Element[]
 	anchor: HTMLElement | null
 	setOpen: (open: boolean) => void
-	additionalWrapperWidth?: number
+	offsetRight?: number
 	wrapperClassNames?: string
 	wrapperStyles?: React.CSSProperties
 }
@@ -38,9 +38,7 @@ export default function Popup(p: P) {
 	if (wrapperNode !== null && offsetBy === 0) {
 		const { right } = wrapperNode.getBoundingClientRect()
 		const diff =
-			right -
-			document.documentElement.clientWidth +
-			(p.additionalWrapperWidth ?? 0)
+			right - document.documentElement.clientWidth + (p.offsetRight ?? 0)
 
 		if (diff > 0) {
 			setOffsetBy(diff)
@@ -64,13 +62,16 @@ export default function Popup(p: P) {
 				className={
 					p.wrapperClassNames
 						? `absolute rounded bg-white ${p.wrapperClassNames}`
-						: "absolute min-w-fit bg-white p-2 rounded"
+						: `absolute min-w-fit bg-white p-2 rounded`
 				}
 				style={
 					p.type === "anchor"
 						? {
 								top: (position.y ?? 0) + "px",
-								left: (position.x ?? 0) - (offsetBy ? offsetBy : 0) + "px",
+								left:
+									(position.x ?? 0) -
+									(offsetBy ? offsetBy : 0) /* put the stuff in */ +
+									"px",
 								...p.wrapperStyles,
 						  }
 						: p.wrapperStyles
