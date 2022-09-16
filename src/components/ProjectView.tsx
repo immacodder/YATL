@@ -1,8 +1,6 @@
 import { useRef, useState } from "react"
 import { Project } from "../types"
-import { Menu, MenuType } from "./Menu"
 import Popup from "./Popup"
-import { ProjectViewGroup } from "./ProjectViewGroup"
 import { ProjectViewSort } from "./ProjectViewSort"
 
 interface P {
@@ -33,7 +31,12 @@ export function ProjectView(p: P) {
 				View
 			</button>
 			{open && (
-				<Popup anchor={anchor.current} setOpen={setOpen} type="anchor">
+				<Popup
+					anchor={anchor.current}
+					setOpen={setOpen}
+					type="anchor"
+					additionalWrapperWidth={100}
+				>
 					<div className="flex flex-row items-start">
 						<ProjectViewSort currentProject={p.currentProject} />
 					</div>
