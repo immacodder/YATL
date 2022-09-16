@@ -11,7 +11,6 @@ interface P {
 }
 export default function AppRouter({ todos }: P) {
 	const projects = useAppSelector((s) => s.projects)
-	console.log(projects)
 
 	return (
 		<Routes>

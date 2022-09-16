@@ -1,10 +1,11 @@
+import { useState } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import Sidebar from "../components/Sidebar"
-import { GeneratedProject, Project, RegularProject, Todo } from "../types"
 import { ProjectRender } from "../components/RegularProjectRender"
+import { Sidebar } from "../components/Sidebar"
 import { TodayRender } from "../components/TodayRender"
 import { Upcoming } from "../components/UpcomingRender"
-import { useState } from "react"
+import { useWindowResize } from "../hooks/useWindowResize"
+import { GeneratedProject, Project, RegularProject, Todo } from "../types"
 
 interface P {
 	todos: Todo[]
@@ -13,7 +14,9 @@ interface P {
 
 export default function MainView(p: P) {
 	const params = useParams()
-	const [sidebarOpen, setSidebarOpen] = useState(!(window.innerWidth < 700))
+	const { width } = useWindowResize()
+	const isMobile = width < 700
+	const [sidebarOpen, setSidebarOpen] = useState(!isMobile)
 
 	const projectId = params.projectId as string
 
@@ -41,11 +44,12 @@ export default function MainView(p: P) {
 		<div
 			className="grid w-[100vw] h-[100vh]"
 			style={{
-				gridTemplateColumns: sidebarOpen ? `200px auto` : undefined,
+				gridTemplateColumns:
+					sidebarOpen && !isMobile ? `200px auto` : undefined,
 				gridTemplateRows: `3rem auto`,
 			}}
 		>
-			<nav className="bg-red-400 flex items-center px-2 col-span-full h-12 w-full">
+			<nav className="bg-red-400 flex items-center px-2 col-span-full h-12 w-full z-10">
 				<button
 					className="material-icons rounded-full p-2 hover:bg-[rgba(0,0,0,0.15)]"
 					onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -53,7 +57,11 @@ export default function MainView(p: P) {
 					menu
 				</button>
 			</nav>
-			{sidebarOpen && <Sidebar />}
+			<Sidebar
+				setSidebarOpen={setSidebarOpen}
+				isMobile={isMobile}
+				sidebarOpen={sidebarOpen}
+			/>
 			{(() => {
 				if (projectId === "today")
 					return (
