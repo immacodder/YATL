@@ -1,13 +1,14 @@
 import ReactDOM from "react-dom"
+import { useDispatch } from "react-redux"
+import { useAppSelector } from "../hooks"
+import { uiStateActions } from "../slices/uiStateSlice"
 import SidebarDefaultProjects from "./DefaultProjects"
 import SidebarProjects from "./SidebarProjects"
 import { SidebarTags } from "./SidebarTags"
 
-export function Sidebar(p: {
-	sidebarOpen: boolean
-	isMobile: boolean
-	setSidebarOpen: (isOpen: boolean) => void
-}) {
+export function Sidebar(p: { isMobile: boolean }) {
+	const sidebarOpen = useAppSelector((s) => s.uiState.sidebarOpen)
+	const dispatch = useDispatch()
 	const sidebar = (
 		<aside
 			id="sidebar"
@@ -20,7 +21,7 @@ export function Sidebar(p: {
 		</aside>
 	)
 
-	if (p.sidebarOpen && p.isMobile) {
+	if (sidebarOpen && p.isMobile) {
 		const jsx = (
 			<div
 				onClick={(e) => {
@@ -40,11 +41,11 @@ export function Sidebar(p: {
 					})
 
 					if (targetWithinMatches && p.isMobile) {
-						p.setSidebarOpen(false)
+						dispatch(uiStateActions.set({ property: "sidebar", to: false }))
 					}
 
 					if (target.id !== "sidebar" && !sidebar.contains(target)) {
-						p.setSidebarOpen(false)
+						dispatch(uiStateActions.set({ property: "sidebar", to: false }))
 					}
 				}}
 				className="absolute left-0 pt-12 top-0 bg-[rgba(0,0,0,.15)] h-full w-full"
@@ -56,7 +57,7 @@ export function Sidebar(p: {
 			jsx,
 			document.getElementById("sidebarWrapper")!
 		)
-	} else if (p.sidebarOpen) {
+	} else if (sidebarOpen) {
 		return sidebar
 	} else return null
 }

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useDispatch } from "react-redux"
 import { Navigate, useParams } from "react-router-dom"
 import { ProjectCreator } from "../components/ProjectCreator"
 import { ProjectRender } from "../components/RegularProjectRender"
@@ -7,6 +7,7 @@ import { TodayRender } from "../components/TodayRender"
 import { Upcoming } from "../components/UpcomingRender"
 import { useAppSelector } from "../hooks"
 import { useWindowResize } from "../hooks/useWindowResize"
+import { uiStateActions } from "../slices/uiStateSlice"
 import { GeneratedProject, Project, RegularProject, Todo } from "../types"
 
 interface P {
@@ -18,8 +19,8 @@ export default function MainView(p: P) {
 	const params = useParams()
 	const { width } = useWindowResize()
 	const isMobile = width < 600
-	const [sidebarOpen, setSidebarOpen] = useState(!isMobile)
 	const uiState = useAppSelector((s) => s.uiState)
+	const dispatch = useDispatch()
 
 	const projectId = params.projectId as string
 
@@ -50,23 +51,19 @@ export default function MainView(p: P) {
 				className="grid w-[100vw] h-[100vh]"
 				style={{
 					gridTemplateColumns:
-						sidebarOpen && !isMobile ? `200px auto` : undefined,
+						uiState.sidebarOpen && !isMobile ? `200px auto` : undefined,
 					gridTemplateRows: `3rem auto`,
 				}}
 			>
 				<nav className="bg-red-400 flex items-center px-2 col-span-full h-12 w-full z-10">
 					<button
 						className="material-icons rounded-full p-2 hover:bg-[rgba(0,0,0,0.15)]"
-						onClick={() => setSidebarOpen(!sidebarOpen)}
+						onClick={() => dispatch(uiStateActions.toggle("sidebar"))}
 					>
 						menu
 					</button>
 				</nav>
-				<Sidebar
-					setSidebarOpen={setSidebarOpen}
-					isMobile={isMobile}
-					sidebarOpen={sidebarOpen}
-				/>
+				<Sidebar isMobile={isMobile} />
 				{(() => {
 					if (projectId === "today")
 						return (
