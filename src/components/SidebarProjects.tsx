@@ -69,7 +69,7 @@ export default function SidebarProjects() {
 							if (proj.isInbox) return null
 							return (
 								<Link
-									className={`flex items-center my-2 w-full p-1 pl-0 highlight ${
+									className={`projectLink flex items-center my-2 w-full p-1 pl-0 highlight ${
 										proj.id === selectedProjectId ? "selected" : ""
 									}`}
 									key={proj.id}
@@ -85,7 +85,7 @@ export default function SidebarProjects() {
 						})}
 				<button
 					onClick={() => setProjectOpen(true)}
-					className="flex mt-2 justify-between w-full items-center"
+					className="newProjectButton flex mt-2 justify-between w-full items-center"
 				>
 					<p>New project</p>
 					<span className="material-icons">add</span>

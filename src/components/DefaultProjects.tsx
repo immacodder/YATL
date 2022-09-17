@@ -34,7 +34,7 @@ export default function SidebarDefaultProjects() {
 						return (
 							<li
 								key={proj.id}
-								className={`w-full ${selected ? "selected" : ""}`}
+								className={`projectLink w-full ${selected ? "selected" : ""}`}
 							>
 								<Link
 									to={`/project/${id}`}
