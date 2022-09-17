@@ -51,7 +51,9 @@ export default function Popup(p: P) {
 
 	return ReactDOM.createPortal(
 		<div
-			onClick={() => p.setOpen(false)}
+			onClick={() => {
+				p.setOpen(false)
+			}}
 			className={`left-0 top-0 absolute w-full h-full bg-black bg-opacity-10 overflow-clip ${
 				p.type === "dialog" ? "flex justify-center items-center" : ""
 			}`}

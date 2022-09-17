@@ -24,6 +24,7 @@ export function Sidebar(p: {
 		const jsx = (
 			<div
 				onClick={(e) => {
+					e.stopPropagation()
 					const target = e.target as HTMLElement
 					const sidebar = document.getElementById("sidebar") as HTMLDivElement // aside and div have the same properties, don't they?
 					const matchClasses = ["projectLink", "newProjectButton"]
