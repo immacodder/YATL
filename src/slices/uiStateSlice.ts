@@ -6,7 +6,7 @@ interface UIState {
 }
 const initialState: UIState = {
   projectCreatorOpen: false,
-  sidebarOpen: false
+  sidebarOpen: innerWidth > 700
 }
 
 type types = "sidebar" | "projectCreator"

@@ -64,23 +64,25 @@ export default function MainView(p: P) {
 					</button>
 				</nav>
 				<Sidebar isMobile={isMobile} />
-				{(() => {
-					if (projectId === "today")
-						return (
-							<TodayRender
-								currentProject={currentProject as GeneratedProject}
-								todos={p.todos}
-							/>
-						)
-					else if (projectId === "upcoming") return <Upcoming />
-					else
-						return (
-							<ProjectRender
-								currentProject={currentProject as RegularProject}
-								todos={p.todos}
-							/>
-						)
-				})()}
+				<main className="mx-auto max-w-4xl w-full">
+					{(() => {
+						if (projectId === "today")
+							return (
+								<TodayRender
+									currentProject={currentProject as GeneratedProject}
+									todos={p.todos}
+								/>
+							)
+						else if (projectId === "upcoming") return <Upcoming />
+						else
+							return (
+								<ProjectRender
+									currentProject={currentProject as RegularProject}
+									todos={p.todos}
+								/>
+							)
+					})()}
+				</main>
 			</div>
 		</>
 	)

@@ -13,7 +13,7 @@ export function TodayRender(p: P) {
 	const [showCompleted, setShowCompleted] = useState(false)
 
 	return (
-		<main>
+		<>
 			<section className="m-4 flex justify-between items-end mb-2">
 				<div>
 					<p className="text-lg font-bold">
@@ -37,6 +37,6 @@ export function TodayRender(p: P) {
 			<section className="m-4 mt-0">
 				<TodayTodolist currentProject={p.currentProject} todos={p.todos} />
 			</section>
-		</main>
+		</>
 	)
 }

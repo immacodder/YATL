@@ -13,7 +13,7 @@ export function ProjectRender(p: P) {
 	const [showCompleted, setShowCompleted] = useState(false)
 
 	return (
-		<main>
+		<>
 			<section className="m-4 flex justify-end mb-2">
 				<ProjectActions
 					currentProject={p.currentProject}
@@ -33,6 +33,6 @@ export function ProjectRender(p: P) {
 				/>
 				<SectionForm currentProject={p.currentProject} />
 			</section>
-		</main>
+		</>
 	)
 }
