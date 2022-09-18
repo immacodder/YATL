@@ -52,7 +52,7 @@ interface TodoState {
 	description: string
 }
 
-export default function TodoFormWrapper(p: P) {
+export function TodoForm(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 
 	const [todo, setTodo] = useState<TodoState>(

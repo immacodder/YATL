@@ -7,7 +7,7 @@ import {
 } from "date-fns"
 import { useRef } from "react"
 import Popup from "./Popup"
-import type { PopupState } from "./TodoFormWrapper"
+import type { PopupState } from "./TodoForm"
 
 interface P {
 	schedule: PopupState

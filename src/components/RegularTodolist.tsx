@@ -1,9 +1,9 @@
 import { Fragment, useState } from "react"
 import TodoComp from "./TodoComp"
-import TodoFormWrapper from "./TodoFormWrapper"
+import { TodoForm } from "./TodoForm"
 import { useAppSelector } from "../hooks"
 import { RegularProject, Section, Todo, User } from "../types"
-import TodoFormWithDefValues from "./TodoFormWithDefValues"
+import TodoEditForm from "./TodoEditForm"
 
 interface P {
 	currentProject: RegularProject
@@ -84,17 +84,14 @@ export function RegularTodolist(p: P) {
 								key={todo.id}
 							/>
 							{todoEditOpen.open && todoEditOpen.id === todo.id && (
-								<TodoFormWithDefValues
-									setGlobalFormOpen={onTodoEdit}
-									todo={todo}
-								/>
+								<TodoEditForm setGlobalFormOpen={onTodoEdit} todo={todo} />
 							)}
 						</>
 					)}
 					{todoFormOpen &&
 						currentAddTodoSectionId === section.id &&
 						todo.id === todos[todos.length - 1].id && (
-							<TodoFormWrapper
+							<TodoForm
 								setOpen={setTodoFormOpen}
 								defValues={{ sectionId: section.id }}
 							/>
@@ -129,7 +126,7 @@ export function RegularTodolist(p: P) {
 						Add todo
 					</button>
 					{todoFormOpen && (
-						<TodoFormWrapper
+						<TodoForm
 							defValues={{ sectionId: defSection.id }}
 							setOpen={setTodoFormOpen}
 						/>

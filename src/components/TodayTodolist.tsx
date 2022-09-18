@@ -6,8 +6,8 @@ import { getTodoProject } from "../helpers/getTodoProject"
 import { useAppSelector } from "../hooks"
 import { FireCol, GeneratedProject, Todo, User } from "../types"
 import TodoComp from "./TodoComp"
-import TodoFormWithDefValues from "./TodoFormWithDefValues"
-import TodoFormWrapper from "./TodoFormWrapper"
+import TodoEditForm from "./TodoEditForm"
+import { TodoForm } from "./TodoForm"
 
 interface P {
 	todos: Todo[]
@@ -127,7 +127,7 @@ export function TodayTodolist(p: P) {
 				/>
 			)}
 			{todoEditOpen.open && todoEditOpen.id === todo.id && (
-				<TodoFormWithDefValues setGlobalFormOpen={onTodoEdit} todo={todo} />
+				<TodoEditForm setGlobalFormOpen={onTodoEdit} todo={todo} />
 			)}
 		</Fragment>
 	)
@@ -151,7 +151,7 @@ export function TodayTodolist(p: P) {
 			)}
 			{regularTodos.map((todo) => renderTodo(todo))}
 			{todoFormOpen && (
-				<TodoFormWrapper
+				<TodoForm
 					defValues={{
 						schedule: {
 							date: formatISO(Date.now(), { representation: "date" }),

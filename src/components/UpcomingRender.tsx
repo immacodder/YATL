@@ -13,7 +13,7 @@ import { getTodoProject } from "../helpers/getTodoProject"
 import { useAppSelector } from "../hooks"
 import { GeneratedProject, Todo } from "../types"
 import TodoComp from "./TodoComp"
-import TodoFormWrapper from "./TodoFormWrapper"
+import { TodoForm } from "./TodoForm"
 
 interface P {
 	todos: Todo[]
@@ -57,14 +57,6 @@ function generateSection(timestamp: number, todos: Todo[]): section {
 }
 
 export function Upcoming(p: P) {
-	/*
-	TASK
-	1.	Render section for each day (for now 20 days) 	XXX
-	2. 	If user reaches the bottom of the 20 days, create a new one
-	3.	Display todos that have a date set to x day in a section that corresponds to the x day 		XXX
-	4.	Add an add todo form to each section 			XXX
-	5.	PROFIT
-	*/
 	const [sections, setSections] = useState<section[]>([])
 	const [todoFormOpen, setTodoFormOpen] = useState(false)
 	const [currentAddTodoSectionId, setCurrentAddTodoSectionId] = useState<
@@ -97,7 +89,7 @@ export function Upcoming(p: P) {
 								/>
 							))}
 						{todoFormOpen && currentAddTodoSectionId === section.id ? (
-							<TodoFormWrapper
+							<TodoForm
 								setOpen={setTodoFormOpen}
 								defValues={{
 									schedule: {

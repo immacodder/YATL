@@ -2,7 +2,7 @@ import { useRef, useState, Fragment } from "react"
 import { useAppSelector } from "../hooks"
 import { Section, UserSection } from "../types"
 import Popup from "./Popup"
-import { DefValues } from "./TodoFormWrapper"
+import { DefValues } from "./TodoForm"
 
 interface P {
 	defValues?: DefValues
