@@ -9,10 +9,8 @@ import {
 } from "date-fns/esm"
 import { useEffect, useState } from "react"
 import { v4 } from "uuid"
-import { getTodoProject } from "../helpers/getTodoProject"
-import { useAppSelector } from "../hooks"
+import { getScrollHeight } from "../helpers/getScrollHeight"
 import { GeneratedProject, Todo } from "../types"
-import TodoComp from "./TodoComp"
 import { TodoForm } from "./TodoForm"
 import { TodoRender } from "./TodoRender"
 
@@ -63,10 +61,31 @@ export function Upcoming(p: P) {
 	const [currentAddTodoSectionId, setCurrentAddTodoSectionId] = useState<
 		string | null
 	>(null)
+	const [amountOfSections, setAmountOfSections] = useState(0)
 
 	useEffect(() => {
-		setSections(generateSections(p.todos, 200))
-	}, [p.todos])
+		setSections(generateSections(p.todos, amountOfSections))
+
+		function onScroll() {
+			const pixelsFromBottom = getScrollHeight() - scrollY - innerHeight
+			if (pixelsFromBottom < innerHeight) {
+				const newAmount = amountOfSections + 200
+				setAmountOfSections(newAmount)
+				setSections(generateSections(p.todos, newAmount))
+			}
+		}
+		addEventListener("scroll", onScroll)
+
+		return () => removeEventListener("scroll", onScroll)
+	}, [p.todos, amountOfSections])
+
+	useEffect(() => {
+		const amount = 100
+		setAmountOfSections(amount)
+		setSections(generateSections(p.todos, amount))
+		// I only ever need it to run once
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	return (
 		<section className="m-4">
