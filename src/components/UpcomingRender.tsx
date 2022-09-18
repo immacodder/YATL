@@ -14,6 +14,7 @@ import { useAppSelector } from "../hooks"
 import { GeneratedProject, Todo } from "../types"
 import TodoComp from "./TodoComp"
 import { TodoForm } from "./TodoForm"
+import { TodoRender } from "./TodoRender"
 
 interface P {
 	todos: Todo[]
@@ -62,7 +63,6 @@ export function Upcoming(p: P) {
 	const [currentAddTodoSectionId, setCurrentAddTodoSectionId] = useState<
 		string | null
 	>(null)
-	const projects = useAppSelector((s) => s.projects)
 
 	useEffect(() => {
 		setSections(generateSections(p.todos, 200))
@@ -78,14 +78,10 @@ export function Upcoming(p: P) {
 						{section.todos
 							.filter((todo) => todo.type !== "completed")
 							.map((todo) => (
-								<TodoComp
-									project={getTodoProject(todo, projects)}
-									setGlobalFormOpen={(id, open) => {
-										setTodoFormOpen(open)
-										setCurrentAddTodoSectionId(id)
-									}}
-									todo={todo}
+								<TodoRender
 									key={todo.id}
+									todo={todo}
+									setTodoFormOpen={setTodoFormOpen}
 								/>
 							))}
 						{todoFormOpen && currentAddTodoSectionId === section.id ? (
