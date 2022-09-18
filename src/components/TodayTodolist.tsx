@@ -1,13 +1,11 @@
-import { isToday, isBefore, startOfDay, format, formatISO } from "date-fns"
+import { format, formatISO, isBefore, isToday, startOfDay } from "date-fns"
 import { doc, updateDoc } from "firebase/firestore"
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import { db } from "../firebase"
-import { getTodoProject } from "../helpers/getTodoProject"
 import { useAppSelector } from "../hooks"
 import { FireCol, GeneratedProject, Todo, User } from "../types"
-import TodoComp from "./TodoComp"
-import TodoEditForm from "./TodoEditForm"
 import { TodoForm } from "./TodoForm"
+import { TodoRender } from "./TodoRender"
 
 interface P {
 	todos: Todo[]
@@ -15,17 +13,8 @@ interface P {
 }
 export function TodayTodolist(p: P) {
 	const [todoFormOpen, setTodoFormOpen] = useState(false)
-	const [todoEditOpen, setTodoEditOpen] = useState({
-		id: null as null | string,
-		open: false,
-	})
 	const projects = useAppSelector((s) => s.projects)
 	const user = useAppSelector((s) => s.user.user as User)
-
-	function onTodoEdit(todoId: string, open: boolean) {
-		setTodoFormOpen(false)
-		setTodoEditOpen({ id: todoId, open })
-	}
 
 	let filteredTodos = p.todos.filter(
 		(todo) =>
@@ -117,21 +106,6 @@ export function TodayTodolist(p: P) {
 		)
 	}
 
-	const renderTodo = (todo: Todo) => (
-		<Fragment key={todo.id}>
-			{!(todoEditOpen.open && todoEditOpen.id === todo.id) && (
-				<TodoComp
-					project={getTodoProject(todo, projects)}
-					setGlobalFormOpen={onTodoEdit}
-					todo={todo}
-				/>
-			)}
-			{todoEditOpen.open && todoEditOpen.id === todo.id && (
-				<TodoEditForm setGlobalFormOpen={onTodoEdit} todo={todo} />
-			)}
-		</Fragment>
-	)
-
 	return (
 		<>
 			{overdueSectionShowed && (
@@ -142,14 +116,14 @@ export function TodayTodolist(p: P) {
 					</button>
 				</div>
 			)}
-			{overdueTodos.map((todo) => renderTodo(todo))}
+			{overdueTodos.map((todo) => TodoRender({ setTodoFormOpen, todo }))}
 			{regularSectionShowed && overdueSectionShowed && (
 				<p className="text-lg font-bold mt-4 mb-2">{`Today, ${format(
 					Date.now(),
 					`d MMM`
 				)}`}</p>
 			)}
-			{regularTodos.map((todo) => renderTodo(todo))}
+			{regularTodos.map((todo) => TodoRender({ setTodoFormOpen, todo }))}
 			{todoFormOpen && (
 				<TodoForm
 					defValues={{
