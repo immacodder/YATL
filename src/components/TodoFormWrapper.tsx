@@ -19,8 +19,6 @@ import RemindSelector from "./RemindSelector"
 import TagSelector from "./TagSelector"
 
 export interface DefValues {
-	date?: Date
-	time?: Date
 	schedule?: PopupState
 	remind?: PopupState
 	todoState?: TodoState
@@ -64,7 +62,7 @@ export default function TodoFormWrapper(p: P) {
 
 	const projects = useAppSelector((s) => s.projects)
 	const projectId =
-		params.projectId === "today"
+		params.projectId === "today" || params.projectId === "upcoming"
 			? projects.find((proj) => "isInbox" in proj)!.id
 			: params.projectId
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import ReactDOM from "react-dom"
+import { getScrollHeight } from "../helpers/getScrollHeight"
 import { useWindowResize } from "../hooks/useWindowResize"
 
 interface P {
@@ -23,7 +24,7 @@ export default function Popup(p: P) {
 		(el: WrapperNode) => setWrapperNode(el),
 		[]
 	)
-	const { width: windowWidth } = useWindowResize()
+	const { width: windowWidth, height: windowHeight } = useWindowResize()
 
 	useEffect(() => {
 		if (p.anchor) {
@@ -57,6 +58,7 @@ export default function Popup(p: P) {
 			className={`left-0 top-0 absolute w-full h-full bg-black bg-opacity-10 overflow-clip ${
 				p.type === "dialog" ? "flex justify-center items-center" : ""
 			}`}
+			style={{ height: `${getScrollHeight()}px` }}
 		>
 			<div
 				ref={onWrapperNodeChange}

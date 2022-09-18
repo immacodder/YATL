@@ -2,6 +2,7 @@ import { isToday, isBefore, startOfDay, format, formatISO } from "date-fns"
 import { doc, updateDoc } from "firebase/firestore"
 import { Fragment, useState } from "react"
 import { db } from "../firebase"
+import { getTodoProject } from "../helpers/getTodoProject"
 import { useAppSelector } from "../hooks"
 import { FireCol, GeneratedProject, Todo, User } from "../types"
 import TodoComp from "./TodoComp"
@@ -105,13 +106,6 @@ export function TodayTodolist(p: P) {
 		regularSectionShowed = true
 	})
 
-	const getTodoProject = (todo: Todo) =>
-		projects.find(
-			(proj) =>
-				proj.type === "regular" &&
-				proj.sections.find((section) => section.id === todo.sectionId)
-		)!
-
 	function onRescheduleClick() {
 		return Promise.all(
 			overdueTodos.map((todo) =>
@@ -127,7 +121,7 @@ export function TodayTodolist(p: P) {
 		<Fragment key={todo.id}>
 			{!(todoEditOpen.open && todoEditOpen.id === todo.id) && (
 				<TodoComp
-					project={getTodoProject(todo)}
+					project={getTodoProject(todo, projects)}
 					setGlobalFormOpen={onTodoEdit}
 					todo={todo}
 				/>

@@ -73,7 +73,13 @@ export default function MainView(p: P) {
 									todos={p.todos}
 								/>
 							)
-						else if (projectId === "upcoming") return <Upcoming />
+						else if (projectId === "upcoming")
+							return (
+								<Upcoming
+									todos={p.todos}
+									currentProject={currentProject as GeneratedProject}
+								/>
+							)
 						else
 							return (
 								<ProjectRender
