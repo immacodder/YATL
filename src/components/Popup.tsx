@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { CSSProperties, useCallback, useEffect, useState } from "react"
 import ReactDOM from "react-dom"
 import { getScrollHeight } from "../helpers/getScrollHeight"
 import { useWindowResize } from "../hooks/useWindowResize"
@@ -50,6 +50,22 @@ export default function Popup(p: P) {
 		}
 	}
 
+	let wrapperStyles: CSSProperties
+	if (p.type === "anchor")
+		wrapperStyles = {
+			top: (position.bottom ?? 0) + "px",
+			right: `${position.offsetRight}px`,
+			...p.wrapperStyles,
+		}
+	else if (p.type === "dialog") {
+		wrapperStyles = {
+			position: "fixed",
+			// hacky but works
+			top: `${innerHeight - innerHeight / 2 - 60}px`,
+			...p.wrapperStyles,
+		}
+	} else throw new Error("not implemented")
+
 	return ReactDOM.createPortal(
 		<div
 			onClick={() => {
@@ -67,15 +83,7 @@ export default function Popup(p: P) {
 						? `absolute rounded bg-white ${p.wrapperClassNames}`
 						: `absolute min-w-fit bg-white p-2 rounded`
 				}
-				style={
-					p.type === "anchor"
-						? {
-								top: (position.bottom ?? 0) + "px",
-								right: `${position.offsetRight}px`,
-								...p.wrapperStyles,
-						  }
-						: p.wrapperStyles
-				}
+				style={wrapperStyles}
 				onClick={(e) => e.stopPropagation()}
 			>
 				{p.children}
