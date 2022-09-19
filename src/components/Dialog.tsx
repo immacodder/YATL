@@ -13,7 +13,7 @@ export default function Dialog(p: P) {
 		<Popup
 			type="dialog"
 			anchor={null}
-			wrapperClassNames="p-4"
+			wrapperClassNames="p-4 mx-4"
 			setOpen={p.setOpen}
 		>
 			<p className="text-lg">{p.text}</p>
