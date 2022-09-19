@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useEffect, useState } from "react"
+import React, { CSSProperties, useEffect, useRef, useState } from "react"
 import ReactDOM from "react-dom"
 import { getScrollHeight } from "../helpers/getScrollHeight"
 import { useWindowResize } from "../hooks/useWindowResize"
@@ -18,26 +18,22 @@ export default function Popup(p: P) {
 		offsetRight: null as number | null,
 		bottom: null as number | null,
 	})
-	type WrapperNode = HTMLDivElement | null
-	const [wrapperNode, setWrapperNode] = useState<WrapperNode>(null)
-	const onWrapperNodeChange = useCallback(
-		(el: WrapperNode) => setWrapperNode(el),
-		[]
-	)
-	const { width: windowWidth, height: windowHeight } = useWindowResize()
+	const wrapperNodeRef = useRef<HTMLDivElement>(null)
+	const { width: windowWidth } = useWindowResize()
 
 	useEffect(() => {
 		if (p.anchor) {
 			const { right, bottom } = getCoords(p.anchor)
 			let offsetFromRight = innerWidth - right
-			const wrapperLeft = wrapperNode?.getBoundingClientRect().left ?? 0
+			const wrapperLeft =
+				wrapperNodeRef.current?.getBoundingClientRect().left ?? 0
 			if (wrapperLeft < 0) {
 				offsetFromRight = offsetFromRight - (Math.abs(wrapperLeft) + 16)
 			}
 
 			setPosition({ offsetRight: offsetFromRight, bottom })
 		}
-	}, [p, windowWidth, wrapperNode])
+	}, [p, windowWidth, wrapperNodeRef])
 
 	function getCoords(elem: HTMLElement) {
 		const box = elem.getBoundingClientRect()
@@ -60,8 +56,11 @@ export default function Popup(p: P) {
 	else if (p.type === "dialog") {
 		wrapperStyles = {
 			position: "fixed",
-			// hacky but works
-			top: `${innerHeight - innerHeight / 2 - 60}px`,
+			top: `${
+				innerHeight -
+				innerHeight / 2 -
+				(wrapperNodeRef?.current?.getBoundingClientRect().height ?? 120) / 2
+			}px`,
 			...p.wrapperStyles,
 		}
 	} else throw new Error("not implemented")
@@ -77,7 +76,7 @@ export default function Popup(p: P) {
 			style={{ height: `${getScrollHeight()}px` }}
 		>
 			<div
-				ref={onWrapperNodeChange}
+				ref={wrapperNodeRef}
 				className={
 					p.wrapperClassNames
 						? `absolute rounded bg-white ${p.wrapperClassNames}`
