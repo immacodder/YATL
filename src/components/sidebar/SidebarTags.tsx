@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
-import { useAppSelector } from "../hooks"
-import { TagProject } from "../types"
+import { useAppSelector } from "../../hooks"
+import { TagProject } from "../../types"
 
 export function SidebarTags() {
 	const tagProjects = useAppSelector((s) => s.projects).filter(

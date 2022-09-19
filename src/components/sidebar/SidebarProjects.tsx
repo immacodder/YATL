@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { Link, useParams } from "react-router-dom"
-import { useAppSelector } from "../hooks"
-import { uiStateActions } from "../slices/uiStateSlice"
-import { RegularProject } from "../types"
+import { useAppSelector } from "../../hooks"
+import { uiStateActions } from "../../slices/uiStateSlice"
+import { RegularProject } from "../../types"
 
 export default function SidebarProjects() {
 	const projects = useAppSelector((s) => s.projects)

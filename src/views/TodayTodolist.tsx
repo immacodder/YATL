@@ -4,8 +4,8 @@ import { useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
 import { FireCol, GeneratedProject, Todo, User } from "../types"
-import { TodoForm } from "./TodoForm"
-import { TodoRender } from "./TodoRender"
+import { TodoForm } from "../components/todo/todo_form/TodoForm"
+import { TodoRender } from "../components/todo/TodoRender"
 
 interface P {
 	todos: Todo[]

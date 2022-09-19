@@ -1,8 +1,8 @@
 import { format } from "date-fns"
 import { useState } from "react"
 import { GeneratedProject, Todo } from "../types"
-import { ProjectActions } from "./ProjectActions"
-import { ProjectView } from "./ProjectView"
+import { ProjectActions } from "../components/ProjectActions"
+import { ProjectView } from "../components/ProjectView"
 import { TodayTodolist } from "./TodayTodolist"
 
 interface P {

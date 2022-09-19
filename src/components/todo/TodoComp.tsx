@@ -1,7 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore"
-import { db } from "../firebase"
-import { useAppSelector } from "../hooks"
-import { FireCol, Project, Todo, User } from "../types"
+import { db } from "../../firebase"
+import { useAppSelector } from "../../hooks"
+import { FireCol, Project, Todo, User } from "../../types"
 import TodoInfo from "./TodoInfo"
 import TodoMenu from "./TodoMenu"
 

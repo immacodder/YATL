@@ -1,9 +1,9 @@
 import { Fragment, useState } from "react"
-import TodoComp from "./TodoComp"
-import { TodoForm } from "./TodoForm"
+import TodoComp from "../components/todo/TodoComp"
+import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { useAppSelector } from "../hooks"
 import { RegularProject, Section, Todo, User } from "../types"
-import TodoEditForm from "./TodoEditForm"
+import TodoEditForm from "../components/todo/todo_form/TodoEditForm"
 
 interface P {
 	currentProject: RegularProject
@@ -11,7 +11,7 @@ interface P {
 	showCompleted: boolean
 	setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>
 }
-export function RegularTodolist(p: P) {
+export function Todolist(p: P) {
 	const [todoFormOpen, setTodoFormOpen] = useState(false)
 	const [todoEditOpen, setTodoEditOpen] = useState({
 		id: null as null | string,

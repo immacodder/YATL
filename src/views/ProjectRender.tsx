@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { RegularProject, Todo } from "../types"
-import { ProjectActions } from "./ProjectActions"
-import { ProjectView } from "./ProjectView"
-import SectionForm from "./SectionForm"
-import { RegularTodolist } from "./RegularTodolist"
+import { ProjectActions } from "../components/ProjectActions"
+import { ProjectView } from "../components/ProjectView"
+import SectionForm from "../components/SectionForm"
+import { Todolist } from "./Todolist"
 
 interface P {
 	todos: Todo[]
@@ -25,7 +25,7 @@ export function ProjectRender(p: P) {
 			</section>
 
 			<section className="m-4 mt-0">
-				<RegularTodolist
+				<Todolist
 					showCompleted={showCompleted}
 					setShowCompleted={setShowCompleted}
 					todos={p.todos}

@@ -7,10 +7,10 @@ import {
 } from "firebase/firestore"
 import React, { useRef } from "react"
 import { v4 } from "uuid"
-import { db } from "../firebase"
-import { useAppSelector } from "../hooks"
-import { FireCol, TagProject, User } from "../types"
-import Popup from "./Popup"
+import { db } from "../../../firebase"
+import { useAppSelector } from "../../../hooks"
+import { FireCol, TagProject, User } from "../../../types"
+import Popup from "../../Popup"
 
 interface P {
 	tagInfo: {

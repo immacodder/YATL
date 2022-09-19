@@ -2,8 +2,8 @@ import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
-import { db } from "../firebase"
-import { useAppSelector } from "../hooks"
+import { db } from "../../../firebase"
+import { useAppSelector } from "../../../hooks"
 import {
 	FireCol,
 	Todo,
@@ -11,7 +11,7 @@ import {
 	Section,
 	RegularProject,
 	DefaultSection,
-} from "../types"
+} from "../../../types"
 import DateSelector from "./DateSelector"
 import PrioritySelector from "./PrioritySelector"
 import ProjectSelector from "./ProjectSelector"

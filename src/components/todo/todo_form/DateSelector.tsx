@@ -6,7 +6,7 @@ import {
 	isTomorrow,
 } from "date-fns"
 import { useRef } from "react"
-import Popup from "./Popup"
+import Popup from "../../Popup"
 import type { PopupState } from "./TodoForm"
 
 interface P {

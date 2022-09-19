@@ -1,11 +1,11 @@
 import { setDoc, doc, deleteDoc } from "firebase/firestore"
 import { useRef, useState } from "react"
 import { v4 } from "uuid"
-import { db } from "../firebase"
-import { useAppSelector } from "../hooks"
-import { FireCol, Todo, User } from "../types"
-import Dialog from "./Dialog"
-import { Menu, MenuType } from "./Menu"
+import { db } from "../../firebase"
+import { useAppSelector } from "../../hooks"
+import { FireCol, Todo, User } from "../../types"
+import Dialog from "../Dialog"
+import { Menu, MenuType } from "../Menu"
 
 interface P {
 	todo: Todo

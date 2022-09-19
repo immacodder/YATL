@@ -1,6 +1,6 @@
 import { formatISO } from "date-fns"
-import { useAppSelector } from "../hooks"
-import { TagProject, Todo } from "../types"
+import { useAppSelector } from "../../../hooks"
+import { TagProject, Todo } from "../../../types"
 import { TodoForm } from "./TodoForm"
 
 interface P {

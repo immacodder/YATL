@@ -11,8 +11,8 @@ import { useEffect, useState } from "react"
 import { v4 } from "uuid"
 import { getScrollHeight } from "../helpers/getScrollHeight"
 import { GeneratedProject, Todo } from "../types"
-import { TodoForm } from "./TodoForm"
-import { TodoRender } from "./TodoRender"
+import { TodoForm } from "../components/todo/todo_form/TodoForm"
+import { TodoRender } from "../components/todo/TodoRender"
 
 interface P {
 	todos: Todo[]

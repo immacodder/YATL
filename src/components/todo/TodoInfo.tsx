@@ -1,6 +1,6 @@
 import { format, isBefore, startOfDay } from "date-fns"
 import { useParams } from "react-router-dom"
-import { Project, Todo } from "../types"
+import { Project, Todo } from "../../types"
 
 interface P {
 	todo: Todo

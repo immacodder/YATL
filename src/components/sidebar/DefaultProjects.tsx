@@ -1,10 +1,10 @@
 import { Link, useParams } from "react-router-dom"
-import { useAppSelector } from "../hooks"
+import { useAppSelector } from "../../hooks"
 import {
 	DefaultProjectsIcons,
 	GeneratedProject,
 	RegularProject,
-} from "../types"
+} from "../../types"
 
 export default function SidebarDefaultProjects() {
 	const projects = useAppSelector((s) => s.projects)
