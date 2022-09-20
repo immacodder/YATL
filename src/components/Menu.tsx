@@ -24,15 +24,15 @@ export const Menu = (p: P) => (
 					return (
 						<div
 							key={data.name}
-							className="hover:bg-black hover:bg-opacity-10 w-full"
+							onClick={() => {
+								if (!data.noCloseAfterClick) close()
+								data.action()
+							}}
+							className="hover:bg-black hover:bg-opacity-10 w-full cursor-pointer"
 						>
 							{data.separatorBefore && <hr />}
 							<button
 								ref={data.ref}
-								onClick={() => {
-									if (!data.noCloseAfterClick) close()
-									data.action()
-								}}
 								className={`p-2 flex items-center ${
 									data.danger ? "text-red-500" : ""
 								}`}
