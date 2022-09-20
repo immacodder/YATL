@@ -1,6 +1,4 @@
-import { Fragment, useRef, useState } from "react"
-import Popup from "../components/Popup"
-import { Snackbar } from "../components/Snackbar"
+import { Fragment } from "react"
 
 export default function Test() {
 	return (

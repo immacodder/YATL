@@ -54,36 +54,30 @@ export default function TodoMenu(p: P) {
 
 	return (
 		<>
-			<button
-				onClick={() => setMenuOpen(!menuOpen)}
-				ref={menuAnchor}
-				className="button bg-transparent rounded-full shadow-none ml-2 material-icons transition-colors hover:bg-primary hover:shadow-lg min-w-0"
-			>
-				more_horiz
-			</button>
-			{menuOpen && (
-				<Menu
-					anchor={menuAnchor.current}
-					data={menuData}
-					setOpen={setMenuOpen}
-				/>
-			)}
-			{deleteDialogOpen && (
-				<Dialog
-					action={async () => {
-						await deleteDoc(
-							doc(
-								db,
-								`${FireCol.Users}/${user.id}/${FireCol.Todos}/${p.todo.id}`
-							)
-						)
-					}}
-					setOpen={setDeleteDialogOpen}
-					text={`Are you sure you want to delete ${p.todo.title}`}
-					danger
-					confirmText="Delete it"
-				/>
-			)}
+			<Menu
+				trigger={
+					<button
+						onClick={() => setMenuOpen(!menuOpen)}
+						ref={menuAnchor}
+						className="button bg-transparent rounded-full shadow-none ml-2 material-icons transition-colors hover:bg-primary hover:shadow-lg min-w-0"
+					>
+						more_horiz
+					</button>
+				}
+				data={menuData}
+			/>
+			<Dialog
+				action={async () => {
+					await deleteDoc(
+						doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${p.todo.id}`)
+					)
+				}}
+				setOpen={setDeleteDialogOpen}
+				open={deleteDialogOpen}
+				text={`Are you sure you want to delete ${p.todo.title}`}
+				danger
+				confirmText="Delete it"
+			/>
 		</>
 	)
 }

@@ -1,36 +1,39 @@
-import Popup from "./Popup"
+import Popup from "reactjs-popup"
 
 interface P {
-	setOpen: (open: boolean) => void
 	action: () => void
 	text: string
 	cancelText?: string
 	confirmText?: string
 	danger?: true
+	open: boolean
+	setOpen: (open: boolean) => void
 }
 export default function Dialog(p: P) {
 	return (
 		<Popup
-			type="dialog"
-			anchor={null}
-			wrapperClassNames="p-4 mx-4"
-			setOpen={p.setOpen}
+			contentStyle={{ padding: "1rem", margin: "1rem 0" }}
+			open={p.open}
+			onClose={() => p.setOpen(false)}
+			modal
 		>
-			<p className="text-lg">{p.text}</p>
-			<div className="mt-2">
-				<button
-					onClick={() => {
-						p.setOpen(false)
-						p.action()
-					}}
-					className={`button ${p.danger ? "hover:bg-red-500 " : ""} mr-2`}
-				>
-					{p.confirmText ?? "Yes"}
-				</button>
-				<button onClick={() => p.setOpen(false)} className="button-outline">
-					{p.cancelText ?? "Cancel"}
-				</button>
-			</div>
+			<>
+				<p className="text-lg">{p.text}</p>
+				<div className="mt-2">
+					<button
+						onClick={() => {
+							p.setOpen(false)
+							p.action()
+						}}
+						className={`button ${p.danger ? "hover:bg-red-500 " : ""} mr-2`}
+					>
+						{p.confirmText ?? "Yes"}
+					</button>
+					<button onClick={() => p.setOpen(false)} className="button-outline">
+						{p.cancelText ?? "Cancel"}
+					</button>
+				</div>
+			</>
 		</Popup>
 	)
 }

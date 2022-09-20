@@ -1,16 +1,9 @@
-import {
-	arrayRemove,
-	arrayUnion,
-	doc,
-	setDoc,
-	updateDoc,
-} from "firebase/firestore"
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore"
 import React, { useRef } from "react"
-import { v4 } from "uuid"
+import Popup from "reactjs-popup"
 import { db } from "../../../firebase"
 import { useAppSelector } from "../../../hooks"
 import { FireCol, TagProject, User } from "../../../types"
-import Popup from "../../Popup"
 
 interface P {
 	tagInfo: {
@@ -24,7 +17,6 @@ interface P {
 }
 
 export default function TagSelector(p: P) {
-	const tagAnchor = useRef<HTMLButtonElement>(null)
 	const user = useAppSelector((s) => s.user.user as User)
 	const tagProjects = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"
@@ -65,64 +57,58 @@ export default function TagSelector(p: P) {
 	}
 
 	return (
-		<>
-			<button
-				ref={tagAnchor}
-				onClick={() => p.setTagInfo({ ...p.tagInfo, open: true })}
-				type="button"
-				className="button mx-1 flex items-center"
-			>
-				Tags
-				<span className="material-icons ml-1">new_label</span>
-			</button>
-			{p.tagInfo.open && (
-				<Popup
-					type="anchor"
-					anchor={tagAnchor.current}
-					setOpen={(open) => p.setTagInfo({ ...p.tagInfo, open })}
+		<Popup
+			trigger={
+				<button
+					onClick={() => p.setTagInfo({ ...p.tagInfo, open: true })}
+					type="button"
+					className="button mx-1 flex items-center"
 				>
-					<>
-						{!!tagProjects.length && <p className="text-lg">Select tags</p>}
-						{tagProjects.map((tag) => (
-							<React.Fragment key={tag.id}>
-								<input
-									type="checkbox"
-									id={tag.id}
-									onChange={() => onCheckboxClick(tag.id)}
-									checked={p.checked.includes(tag.id)}
-									className="mr-2"
-								/>
-								<label htmlFor={tag.id}>{tag.name}</label>
-								<br />
-							</React.Fragment>
-						))}
-						<form
-							onSubmit={(e) => {
-								e.preventDefault()
-								e.stopPropagation()
-								onCreateTag()
-							}}
-							className="flex items-center justify-start"
-						>
-							<input
-								onChange={(e) =>
-									p.setTagInfo({ ...p.tagInfo, name: e.target.value })
-								}
-								value={p.tagInfo.name}
-								placeholder="Tag name"
-								className="input"
-							/>
-							<button
-								className="button whitespace-nowrap ml-2"
-								type="submit"
-								disabled={!p.tagInfo.name}
-							>
-								New tag
-							</button>
-						</form>
-					</>
-				</Popup>
-			)}
-		</>
+					Tags
+					<span className="material-icons ml-1">new_label</span>
+				</button>
+			}
+		>
+			<>
+				{!!tagProjects.length && <p className="text-lg">Select tags</p>}
+				{tagProjects.map((tag) => (
+					<React.Fragment key={tag.id}>
+						<input
+							type="checkbox"
+							id={tag.id}
+							onChange={() => onCheckboxClick(tag.id)}
+							checked={p.checked.includes(tag.id)}
+							className="mr-2"
+						/>
+						<label htmlFor={tag.id}>{tag.name}</label>
+						<br />
+					</React.Fragment>
+				))}
+				<form
+					onSubmit={(e) => {
+						e.preventDefault()
+						e.stopPropagation()
+						onCreateTag()
+					}}
+					className="flex items-center justify-start"
+				>
+					<input
+						onChange={(e) =>
+							p.setTagInfo({ ...p.tagInfo, name: e.target.value })
+						}
+						value={p.tagInfo.name}
+						placeholder="Tag name"
+						className="input"
+					/>
+					<button
+						className="button whitespace-nowrap ml-2"
+						type="submit"
+						disabled={!p.tagInfo.name}
+					>
+						New tag
+					</button>
+				</form>
+			</>
+		</Popup>
 	)
 }

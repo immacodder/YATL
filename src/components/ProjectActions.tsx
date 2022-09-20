@@ -1,10 +1,10 @@
 import { deleteDoc, doc } from "firebase/firestore"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { User, FireCol, Project, Todo, RegularProject } from "../types"
+import { FireCol, Project, RegularProject, Todo, User } from "../types"
 import Dialog from "./Dialog"
-import { MenuType, Menu } from "./Menu"
+import { Menu, MenuType } from "./Menu"
 
 interface P {
 	todos: Todo[]
@@ -14,7 +14,6 @@ interface P {
 }
 
 export function ProjectActions(p: P) {
-	const projectActionsRef = useRef<HTMLButtonElement>(null)
 	const [projectActionsOpen, setProjectActionsOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 	const [showCompleted, setShowCompleted] = useState(false)
@@ -64,29 +63,18 @@ export function ProjectActions(p: P) {
 
 	return (
 		<>
-			<button
-				onClick={() => setProjectActionsOpen(true)}
-				ref={projectActionsRef}
-				className="m-2 button mr-0"
-			>
-				Project actions
-			</button>
-			{projectActionsOpen && (
-				<Menu
-					anchor={projectActionsRef.current}
-					data={projectActionsData}
-					setOpen={setProjectActionsOpen}
-				/>
-			)}
-			{deleteDialogOpen && (
-				<Dialog
-					action={deleteProject}
-					setOpen={setDeleteDialogOpen}
-					text={`Are you sure you want to delete ${p.currentProject.name}`}
-					confirmText="Delete"
-					danger
-				/>
-			)}
+			<Menu
+				data={projectActionsData}
+				trigger={<button className="m-2 button mr-0">Project actions</button>}
+			/>
+			<Dialog
+				open={deleteDialogOpen}
+				setOpen={setDeleteDialogOpen}
+				action={deleteProject}
+				text={`Are you sure you want to delete ${p.currentProject.name}`}
+				confirmText="Delete"
+				danger
+			/>
 		</>
 	)
 }

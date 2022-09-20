@@ -1,16 +1,17 @@
 import { doc, setDoc } from "firebase/firestore"
 import { useState } from "react"
+import Popup from "reactjs-popup"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppDispatch, useAppSelector } from "../hooks"
 import { uiStateActions } from "../slices/uiStateSlice"
 import { FireCol, ProjectColors, RegularProject, User } from "../types"
-import Popup from "./Popup"
 
 export function ProjectCreator() {
 	const [projectName, setProjectName] = useState("")
 	const [projectColor, setProjectColor] = useState(ProjectColors.Cyan)
 	const { id: userId } = useAppSelector((s) => s.user.user as User)
+	const projectCreatorOpen = useAppSelector((s) => s.uiState.projectCreatorOpen)
 	const dispatch = useAppDispatch()
 
 	const onNewProjectAdd = async () => {
@@ -47,11 +48,12 @@ export function ProjectCreator() {
 
 	return (
 		<Popup
-			type="dialog"
-			anchor={null}
-			setOpen={(open) =>
-				dispatch(uiStateActions.set({ property: "projectCreator", to: open }))
+			// dialog
+			onClose={() =>
+				dispatch(uiStateActions.set({ property: "projectCreator", to: false }))
 			}
+			open={projectCreatorOpen}
+			modal
 		>
 			<form onSubmit={(e) => e.preventDefault()}>
 				<header>
