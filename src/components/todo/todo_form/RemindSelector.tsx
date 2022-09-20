@@ -28,6 +28,7 @@ export function RemindSelector(p: P) {
 	return (
 		<>
 			<Popup
+				keepTooltipInside
 				trigger={
 					<button
 						type="button"

@@ -48,6 +48,7 @@ export function ProjectCreator() {
 
 	return (
 		<Popup
+			keepTooltipInside
 			// dialog
 			onClose={() =>
 				dispatch(uiStateActions.set({ property: "projectCreator", to: false }))

@@ -58,6 +58,7 @@ export function TagSelector(p: P) {
 
 	return (
 		<Popup
+			keepTooltipInside
 			trigger={
 				<button
 					onClick={() => p.setTagInfo({ ...p.tagInfo, open: true })}

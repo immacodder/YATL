@@ -31,6 +31,7 @@ export function DateSelector(p: P) {
 
 	return (
 		<Popup
+			keepTooltipInside
 			open={p.schedule.open}
 			position="top center"
 			trigger={

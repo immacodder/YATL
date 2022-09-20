@@ -26,6 +26,7 @@ export function ProjectSelector(p: P) {
 
 	return (
 		<Popup
+			keepTooltipInside
 			trigger={
 				<button className="button" type="button">
 					{projectName}

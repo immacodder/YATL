@@ -17,7 +17,7 @@ interface P {
 }
 
 export const Menu = (p: P) => (
-	<Popup trigger={p.trigger}>
+	<Popup keepTooltipInside trigger={p.trigger}>
 		{(close: any) => (
 			<div className="flex flex-col justify-start items-start">
 				{p.data.map((data) => {
