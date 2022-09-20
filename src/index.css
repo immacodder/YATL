@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+.popup-content {
+	@apply bg-white shadow-lg border border-black border-opacity-25 rounded-md p-4;
+}
+.popup-arrow {
+	@apply stroke-[rgba(0,0,0,.5)];
+}
+[role="tooltip"].popup-content {
+	@apply p-2;
+}
+
+.popup-overlay {
+	background: rgba(0, 0, 0, 0.5);
+}
+[data-popup="tooltip"].popup-overlay {
+	background: transparent;
+}
+
 html {
 	background-color: #eee;
 }
