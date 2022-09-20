@@ -13,7 +13,7 @@ interface P {
 	setSchedule: (schedule: PopupState) => void
 }
 
-export default function DateSelector(p: P) {
+export function DateSelector(p: P) {
 	const dateInISO = formatISO(Date.now(), {
 		representation: "date",
 	})

@@ -2,8 +2,8 @@ import { Fragment, useState } from "react"
 import { getTodoProject } from "../../helpers/getTodoProject"
 import { useAppSelector } from "../../hooks"
 import { Todo } from "../../types"
-import TodoComp from "./TodoComp"
-import TodoEditForm from "./todo_form/TodoEditForm"
+import { TodoComp } from "./TodoComp"
+import { TodoEditForm } from "./todo_form/TodoEditForm"
 
 interface P {
 	setTodoFormOpen: (open: boolean) => void

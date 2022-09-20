@@ -9,7 +9,7 @@ interface P {
 	selectedSection: Section
 	setSelectedSection: (sec: Section) => void
 }
-export default function ProjectSelector(p: P) {
+export function ProjectSelector(p: P) {
 	const projects = useAppSelector((s) => s.projects)
 
 	const selectedSectionsProject = projects.find((proj) =>

@@ -4,14 +4,14 @@ import { v4 } from "uuid"
 import { db } from "../../firebase"
 import { useAppSelector } from "../../hooks"
 import { FireCol, Todo, User } from "../../types"
-import Dialog from "../Dialog"
+import { Dialog } from "../Dialog"
 import { Menu, MenuType } from "../Menu"
 
 interface P {
 	todo: Todo
 	setGlobalFormOpen: (id: string, open: boolean) => void
 }
-export default function TodoMenu(p: P) {
+export function TodoMenu(p: P) {
 	const menuAnchor = useRef<HTMLButtonElement>(null)
 	const [menuOpen, setMenuOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)

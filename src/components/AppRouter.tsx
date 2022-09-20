@@ -2,14 +2,14 @@ import { Routes, Route, Navigate } from "react-router-dom"
 import { useAppSelector } from "../hooks"
 import { Todo } from "../types"
 import { Sign } from "../views/Sign"
-import Test from "../views/Test"
-import MainView from "../views/MainView"
+import { Test } from "../views/Test"
+import { MainView } from "../views/MainView"
 import { AuthChecker } from "./AuthChecker"
 
 interface P {
 	todos: Todo[]
 }
-export default function AppRouter({ todos }: P) {
+export function AppRouter({ todos }: P) {
 	const projects = useAppSelector((s) => s.projects)
 
 	return (

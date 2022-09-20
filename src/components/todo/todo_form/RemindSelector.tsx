@@ -7,7 +7,7 @@ interface P {
 	remind: PopupState
 	setRemind: (remind: PopupState) => void
 }
-export default function RemindSelector(p: P) {
+export function RemindSelector(p: P) {
 	const timeInISO = formatISO(new Date(), { representation: "time" }).split(
 		"+"
 	)[0]

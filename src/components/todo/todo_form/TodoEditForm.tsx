@@ -7,7 +7,7 @@ interface P {
 	todo: Todo
 	setGlobalFormOpen: (id: string, open: boolean) => void
 }
-export default function TodoEditForm({ todo, setGlobalFormOpen }: P) {
+export function TodoEditForm({ todo, setGlobalFormOpen }: P) {
 	const tags = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"
 	)

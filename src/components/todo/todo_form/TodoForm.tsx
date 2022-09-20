@@ -12,11 +12,11 @@ import {
 	RegularProject,
 	DefaultSection,
 } from "../../../types"
-import DateSelector from "./DateSelector"
-import PrioritySelector from "./PrioritySelector"
-import ProjectSelector from "./ProjectSelector"
-import RemindSelector from "./RemindSelector"
-import TagSelector from "./TagSelector"
+import { DateSelector } from "./DateSelector"
+import { PrioritySelector } from "./PrioritySelector"
+import { ProjectSelector } from "./ProjectSelector"
+import { RemindSelector } from "./RemindSelector"
+import { TagSelector } from "./TagSelector"
 
 export interface DefValues {
 	schedule?: PopupState

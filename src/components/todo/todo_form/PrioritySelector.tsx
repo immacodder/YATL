@@ -2,7 +2,7 @@ interface P {
 	priority: number
 	setPriority: (priority: number) => void
 }
-export default function PrioritySelector(p: P) {
+export function PrioritySelector(p: P) {
 	return (
 		<select
 			className="button appearance-none ml-2 mr-1"

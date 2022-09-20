@@ -15,7 +15,7 @@ interface P {
 	projects: Project[]
 }
 
-export default function MainView(p: P) {
+export function MainView(p: P) {
 	const params = useParams()
 	const { width } = useWindowResize()
 	const isMobile = width < 600

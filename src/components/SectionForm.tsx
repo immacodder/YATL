@@ -8,7 +8,7 @@ import { Section, FireCol, User, Project } from "../types"
 interface P {
 	currentProject: Project
 }
-export default function SectionForm(p: P) {
+export function SectionForm(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 	const [sectionFormOpen, setSectionFormOpen] = useState(false)
 	const [sectionName, setSectionName] = useState("")

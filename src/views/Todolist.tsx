@@ -1,9 +1,9 @@
 import { Fragment, useState } from "react"
-import TodoComp from "../components/todo/TodoComp"
+import { TodoComp } from "../components/todo/TodoComp"
 import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { useAppSelector } from "../hooks"
 import { RegularProject, Section, Todo, User } from "../types"
-import TodoEditForm from "../components/todo/todo_form/TodoEditForm"
+import { TodoEditForm } from "../components/todo/todo_form/TodoEditForm"
 
 interface P {
 	currentProject: RegularProject

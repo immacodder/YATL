@@ -2,7 +2,7 @@ import { useState } from "react"
 import { RegularProject, Todo } from "../types"
 import { ProjectActions } from "../components/ProjectActions"
 import { ProjectView } from "../components/ProjectView"
-import SectionForm from "../components/SectionForm"
+import { SectionForm } from "../components/SectionForm"
 import { Todolist } from "./Todolist"
 
 interface P {

@@ -6,7 +6,7 @@ interface P {
 	todo: Todo
 	project: Project
 }
-export default function TodoInfo({ todo, project }: P) {
+export function TodoInfo({ todo, project }: P) {
 	const params = useParams()
 
 	return (

@@ -1,6 +1,6 @@
 import { Fragment } from "react"
 
-export default function Test() {
+export function Test() {
 	return (
 		<Fragment>
 			{/* <Snackbar message="Test here" variant="Success" /> */}

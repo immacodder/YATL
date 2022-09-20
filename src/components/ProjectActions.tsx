@@ -3,7 +3,7 @@ import { useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
 import { FireCol, Project, RegularProject, Todo, User } from "../types"
-import Dialog from "./Dialog"
+import { Dialog } from "./Dialog"
 import { Menu, MenuType } from "./Menu"
 
 interface P {

@@ -16,7 +16,7 @@ interface P {
 	setChecked: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export default function TagSelector(p: P) {
+export function TagSelector(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 	const tagProjects = useAppSelector((s) => s.projects).filter(
 		(proj): proj is TagProject => proj.type === "tag"

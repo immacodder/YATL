@@ -6,7 +6,7 @@ import {
 	RegularProject,
 } from "../../types"
 
-export default function SidebarDefaultProjects() {
+export function SidebarDefaultProjects() {
 	const projects = useAppSelector((s) => s.projects)
 	const { projectId: selectedProjectId } = useParams()
 	if (!selectedProjectId) throw new Error("no project id found")

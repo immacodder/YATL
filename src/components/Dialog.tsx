@@ -9,7 +9,7 @@ interface P {
 	open: boolean
 	setOpen: (open: boolean) => void
 }
-export default function Dialog(p: P) {
+export function Dialog(p: P) {
 	return (
 		<Popup
 			contentStyle={{ padding: "1rem", margin: "1rem 0" }}

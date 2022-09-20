@@ -2,15 +2,15 @@ import { doc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase"
 import { useAppSelector } from "../../hooks"
 import { FireCol, Project, Todo, User } from "../../types"
-import TodoInfo from "./TodoInfo"
-import TodoMenu from "./TodoMenu"
+import { TodoInfo } from "./TodoInfo"
+import { TodoMenu } from "./TodoMenu"
 
 interface P {
 	todo: Todo
 	setGlobalFormOpen: (id: string, open: boolean) => void
 	project: Project
 }
-export default function TodoComp(p: P) {
+export function TodoComp(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 	const todo = p.todo
 

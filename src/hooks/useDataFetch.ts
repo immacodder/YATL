@@ -25,7 +25,7 @@ import {
 	GeneratedProject,
 } from "../types"
 
-export default function useDataFetch() {
+export function useDataFetch() {
 	const [userId, setUserUid] = useState<null | string>(null)
 	const [todos, setTodos] = useState<Todo[]>([])
 	const userState = useAppSelector((s) => s.user)

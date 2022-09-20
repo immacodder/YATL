@@ -2,8 +2,8 @@ import ReactDOM from "react-dom"
 import { useDispatch } from "react-redux"
 import { useAppSelector } from "../../hooks"
 import { uiStateActions } from "../../slices/uiStateSlice"
-import SidebarDefaultProjects from "./DefaultProjects"
-import SidebarProjects from "./SidebarProjects"
+import { SidebarDefaultProjects } from "./DefaultProjects"
+import { SidebarProjects } from "./SidebarProjects"
 import { SidebarTags } from "./SidebarTags"
 
 export function Sidebar(p: { isMobile: boolean }) {

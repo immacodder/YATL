@@ -5,7 +5,7 @@ import { useAppSelector } from "../../hooks"
 import { uiStateActions } from "../../slices/uiStateSlice"
 import { RegularProject } from "../../types"
 
-export default function SidebarProjects() {
+export function SidebarProjects() {
 	const projects = useAppSelector((s) => s.projects)
 	const [projectListExpanded, setProjectListExpanded] = useState(true)
 	const { projectId: selectedProjectId } = useParams()
