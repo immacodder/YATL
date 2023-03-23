@@ -6,23 +6,29 @@ This project is very similiar to Todoist, but not a 1 to 1 copy, I'm gonna chang
 
 ## Setup
 
+Make sure to install the firebase cli
+
 ```bash
-npm install && cd functions && npm install && cd ..
+# Required by the firebase tools
+sudo apt install openjdk-18-jre
 ```
 
 ```bash
-cd functions
-npm run build
+curl -sL firebase.tools | bash
+```
+
+```bash
+npm install
 ```
 
 ## To start a local server
 
 ```bash
 # Start firebase emulators
-npx firebase emulators:start
+firebase emulators:start
 
 # if you want to also make data persist across restarts
-npx firebase emulators:start --import=./firebase_emulators_data --export-on-exit
+firebase emulators:start --import=./firebase_emulators_data --export-on-exit
 ```
 
 ```bash
