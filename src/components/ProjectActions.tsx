@@ -16,7 +16,6 @@ interface P {
 export function ProjectActions(p: P) {
 	const [projectActionsOpen, setProjectActionsOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-	const [showCompleted, setShowCompleted] = useState(false)
 	const user = useAppSelector((s) => s.user.user as User)
 
 	if (p.currentProject.type !== "regular") return null
@@ -48,9 +47,9 @@ export function ProjectActions(p: P) {
 
 	const projectActionsData: MenuType[] = [
 		{
-			name: showCompleted ? "Hide completed" : "Show completed",
-			icon: showCompleted ? "remove_done" : "done",
-			action: () => setShowCompleted(!showCompleted),
+			name: p.showCompleted ? "Hide completed" : "Show completed",
+			icon: p.showCompleted ? "remove_done" : "done",
+			action: () => p.setShowCompleted(!p.showCompleted),
 		},
 		{
 			icon: "delete_forever",

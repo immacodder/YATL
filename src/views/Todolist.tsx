@@ -72,6 +72,7 @@ export function Todolist(p: P) {
 				)
 				sectionUsed = true
 			}
+			console.log(p.showCompleted)
 			return (
 				<Fragment key={todo.id}>
 					{sectionJSX}
