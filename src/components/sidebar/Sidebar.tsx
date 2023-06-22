@@ -2,9 +2,8 @@ import ReactDOM from "react-dom"
 import { useDispatch } from "react-redux"
 import { useAppSelector } from "../../hooks"
 import { uiStateActions } from "../../slices/uiStateSlice"
-import { SidebarDefaultProjects } from "./DefaultProjects"
+import { DefaultProjects } from "./DefaultProjects"
 import { SidebarProjects } from "./SidebarProjects"
-import { SidebarTags } from "./SidebarTags"
 
 export function Sidebar(p: { isMobile: boolean }) {
 	const sidebarOpen = useAppSelector((s) => s.uiState.sidebarOpen)
@@ -15,9 +14,8 @@ export function Sidebar(p: { isMobile: boolean }) {
 			className="bg-white p-2 flex flex-col items-start justify-start h-full"
 			style={{ width: p.isMobile ? "60%" : undefined }}
 		>
-			<SidebarDefaultProjects />
+			<DefaultProjects />
 			<SidebarProjects />
-			<SidebarTags />
 		</aside>
 	)
 

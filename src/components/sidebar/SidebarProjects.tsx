@@ -8,7 +8,8 @@ import { RegularProject } from "../../types"
 export function SidebarProjects() {
 	const projects = useAppSelector((s) => s.projects)
 	const [projectListExpanded, setProjectListExpanded] = useState(true)
-	const { projectId: selectedProjectId } = useParams()
+	let { projectId: selectedProjectId } = useParams()
+	if (location.pathname.includes("tags")) selectedProjectId = "tags"
 	if (!selectedProjectId) throw new Error("no project id found")
 	const dispatch = useDispatch()
 

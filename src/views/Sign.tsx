@@ -9,7 +9,7 @@ import {
 	signInWithEmailAndPassword,
 } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
-import { FireCol, StorageCol } from "../types"
+import { FirestoreColl, StorageColl } from "../types"
 import React, { useEffect, useState } from "react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { Snackbar, SnackbarProps } from "../components/Snackbar"
@@ -70,7 +70,10 @@ export function Sign(p: Props) {
 		let profileImageUrl: string | null = null
 
 		if (userAvatar) {
-			const profileImageRef = ref(storage, `${StorageCol.ProfileImages}/${uid}`)
+			const profileImageRef = ref(
+				storage,
+				`${StorageColl.ProfileImages}/${uid}`
+			)
 			const res = await uploadBytes(profileImageRef, userAvatar)
 			profileImageUrl = await getDownloadURL(profileImageRef)
 		}
@@ -87,7 +90,7 @@ export function Sign(p: Props) {
 			},
 		}
 
-		await setDoc(doc(db, `${FireCol.Users}/${UserData.id}`), UserData)
+		await setDoc(doc(db, `${FirestoreColl.Users}/${UserData.id}`), UserData)
 
 		navigate(`/`)
 	}

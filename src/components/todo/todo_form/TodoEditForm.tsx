@@ -9,8 +9,8 @@ interface P {
 }
 export function TodoEditForm({ todo, setGlobalFormOpen }: P) {
 	const tags = useAppSelector((s) => s.projects).filter(
-		(proj): proj is TagProject => proj.type === "tag"
-	)
+		(project) => project.type === "tag"
+	) as TagProject[]
 	const tagsFiltered = tags.filter((tag) => tag.todoIds.includes(todo.id))
 
 	return (

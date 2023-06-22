@@ -15,7 +15,7 @@ export function AuthChecker(p: P) {
 	if (
 		authUser.type === UserState.Signed &&
 		authUser.user !== null &&
-		p.projects.filter((project) => project.type === "generated").length === 2
+		p.projects.filter((project) => project.type === "generated").length === 3
 	)
 		return <Outlet />
 	return null

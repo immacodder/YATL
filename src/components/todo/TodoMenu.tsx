@@ -1,9 +1,16 @@
-import { setDoc, doc, deleteDoc } from "firebase/firestore"
+import {
+	setDoc,
+	doc,
+	deleteDoc,
+	updateDoc,
+	Firestore,
+	arrayRemove,
+} from "firebase/firestore"
 import { useRef, useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../../firebase"
 import { useAppSelector } from "../../hooks"
-import { FireCol, Todo, User } from "../../types"
+import { FirestoreColl, TagProject, Todo, User } from "../../types"
 import { Dialog } from "../Dialog"
 import { Menu, MenuType } from "../Menu"
 
@@ -16,6 +23,9 @@ export function TodoMenu(p: P) {
 	const [menuOpen, setMenuOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 	const user = useAppSelector((s) => s.user.user as User)
+	const tags = useAppSelector((s) => s.projects).filter(
+		(project) => project.type === "tag"
+	) as TagProject[]
 
 	const menuData: MenuType[] = [
 		{
@@ -30,7 +40,10 @@ export function TodoMenu(p: P) {
 				const newTodo = p.todo
 				newTodo.id = v4()
 				setDoc(
-					doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${newTodo.id}`),
+					doc(
+						db,
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${newTodo.id}`
+					),
 					newTodo
 				)
 			},
@@ -68,13 +81,27 @@ export function TodoMenu(p: P) {
 			/>
 			<Dialog
 				action={async () => {
+					// deletes the todo
 					await deleteDoc(
-						doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${p.todo.id}`)
+						doc(
+							db,
+							`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${p.todo.id}`
+						)
 					)
+					const tagsToUpdate = tags.filter((tag) =>
+						tag.todoIds.includes(p.todo.id)
+					)
+					tagsToUpdate.forEach(async (tag) => {
+						const tagToUpdate = doc(
+							db,
+							`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tag.id}`
+						)
+						await updateDoc(tagToUpdate, { todoIds: arrayRemove(p.todo.id) })
+					})
 				}}
 				setOpen={setDeleteDialogOpen}
 				open={deleteDialogOpen}
-				text={`Are you sure you want to delete ${p.todo.title}`}
+				text={`Are you sure you want to delete ${p.todo.title}?`}
 				danger
 				confirmText="Delete it"
 			/>

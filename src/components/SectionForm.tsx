@@ -3,7 +3,7 @@ import { useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { Section, FireCol, User, Project } from "../types"
+import { Section, FirestoreColl, User, Project } from "../types"
 
 interface P {
 	currentProject: Project
@@ -21,7 +21,7 @@ export function SectionForm(p: P) {
 		}
 		const ref = doc(
 			db,
-			`${FireCol.Users}/${user.id}/${FireCol.Projects}/${p.currentProject.id}`
+			`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${p.currentProject.id}`
 		)
 		updateDoc(ref, {
 			sections: arrayUnion(section),
@@ -62,7 +62,7 @@ export function SectionForm(p: P) {
 				</form>
 			) : (
 				p.currentProject.type !== "generated" &&
-				!("isInbox" in p.currentProject) && (
+				p.currentProject.type !== "tag" && (
 					<div className="flex items-center justify-center w-full mt-2">
 						<hr className="w-full border-black mr-2" />
 						<button

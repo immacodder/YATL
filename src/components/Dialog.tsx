@@ -12,7 +12,7 @@ interface P {
 export function Dialog(p: P) {
 	return (
 		<Popup
-			contentStyle={{ padding: "1rem", margin: "1rem 0" }}
+			contentStyle={{ padding: "1rem", margin: "auto auto" }}
 			open={p.open}
 			onClose={() => p.setOpen(false)}
 			modal

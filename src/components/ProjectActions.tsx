@@ -2,7 +2,7 @@ import { deleteDoc, doc } from "firebase/firestore"
 import { useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, Project, RegularProject, Todo, User } from "../types"
+import { FirestoreColl, Project, RegularProject, Todo, User } from "../types"
 import { Dialog } from "./Dialog"
 import { Menu, MenuType } from "./Menu"
 
@@ -18,7 +18,8 @@ export function ProjectActions(p: P) {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 	const user = useAppSelector((s) => s.user.user as User)
 
-	if (p.currentProject.type !== "regular") return null
+	if (p.currentProject.type !== "regular" && p.currentProject.type !== "tag")
+		return null
 
 	const deleteProject = async () => {
 		const todoIDs: string[] = p.todos
@@ -32,7 +33,10 @@ export function ProjectActions(p: P) {
 		await Promise.all(
 			todoIDs.map(async (id) => {
 				await deleteDoc(
-					doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${id}`)
+					doc(
+						db,
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${id}`
+					)
 				)
 			})
 		)
@@ -40,7 +44,7 @@ export function ProjectActions(p: P) {
 		await deleteDoc(
 			doc(
 				db,
-				`${FireCol.Users}/${user.id}/${FireCol.Projects}/${p.currentProject.id}`
+				`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${p.currentProject.id}`
 			)
 		)
 	}
@@ -70,7 +74,7 @@ export function ProjectActions(p: P) {
 				open={deleteDialogOpen}
 				setOpen={setDeleteDialogOpen}
 				action={deleteProject}
-				text={`Are you sure you want to delete ${p.currentProject.name}`}
+				text={`Are you sure you want to delete ${p.currentProject.name}?`}
 				confirmText="Delete"
 				danger
 			/>

@@ -15,14 +15,15 @@ import { setProjects } from "../slices/projectSlice"
 import { setUser } from "../slices/userSlice"
 import {
 	Todo,
-	FireCol,
+	FirestoreColl,
 	Project,
 	UserState,
 	User,
 	RegularProject,
-	ProjectColors,
+	Colors,
 	DefaultProjectsIcons,
 	GeneratedProject,
+	TagProject,
 } from "../types"
 
 export function useDataFetch() {
@@ -35,7 +36,7 @@ export function useDataFetch() {
 		if (!userId) return
 
 		const ref = query(
-			collection(db, `${FireCol.Users}/${userId}/${FireCol.Projects}`),
+			collection(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}`),
 			orderBy("createdAt", "asc")
 		)
 		return onSnapshot(ref, async (snap) => {
@@ -44,7 +45,7 @@ export function useDataFetch() {
 				const inbox: RegularProject = {
 					type: "regular",
 					isInbox: true,
-					color: ProjectColors.Pink,
+					color: Colors.Pink,
 					createdAt: Date.now(),
 					sections: [{ id: v4(), type: "default" }],
 					id: v4(),
@@ -64,20 +65,31 @@ export function useDataFetch() {
 					name: "Upcoming",
 					type: "generated",
 				}
+				const tags: GeneratedProject = {
+					name: "Tags",
+					createdAt: Date.now(),
+					icon: DefaultProjectsIcons.Tags,
+					id: v4(),
+					type: "generated"
+				}
 				await setDoc(
-					doc(db, `${FireCol.Users}/${userId}/${FireCol.Projects}/${inbox.id}`),
+					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${inbox.id}`),
 					inbox
 				)
 				await setDoc(
-					doc(db, `${FireCol.Users}/${userId}/${FireCol.Projects}/${today.id}`),
+					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${today.id}`),
 					today
 				)
 				await setDoc(
 					doc(
 						db,
-						`${FireCol.Users}/${userId}/${FireCol.Projects}/${upcoming.id}`
+						`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${upcoming.id}`
 					),
 					upcoming
+				)
+				await setDoc(
+					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${tags.id}`),
+					tags
 				)
 				return console.log("Default projects generated")
 			}
@@ -96,7 +108,7 @@ export function useDataFetch() {
 
 	useEffect(() => {
 		if (userState.type === UserState.Signed) {
-			return onSnapshot(doc(db, `${FireCol.Users}/${userId}`), (snap) =>
+			return onSnapshot(doc(db, `${FirestoreColl.Users}/${userId}`), (snap) =>
 				dispatch(setUser({ type: UserState.Signed, user: snap.data() as User }))
 			)
 		}
@@ -104,7 +116,7 @@ export function useDataFetch() {
 
 	useEffect(() => {
 		if (!userId) return
-		const ref = collection(db, `${FireCol.Users}/${userId}/${FireCol.Todos}`)
+		const ref = collection(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Todos}`)
 		return onSnapshot(ref, (snap) =>
 			setTodos(snap.docs.map((doc) => doc.data() as Todo))
 		)

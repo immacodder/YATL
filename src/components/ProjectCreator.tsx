@@ -5,11 +5,11 @@ import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppDispatch, useAppSelector } from "../hooks"
 import { uiStateActions } from "../slices/uiStateSlice"
-import { FireCol, ProjectColors, RegularProject, User } from "../types"
+import { FirestoreColl, Colors, RegularProject, User } from "../types"
 
 export function ProjectCreator() {
 	const [projectName, setProjectName] = useState("")
-	const [projectColor, setProjectColor] = useState(ProjectColors.Cyan)
+	const [projectColor, setProjectColor] = useState(Colors.Cyan)
 	const { id: userId } = useAppSelector((s) => s.user.user as User)
 	const projectCreatorOpen = useAppSelector((s) => s.uiState.projectCreatorOpen)
 	const dispatch = useAppDispatch()
@@ -33,7 +33,7 @@ export function ProjectCreator() {
 		await setDoc(
 			doc(
 				db,
-				`${FireCol.Users}/${userId}/${FireCol.Projects}/${newProject.id}`
+				`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${newProject.id}`
 			),
 			newProject
 		)
@@ -42,7 +42,7 @@ export function ProjectCreator() {
 
 	const resetNewProject = () => {
 		dispatch(uiStateActions.set({ property: "projectCreator", to: false }))
-		setProjectColor(ProjectColors.Cyan)
+		setProjectColor(Colors.Cyan)
 		setProjectName("")
 	}
 
@@ -75,11 +75,8 @@ export function ProjectCreator() {
 						className="button bg-white border-2 p-1 ml-2 outline-none"
 						onChange={(e) => setProjectColor(e.target.value as any)}
 					>
-						{Object.keys(ProjectColors).map((key) => (
-							<option
-								key={key}
-								value={ProjectColors[key as keyof typeof ProjectColors]}
-							>
+						{Object.keys(Colors).map((key) => (
+							<option key={key} value={Colors[key as keyof typeof Colors]}>
 								{key}
 							</option>
 						))}

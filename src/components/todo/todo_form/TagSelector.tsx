@@ -1,89 +1,99 @@
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore"
+import {
+	arrayRemove,
+	arrayUnion,
+	doc,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore"
 import React, { useRef } from "react"
 import Popup from "reactjs-popup"
 import { db } from "../../../firebase"
 import { useAppSelector } from "../../../hooks"
-import { FireCol, TagProject, User } from "../../../types"
+import { Colors, FirestoreColl, TagProject, User } from "../../../types"
+import { v4 } from "uuid"
 
 interface P {
-	tagInfo: {
-		open: boolean
-		name: string
-	}
-	setTagInfo: (info: P["tagInfo"]) => void
+	tagName: string
+	setTagName: (name: string) => void
 	currentTodoId: string
-	checked: string[]
-	setChecked: React.Dispatch<React.SetStateAction<string[]>>
+	selectedCheckboxes: string[]
+	setSelectedCheckboxes: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 export function TagSelector(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
-	const tagProjects = useAppSelector((s) => s.projects).filter(
-		(proj): proj is TagProject => proj.type === "tag"
-	)
+	const tags = useAppSelector((s) => s.projects).filter(
+		(project) => project.type === "tag"
+	) as TagProject[]
 
-	const onCheckboxClick = (id: string) => {
-		let data: object
-		if (p.checked.includes(id)) {
-			p.setChecked(p.checked.filter((v) => v !== id))
-			data = { todoIds: arrayRemove(p.currentTodoId) }
+	const onCheckboxClick = (tagId: string) => {
+		let firestoreData: object
+		if (p.selectedCheckboxes.includes(tagId)) {
+			p.setSelectedCheckboxes(p.selectedCheckboxes.filter((v) => v !== tagId))
+			firestoreData = { todoIds: arrayRemove(p.currentTodoId) }
 		} else {
-			p.setChecked([...p.checked, id])
-			data = { todoIds: arrayUnion(p.currentTodoId) }
+			p.setSelectedCheckboxes([...p.selectedCheckboxes, tagId])
+			firestoreData = { todoIds: arrayUnion(p.currentTodoId) }
 		}
 
 		updateDoc(
-			doc(db, `${FireCol.Users}/${user.id}/${FireCol.Projects}/${id}`),
-			data
+			doc(
+				db,
+				`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tagId}`
+			),
+			firestoreData
 		)
 	}
 
 	const onCreateTag = async () => {
-		// TODO fix it
-		// const newTag: TagProject = {
-		// 	type: "tag",
-		// 	id: v4(),
-		// 	name: p.tagInfo.name,
-		// 	todoIds: [],
-		// 	createdAt: new Date().getTime(),
-		// 	sections: [{ type: "default", id: v4() }],
-		// }
-		// const ref = doc(
-		// 	db,
-		// 	`${FireCol.Users}/${user.id}/${FireCol.Projects}/${newTag.id}`
-		// )
-		// setDoc(ref, newTag)
-		// p.setTagInfo({ ...p.tagInfo, name: "" })
+		const newTag: TagProject = {
+			type: "tag",
+			id: v4(),
+			name: p.tagName,
+			todoIds: [],
+			createdAt: new Date().getTime(),
+			color: Colors.Slate,
+			sections: [{ id: v4(), type: "default" }],
+		}
+		const ref = doc(
+			db,
+			`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${newTag.id}`
+		)
+		setDoc(ref, newTag)
+		p.setTagName("")
 	}
 
 	return (
 		<Popup
 			keepTooltipInside
 			trigger={
-				<button
-					onClick={() => p.setTagInfo({ ...p.tagInfo, open: true })}
-					type="button"
-					className="button mx-1 flex items-center"
-				>
+				<button type="button" className="button mx-1 flex items-center">
 					Tags
 					<span className="material-icons ml-1">new_label</span>
 				</button>
 			}
 		>
 			<>
-				{!!tagProjects.length && <p className="text-lg">Select tags</p>}
-				{tagProjects.map((tag) => (
-					<React.Fragment key={tag.id}>
-						<input
-							type="checkbox"
-							id={tag.id}
-							onChange={() => onCheckboxClick(tag.id)}
-							checked={p.checked.includes(tag.id)}
-							className="mr-2"
-						/>
-						<label htmlFor={tag.id}>{tag.name}</label>
-						<br />
-					</React.Fragment>
+				{!!tags.length && <p className="text-lg">Select tags</p>}
+				{tags.map((tag) => (
+					<div className="flex justify-between" key={tag.id}>
+						<div>
+							<input
+								type="checkbox"
+								id={tag.id}
+								onChange={() => onCheckboxClick(tag.id)}
+								checked={p.selectedCheckboxes.includes(tag.id)}
+								className="mr-2"
+							/>
+							<label htmlFor={tag.id}>{tag.name}</label>
+							<br />
+						</div>
+
+						<div
+							className="w-[15px] h-[15px] rounded-full"
+							style={{ backgroundColor: tag.color }}
+						></div>
+					</div>
 				))}
 				<form
 					onSubmit={(e) => {
@@ -94,17 +104,15 @@ export function TagSelector(p: P) {
 					className="flex items-center justify-start"
 				>
 					<input
-						onChange={(e) =>
-							p.setTagInfo({ ...p.tagInfo, name: e.target.value })
-						}
-						value={p.tagInfo.name}
+						onChange={(e) => p.setTagName(e.target.value)}
+						value={p.tagName}
 						placeholder="Tag name"
 						className="input"
 					/>
 					<button
 						className="button whitespace-nowrap ml-2"
 						type="submit"
-						disabled={!p.tagInfo.name}
+						disabled={!p.tagName}
 					>
 						New tag
 					</button>

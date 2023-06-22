@@ -2,15 +2,16 @@ import { Fragment, useState } from "react"
 import { TodoComp } from "../components/todo/TodoComp"
 import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { useAppSelector } from "../hooks"
-import { RegularProject, Section, Todo, User } from "../types"
+import { RegularProject, Section, TagProject, Todo, User } from "../types"
 import { TodoEditForm } from "../components/todo/todo_form/TodoEditForm"
 
 interface P {
-	currentProject: RegularProject
+	currentProject: RegularProject | TagProject
 	todos: Todo[]
 	showCompleted: boolean
 	setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>
 }
+
 export function Todolist(p: P) {
 	const [todoFormOpen, setTodoFormOpen] = useState(false)
 	const [todoEditOpen, setTodoEditOpen] = useState({
@@ -36,7 +37,14 @@ export function Todolist(p: P) {
 
 	p.currentProject.sections.forEach((section) => {
 		let filteredTodos: Todo[] = []
-		filteredTodos = p.todos.filter((todo) => todo.sectionId === section.id)
+		// handle the case with TagProject --- done
+		// After that, make sure to alter functionality when adding a todo to a tag
+		if (p.currentProject.type === "tag") {
+			filteredTodos = p.todos.filter((todo) =>
+				(p.currentProject as TagProject).todoIds.includes(todo.id)
+			)
+		} else
+			filteredTodos = p.todos.filter((todo) => todo.sectionId === section.id)
 
 		if (Object.keys(user.preferences.sortBy).includes(p.currentProject.id)) {
 			filteredTodos.sort((a, b) => {
@@ -72,7 +80,7 @@ export function Todolist(p: P) {
 				)
 				sectionUsed = true
 			}
-			console.log(p.showCompleted)
+
 			return (
 				<Fragment key={todo.id}>
 					{sectionJSX}
@@ -128,7 +136,11 @@ export function Todolist(p: P) {
 					</button>
 					{todoFormOpen && (
 						<TodoForm
-							defValues={{ sectionId: defSection.id }}
+							defValues={{
+								sectionId: defSection.id,
+								checked:
+									p.currentProject.type === "tag" ? [p.currentProject.id] : [],
+							}}
 							setOpen={setTodoFormOpen}
 						/>
 					)}

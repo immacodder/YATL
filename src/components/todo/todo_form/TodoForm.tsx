@@ -5,7 +5,7 @@ import { v4 } from "uuid"
 import { db } from "../../../firebase"
 import { useAppSelector } from "../../../hooks"
 import {
-	FireCol,
+	FirestoreColl,
 	Todo,
 	User,
 	Section,
@@ -104,16 +104,10 @@ export function TodoForm(p: P) {
 	)
 
 	const [checkedTags, setCheckedTags] = useState<string[]>(
-		p.defValues?.checked ?? currentProject.type === "tag"
-			? [currentProject.id]
-			: []
+		p.defValues?.checked ?? []
 	)
 
-	const defaultTagInfo = {
-		open: false,
-		name: "",
-	}
-	const [tagInfo, setTagInfo] = useState(defaultTagInfo)
+	const [tagName, setTagName] = useState("")
 
 	const onCreateTodo = async () => {
 		let dueUntil: number | null = null
@@ -146,7 +140,7 @@ export function TodoForm(p: P) {
 
 		const todoRef = doc(
 			db,
-			`${FireCol.Users}/${user.id}/${FireCol.Todos}/${newTodo.id}`
+			`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${newTodo.id}`
 		)
 
 		await setDoc(todoRef, newTodo)
@@ -161,7 +155,7 @@ export function TodoForm(p: P) {
 				checkedTags.map(async (tagId) => {
 					const tagRef = doc(
 						db,
-						`${FireCol.Users}/${user.id}/${FireCol.Projects}/${tagId}`
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tagId}`
 					)
 					await updateDoc(tagRef, { todoIds: arrayUnion(newTodo.id) })
 				})
@@ -173,7 +167,7 @@ export function TodoForm(p: P) {
 			setRemind({ ...popupStateDefault })
 			setTodo({ description: "", title: "" })
 			setPriority(4)
-			setTagInfo({ ...defaultTagInfo })
+			setTagName("")
 		}
 	}
 
@@ -233,11 +227,11 @@ export function TodoForm(p: P) {
 							defValues={p.defValues}
 						/>
 						<TagSelector
-							checked={checkedTags}
-							setChecked={setCheckedTags}
+							selectedCheckboxes={checkedTags}
+							setSelectedCheckboxes={setCheckedTags}
 							currentTodoId={todoId}
-							tagInfo={tagInfo}
-							setTagInfo={setTagInfo}
+							tagName={tagName}
+							setTagName={setTagName}
 						/>
 					</div>
 				</div>

@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { Navigate, useParams } from "react-router-dom"
+import { Navigate, useLocation, useParams } from "react-router-dom"
 import { ProjectCreator } from "../components/ProjectCreator"
 import { ProjectRender } from "./ProjectRender"
 import { Sidebar } from "../components/sidebar/Sidebar"
@@ -9,6 +9,7 @@ import { useAppSelector } from "../hooks"
 import { useWindowResize } from "../hooks/useWindowResize"
 import { uiStateActions } from "../slices/uiStateSlice"
 import { GeneratedProject, Project, RegularProject, Todo } from "../types"
+import { TagsRender } from "./TagsRender"
 
 interface P {
 	todos: Todo[]
@@ -22,18 +23,20 @@ export function MainView(p: P) {
 	const uiState = useAppSelector((s) => s.uiState)
 	const dispatch = useDispatch()
 
-	const projectId = params.projectId as string
+	let projectId = params.projectId
+	if (location.pathname.includes("tags") && !projectId) projectId = "tags"
+
+	// here I assume that the currentProject will eventually be found therefore it is a
+	// potential bug place
+	let currentProject = p.projects.find((proj) => proj.id === projectId)!
 
 	if (
 		!p.projects.find((proj) => proj.id === projectId) &&
 		projectId !== "today" &&
-		projectId !== "upcoming"
+		projectId !== "upcoming" &&
+		projectId !== "tags"
 	)
 		return <Navigate to={"/project"} />
-
-	let currentProject: Project = p.projects.find(
-		(proj) => proj.id === projectId
-	)!
 
 	if (projectId === "today")
 		currentProject = p.projects.find(
@@ -43,6 +46,11 @@ export function MainView(p: P) {
 		currentProject = p.projects.find(
 			(proj) => proj.type === "generated" && proj.name === "Upcoming"
 		)!
+	if (projectId === "tags") {
+		currentProject = p.projects.find(
+			(proj) => proj.type === "generated" && proj.name === "Tags"
+		)!
+	}
 
 	return (
 		<>
@@ -80,6 +88,7 @@ export function MainView(p: P) {
 									currentProject={currentProject as GeneratedProject}
 								/>
 							)
+						else if (projectId === "tags") return <TagsRender todos={p.todos} />
 						else
 							return (
 								<ProjectRender

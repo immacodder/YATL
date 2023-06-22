@@ -1,7 +1,7 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase"
 import { useAppSelector } from "../../hooks"
-import { FireCol, Project, Todo, User } from "../../types"
+import { FirestoreColl, Project, Todo, User } from "../../types"
 import { TodoInfo } from "./TodoInfo"
 import { TodoMenu } from "./TodoMenu"
 
@@ -17,7 +17,7 @@ export function TodoComp(p: P) {
 	const onTodoCheck = () => {
 		const ref = doc(
 			db,
-			`${FireCol.Users}/${user.id}/${FireCol.Todos}/${todo.id}`
+			`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${todo.id}`
 		)
 		if (todo.type === "completed")
 			updateDoc(ref, { type: "default" } as { type: Todo["type"] })

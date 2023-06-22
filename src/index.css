@@ -45,4 +45,7 @@ html {
 	.selected {
 		@apply bg-primary bg-opacity-25;
 	}
+	.highlight-danger {
+		@apply hover:bg-red-500;
+	}
 }

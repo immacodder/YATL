@@ -3,7 +3,7 @@ import { doc, updateDoc } from "firebase/firestore"
 import { useState } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, GeneratedProject, Todo, User } from "../types"
+import { FirestoreColl, GeneratedProject, Todo, User } from "../types"
 import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { TodoRender } from "../components/todo/TodoRender"
 
@@ -99,7 +99,10 @@ export function TodayTodolist(p: P) {
 		return Promise.all(
 			overdueTodos.map((todo) =>
 				updateDoc(
-					doc(db, `${FireCol.Users}/${user.id}/${FireCol.Todos}/${todo.id}`),
+					doc(
+						db,
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${todo.id}`
+					),
 					{ scheduledAt: Date.now() }
 				)
 			)

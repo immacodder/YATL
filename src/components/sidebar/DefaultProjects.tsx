@@ -6,9 +6,10 @@ import {
 	RegularProject,
 } from "../../types"
 
-export function SidebarDefaultProjects() {
+export function DefaultProjects() {
 	const projects = useAppSelector((s) => s.projects)
-	const { projectId: selectedProjectId } = useParams()
+	let { projectId: selectedProjectId } = useParams()
+	if (location.pathname.includes("tags")) selectedProjectId = "tags"
 	if (!selectedProjectId) throw new Error("no project id found")
 
 	return (
@@ -25,11 +26,13 @@ export function SidebarDefaultProjects() {
 						if (
 							(selectedProjectId === "today" && proj.name === "Today") ||
 							(selectedProjectId === "upcoming" && proj.name === "Upcoming") ||
+							(selectedProjectId === "tags" && proj.name === "Tags") ||
 							proj.id === selectedProjectId
 						)
 							selected = true
 						if (proj.name === "Today") id = "today"
 						if (proj.name === "Upcoming") id = "upcoming"
+						if (proj.name === "Tags") id = "tags"
 
 						return (
 							<li
@@ -37,7 +40,7 @@ export function SidebarDefaultProjects() {
 								className={`projectLink w-full ${selected ? "selected" : ""}`}
 							>
 								<Link
-									to={`/project/${id}`}
+									to={id === "tags" ? "/tags" : `/project/${id}`}
 									className="p-2 w-full flex items-center"
 								>
 									<span className="material-icons mr-2">

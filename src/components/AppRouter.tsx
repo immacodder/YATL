@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route, Navigate, Router } from "react-router-dom"
 import { useAppSelector } from "../hooks"
 import { Todo } from "../types"
 import { Sign } from "../views/Sign"
@@ -33,17 +33,10 @@ export function AppRouter({ todos }: P) {
 						element={<MainView projects={projects} todos={todos} />}
 					/>
 				</Route>
-				<Route path="tag">
+				<Route path="/tags">
 					<Route
 						index
-						element={
-							<Navigate
-								to={
-									projects.find((project) => project.type === "tag")?.id ??
-									"/404/not-found"
-								}
-							/>
-						}
+						element={<MainView projects={projects} todos={todos} />}
 					/>
 					<Route
 						path=":projectId"

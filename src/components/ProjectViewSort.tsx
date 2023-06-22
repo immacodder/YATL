@@ -2,7 +2,7 @@ import { doc, updateDoc } from "firebase/firestore"
 import { useState, useEffect } from "react"
 import { db } from "../firebase"
 import { useAppSelector } from "../hooks"
-import { FireCol, Project, SortBy, User } from "../types"
+import { FirestoreColl, Project, SortBy, User } from "../types"
 
 export function ProjectViewSort(p: { currentProject: Project }) {
 	const user = useAppSelector((s) => s.user.user as User)
@@ -11,7 +11,7 @@ export function ProjectViewSort(p: { currentProject: Project }) {
 	)
 
 	useEffect(() => {
-		updateDoc(doc(db, `${FireCol.Users}/${user.id}`), {
+		updateDoc(doc(db, `${FirestoreColl.Users}/${user.id}`), {
 			[`preferences.sortBy.${p.currentProject.id}`]: selected,
 		})
 	}, [user, selected, p.currentProject])

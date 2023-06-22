@@ -1,9 +1,9 @@
-export enum FireCol {
+export enum FirestoreColl {
 	Users = "users",
 	Todos = "todos",
 	Projects = "projects",
 }
-export enum StorageCol {
+export enum StorageColl {
 	ProfileImages = "profileImages",
 }
 
@@ -56,7 +56,7 @@ export interface Todo {
 	remindAt: number | null
 	scheduledAt: number | null
 }
-export enum ProjectColors {
+export enum Colors {
 	Emerald = "#34d399",
 	Slate = "#94a3b8",
 	Red = "#f87171",
@@ -73,6 +73,7 @@ export enum DefaultProjectsIcons {
 	Inbox = "inbox",
 	Today = "today",
 	Upcoming = "date_range",
+	Tags = "sell"
 }
 
 interface BaseProject {
@@ -82,18 +83,20 @@ interface BaseProject {
 }
 export interface GeneratedProject extends BaseProject {
 	type: "generated"
-	name: "Today" | "Upcoming"
+	name: "Today" | "Upcoming" | "Tags"
 	icon: DefaultProjectsIcons
 }
 export interface RegularProject extends BaseProject {
 	type: "regular" | "archived"
 	sections: [DefaultSection, ...Section[]]
-	color: ProjectColors
+	color: Colors
 	isInbox?: true
 }
 export interface TagProject extends BaseProject {
+	color: Colors
 	type: "tag"
 	todoIds: string[]
+	sections: [DefaultSection]
 }
 
 export interface DefaultSection {
