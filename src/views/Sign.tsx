@@ -87,6 +87,7 @@ export function Sign(p: Props) {
 			preferences: {
 				sortBy: {},
 				groupBy: {},
+				showCompleted: {},
 			},
 		}
 

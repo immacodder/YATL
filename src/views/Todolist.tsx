@@ -9,7 +9,7 @@ interface P {
 	currentProject: RegularProject | TagProject
 	todos: Todo[]
 	showCompleted: boolean
-	setShowCompleted: React.Dispatch<React.SetStateAction<boolean>>
+	setShowCompleted: React.Dispatch<React.SetStateAction<any>>
 }
 
 export function Todolist(p: P) {

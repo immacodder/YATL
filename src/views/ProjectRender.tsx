@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
 	DefaultProjectsIcons,
 	FirestoreColl,
@@ -19,10 +19,10 @@ interface P {
 	currentProject: RegularProject | TagProject
 }
 export function ProjectRender(p: P) {
-	const [showCompleted, setShowCompleted] = useState(false)
 	const [projectName, setProjectName] = useState(p.currentProject.name)
 	const [projectNameOpen, setProjectNameOpen] = useState(false)
 	const user = useAppSelector((s) => s.user)
+
 	async function changeProjectName(projectName: string) {
 		const ref = doc(
 			db,
@@ -34,6 +34,14 @@ export function ProjectRender(p: P) {
 		await updateDoc(ref, { name: projectName.trim() })
 		setProjectName(projectName.trim())
 		setProjectNameOpen(false)
+	}
+
+	const showCompleted =
+		user.user!.preferences.showCompleted[p.currentProject.id]
+	const setShowCompleted = (completed: boolean) => {
+		updateDoc(doc(db, `${FirestoreColl.Users}/${user.user!.id}`), {
+			[`preferences.showCompleted.${p.currentProject.id}`]: completed,
+		})
 	}
 	const inputId = `projectNameForm-${p.currentProject.id}`
 

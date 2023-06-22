@@ -39,6 +39,7 @@ export interface User {
 export interface UserPrefs {
 	sortBy: { [projectId: string]: keyof typeof SortBy }
 	groupBy: { [projectId: string]: keyof typeof GroupBy }
+	showCompleted: { [projectId: string]: boolean }
 }
 
 export interface Todo {
