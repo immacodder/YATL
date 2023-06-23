@@ -1,10 +1,19 @@
 import { deleteDoc, doc } from "firebase/firestore"
 import { useState } from "react"
 import { db } from "../firebase"
-import { useAppSelector } from "../hooks"
-import { FirestoreColl, Project, RegularProject, Todo, User } from "../types"
+import { useAppDispatch, useAppSelector } from "../hooks"
+import {
+	Delays,
+	FirestoreColl,
+	Project,
+	RegularProject,
+	Todo,
+	User,
+} from "../types"
 import { Dialog } from "./Dialog"
 import { Menu, MenuType } from "./Menu"
+import { setProjectDeletion } from "../slices/deletionSlice"
+import { useNavigate } from "react-router-dom"
 
 interface P {
 	todos: Todo[]
@@ -17,36 +26,44 @@ export function ProjectActions(p: P) {
 	const [projectActionsOpen, setProjectActionsOpen] = useState(false)
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 	const user = useAppSelector((s) => s.user.user as User)
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 
 	if (p.currentProject.type !== "regular" && p.currentProject.type !== "tag")
 		return null
 
-	const deleteProject = async () => {
-		const todoIDs: string[] = p.todos
-			.filter((todo) => {
-				return (p.currentProject as RegularProject).sections.find(
-					(sec) => sec.id === todo.sectionId
-				)
-			})
-			.map((todo) => todo.id)
+	function deleteProject() {
+		const timeoutId = setTimeout(deleteForever, Delays.ProjectDeletion)
+		dispatch(setProjectDeletion({ timeoutId, id: p.currentProject.id }))
+		navigate(`/`)
 
-		await Promise.all(
-			todoIDs.map(async (id) => {
-				await deleteDoc(
-					doc(
-						db,
-						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${id}`
+		async function deleteForever() {
+			const todoIDs: string[] = p.todos
+				.filter((todo) => {
+					return (p.currentProject as RegularProject).sections.find(
+						(sec) => sec.id === todo.sectionId
 					)
-				)
-			})
-		)
+				})
+				.map((todo) => todo.id)
 
-		await deleteDoc(
-			doc(
-				db,
-				`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${p.currentProject.id}`
+			await Promise.all(
+				todoIDs.map(async (id) => {
+					await deleteDoc(
+						doc(
+							db,
+							`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${id}`
+						)
+					)
+				})
 			)
-		)
+
+			await deleteDoc(
+				doc(
+					db,
+					`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${p.currentProject.id}`
+				)
+			)
+		}
 	}
 
 	const projectActionsData: MenuType[] = [

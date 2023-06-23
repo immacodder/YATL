@@ -23,6 +23,7 @@ export function Todolist(p: P) {
 	>(null)
 	const [selectedSection, setSelectedSection] = useState<Section | null>(null)
 	const user = useAppSelector((s) => s.user.user as User)
+	const deletionState = useAppSelector((s) => s.deletion)
 
 	const defSection = p.currentProject.sections[0]
 
@@ -80,23 +81,29 @@ export function Todolist(p: P) {
 				)
 				sectionUsed = true
 			}
-
+			function renderTodo() {
+				if (!deletionState.todo || todo.id !== deletionState.todo.id) {
+					if (todo.type !== "completed" || p.showCompleted)
+						return (
+							<>
+								<TodoComp
+									project={p.currentProject}
+									setGlobalFormOpen={onTodoEdit}
+									todo={todo}
+									key={todo.id}
+								/>
+								{todoEditOpen.open && todoEditOpen.id === todo.id && (
+									<TodoEditForm setGlobalFormOpen={onTodoEdit} todo={todo} />
+								)}
+							</>
+						)
+				}
+				return null
+			}
 			return (
 				<Fragment key={todo.id}>
 					{sectionJSX}
-					{(todo.type !== "completed" || p.showCompleted) && (
-						<>
-							<TodoComp
-								project={p.currentProject}
-								setGlobalFormOpen={onTodoEdit}
-								todo={todo}
-								key={todo.id}
-							/>
-							{todoEditOpen.open && todoEditOpen.id === todo.id && (
-								<TodoEditForm setGlobalFormOpen={onTodoEdit} todo={todo} />
-							)}
-						</>
-					)}
+					{renderTodo()}
 					{todoFormOpen &&
 						currentAddTodoSectionId === section.id &&
 						todo.id === todos[todos.length - 1].id && (

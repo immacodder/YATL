@@ -117,3 +117,10 @@ export enum UserState {
 	NotSigned = "not signed",
 	Signed = "signed",
 }
+
+export enum Delays {
+	ProjectDeletion = 3000,
+	ProjectChange = 2000,
+	TodoDeletion = 2000,
+	TodoChange = 2000
+}

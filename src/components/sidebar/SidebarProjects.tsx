@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { Link, useParams } from "react-router-dom"
-import { useAppSelector } from "../../hooks"
+import { useAppDispatch, useAppSelector } from "../../hooks"
 import { uiStateActions } from "../../slices/uiStateSlice"
 import { RegularProject } from "../../types"
 
@@ -9,9 +9,11 @@ export function SidebarProjects() {
 	const projects = useAppSelector((s) => s.projects)
 	const [projectListExpanded, setProjectListExpanded] = useState(true)
 	let { projectId: selectedProjectId } = useParams()
+	const dispatch = useAppDispatch()
+	const deletionState = useAppSelector((s) => s.deletion)
+
 	if (location.pathname.includes("tags")) selectedProjectId = "tags"
 	if (!selectedProjectId) throw new Error("no project id found")
-	const dispatch = useDispatch()
 
 	return (
 		<>
@@ -32,6 +34,8 @@ export function SidebarProjects() {
 						)
 						.map((proj) => {
 							if (proj.isInbox) return null
+							if (deletionState.project && proj.id === deletionState.project.id)
+								return null
 							return (
 								<Link
 									className={`projectLink flex items-center my-2 w-full p-1 pl-0 highlight ${

@@ -1,15 +1,25 @@
 import { useDispatch } from "react-redux"
-import { Navigate, useLocation, useParams } from "react-router-dom"
+import { Navigate, useLocation, useParams, useNavigate } from "react-router-dom"
 import { ProjectCreator } from "../components/ProjectCreator"
 import { ProjectRender } from "./ProjectRender"
 import { Sidebar } from "../components/sidebar/Sidebar"
 import { TodayRender } from "./TodayRender"
 import { Upcoming } from "./UpcomingRender"
-import { useAppSelector } from "../hooks"
+import { useAppDispatch, useAppSelector } from "../hooks"
 import { useWindowResize } from "../hooks/useWindowResize"
 import { uiStateActions } from "../slices/uiStateSlice"
-import { GeneratedProject, Project, RegularProject, Todo } from "../types"
+import {
+	DefaultProjectsIcons,
+	Delays,
+	GeneratedProject,
+	Project,
+	RegularProject,
+	Todo,
+} from "../types"
 import { TagsRender } from "./TagsRender"
+import { useEffect, useState } from "react"
+import { Snackbar, SnackbarProps } from "../components/Snackbar"
+import { setProjectDeletion, setTodoDeletion } from "../slices/deletionSlice"
 
 interface P {
 	todos: Todo[]
@@ -21,13 +31,62 @@ export function MainView(p: P) {
 	const { width } = useWindowResize()
 	const isMobile = width < 600
 	const uiState = useAppSelector((s) => s.uiState)
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch()
+	const deletionState = useAppSelector((s) => s.deletion)
+	const [snackbarProps, setSnackbarProps] = useState<SnackbarProps | null>(null)
+	const [snackbarOpen, setSnackbarOpen] = useState(false)
+	const navigate = useNavigate()
+
+	function snackbarCleanup() {
+		setSnackbarOpen(false)
+		setSnackbarProps(null)
+	}
+	useEffect(() => {
+		if (!deletionState.project) return
+
+		setTimeout(snackbarCleanup, Delays.ProjectDeletion)
+		setSnackbarOpen(true)
+		setSnackbarProps({
+			message: "Undo project deletion?",
+			variant: "Notification",
+			timeout: Delays.ProjectDeletion,
+			action: {
+				handler: () => {
+					clearTimeout(deletionState.project!.timeoutId)
+					dispatch(setProjectDeletion(null))
+					snackbarCleanup()
+					navigate(`/project/${deletionState.project!.id}`)
+				},
+				message: "undo",
+			},
+		})
+	}, [deletionState.project, navigate, dispatch])
+
+	useEffect(() => {
+		if (!deletionState.todo) {
+			return
+		}
+
+		setTimeout(snackbarCleanup, Delays.TodoDeletion)
+		setSnackbarOpen(true)
+		setSnackbarProps({
+			message: "Undo todo deletion?",
+			variant: "Notification",
+			timeout: Delays.TodoDeletion,
+			action: {
+				handler: () => {
+					clearTimeout(deletionState.todo!.timeoutId)
+					dispatch(setTodoDeletion(null))
+					snackbarCleanup()
+				},
+				message: "undo",
+			},
+		})
+	}, [deletionState, dispatch])
 
 	let projectId = params.projectId
 	if (location.pathname.includes("tags") && !projectId) projectId = "tags"
 
-	// here I assume that the currentProject will eventually be found therefore it is a
-	// potential bug place
 	let currentProject = p.projects.find((proj) => proj.id === projectId)!
 
 	if (
@@ -55,6 +114,7 @@ export function MainView(p: P) {
 	return (
 		<>
 			{uiState.projectCreatorOpen && <ProjectCreator />}
+			{snackbarOpen && snackbarProps && <Snackbar {...snackbarProps} />}
 			<div
 				className="grid w-[100vw] h-[100vh]"
 				style={{

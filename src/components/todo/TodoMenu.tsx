@@ -9,10 +9,11 @@ import {
 import { useRef, useState } from "react"
 import { v4 } from "uuid"
 import { db } from "../../firebase"
-import { useAppSelector } from "../../hooks"
+import { useAppDispatch, useAppSelector } from "../../hooks"
 import { FirestoreColl, TagProject, Todo, User } from "../../types"
 import { Dialog } from "../Dialog"
 import { Menu, MenuType } from "../Menu"
+import { setTodoDeletion } from "../../slices/deletionSlice"
 
 interface P {
 	todo: Todo
@@ -26,6 +27,29 @@ export function TodoMenu(p: P) {
 	const tags = useAppSelector((s) => s.projects).filter(
 		(project) => project.type === "tag"
 	) as TagProject[]
+	const dispatch = useAppDispatch()
+
+	function onTodoDelete() {
+		const timeout = setTimeout(deleteForever, 2000)
+		dispatch(setTodoDeletion({ timeoutId: timeout, id: p.todo.id }))
+
+		async function deleteForever() {
+			await deleteDoc(
+				doc(
+					db,
+					`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${p.todo.id}`
+				)
+			)
+			const tagsToUpdate = tags.filter((tag) => tag.todoIds.includes(p.todo.id))
+			tagsToUpdate.forEach(async (tag) => {
+				const tagToUpdate = doc(
+					db,
+					`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tag.id}`
+				)
+				await updateDoc(tagToUpdate, { todoIds: arrayRemove(p.todo.id) })
+			})
+		}
+	}
 
 	const menuData: MenuType[] = [
 		{
@@ -80,25 +104,7 @@ export function TodoMenu(p: P) {
 				data={menuData}
 			/>
 			<Dialog
-				action={async () => {
-					// deletes the todo
-					await deleteDoc(
-						doc(
-							db,
-							`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${p.todo.id}`
-						)
-					)
-					const tagsToUpdate = tags.filter((tag) =>
-						tag.todoIds.includes(p.todo.id)
-					)
-					tagsToUpdate.forEach(async (tag) => {
-						const tagToUpdate = doc(
-							db,
-							`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tag.id}`
-						)
-						await updateDoc(tagToUpdate, { todoIds: arrayRemove(p.todo.id) })
-					})
-				}}
+				action={onTodoDelete}
 				setOpen={setDeleteDialogOpen}
 				open={deleteDialogOpen}
 				text={`Are you sure you want to delete ${p.todo.title}?`}
