@@ -1,9 +1,21 @@
 import { doc, updateDoc } from "firebase/firestore"
 import { db } from "../../firebase"
-import { useAppSelector } from "../../hooks"
-import { FirestoreColl, Project, Todo, User } from "../../types"
+import { useAppDispatch, useAppSelector } from "../../hooks"
+import { Delays, FirestoreColl, Project, Todo, User } from "../../types"
 import { TodoInfo } from "./TodoInfo"
 import { TodoMenu } from "./TodoMenu"
+import { setTodoCompletion } from "../../slices/snackbarSlice"
+
+export async function toggleCompletion(user: User, todo: Todo) {
+	const ref = doc(
+		db,
+		`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${todo.id}`
+	)
+	if (todo.type === "completed")
+		await updateDoc(ref, { type: "default" } as { type: Todo["type"] })
+	if (todo.type === "default")
+		await updateDoc(ref, { type: "completed" } as { type: Todo["type"] })
+}
 
 interface P {
 	todo: Todo
@@ -13,16 +25,12 @@ interface P {
 export function TodoComp(p: P) {
 	const user = useAppSelector((s) => s.user.user as User)
 	const todo = p.todo
+	const dispatch = useAppDispatch()
+	const snackbarState = useAppSelector((s) => s.snackbar)
 
-	const onTodoCheck = () => {
-		const ref = doc(
-			db,
-			`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Todos}/${todo.id}`
-		)
-		if (todo.type === "completed")
-			updateDoc(ref, { type: "default" } as { type: Todo["type"] })
-		if (todo.type === "default")
-			updateDoc(ref, { type: "completed" } as { type: Todo["type"] })
+	const onTodoCheck = async () => {
+		await toggleCompletion(user, todo)
+		dispatch(setTodoCompletion({ id: todo.id }))
 	}
 
 	return (

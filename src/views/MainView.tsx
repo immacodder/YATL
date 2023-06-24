@@ -19,7 +19,12 @@ import {
 import { TagsRender } from "./TagsRender"
 import { useEffect, useState } from "react"
 import { Snackbar, SnackbarProps } from "../components/Snackbar"
-import { setProjectDeletion, setTodoDeletion } from "../slices/deletionSlice"
+import {
+	setProjectDeletion,
+	setTodoCompletion,
+	setTodoDeletion,
+} from "../slices/snackbarSlice"
+import { toggleCompletion } from "../components/todo/TodoComp"
 
 interface P {
 	todos: Todo[]
@@ -32,63 +37,89 @@ export function MainView(p: P) {
 	const isMobile = width < 600
 	const uiState = useAppSelector((s) => s.uiState)
 	const dispatch = useAppDispatch()
-	const deletionState = useAppSelector((s) => s.deletion)
+	const snackbarState = useAppSelector((s) => s.snackbar)
 	const [snackbarProps, setSnackbarProps] = useState<SnackbarProps | null>(null)
 	const [snackbarOpen, setSnackbarOpen] = useState(false)
 	const navigate = useNavigate()
+	const user = useAppSelector((s) => s.user.user)!
 
 	function snackbarCleanup() {
 		setSnackbarOpen(false)
 		setSnackbarProps(null)
 	}
 	useEffect(() => {
-		if (!deletionState.project) return
+		if (!snackbarState.projectDeletion) return
 
-		setTimeout(snackbarCleanup, Delays.ProjectDeletion)
+		setTimeout(snackbarCleanup, Delays.ProjectDeletion - 250)
 		setSnackbarOpen(true)
 		setSnackbarProps({
 			message: "Undo project deletion?",
 			variant: "Notification",
-			timeout: Delays.ProjectDeletion,
+			timeout: Delays.ProjectDeletion - 250,
 			action: {
 				handler: () => {
 					const projectToBeDeleted = p.projects.find(
-						(p) => deletionState.project!.id === p.id
+						(p) => snackbarState.projectDeletion!.id === p.id
 					)!
-					clearTimeout(deletionState.project!.timeoutId)
+					clearTimeout(snackbarState.projectDeletion!.timeoutId)
 					dispatch(setProjectDeletion(null))
 					snackbarCleanup()
 					if (projectToBeDeleted.type === "tag") {
 						if (location.pathname !== "/tags")
 							navigate(`/tags/${projectToBeDeleted.id}`)
-					} else navigate(`/project/${deletionState.project!.id}`)
+					} else navigate(`/project/${snackbarState.projectDeletion!.id}`)
 				},
 				message: "undo",
 			},
 		})
-	}, [deletionState.project, navigate, dispatch, p.projects])
+	}, [snackbarState.projectDeletion, navigate, dispatch, p.projects])
 
 	useEffect(() => {
-		if (!deletionState.todo) {
+		if (!snackbarState.todoDeletion) {
 			return
 		}
 
-		setTimeout(snackbarCleanup, Delays.TodoDeletion)
+		setTimeout(snackbarCleanup, Delays.TodoDeletion - 250)
 		setSnackbarOpen(true)
 		setSnackbarProps({
 			message: "Undo todo deletion?",
 			variant: "Notification",
-			timeout: Delays.TodoDeletion,
+			timeout: Delays.TodoDeletion - 250,
 			action: {
 				handler: () => {
-					clearTimeout(deletionState.todo!.timeoutId)
+					clearTimeout(snackbarState.todoDeletion!.timeoutId)
 					dispatch(setTodoDeletion(null))
 					snackbarCleanup()
 				},
 				message: "undo",
 			},
 		})
-	}, [deletionState, dispatch])
+	}, [snackbarState, dispatch])
+
+	useEffect(() => {
+		if (!snackbarState.todoCompletion) return
+
+		const todoToBeCompleted = p.todos.find(
+			(todo) => todo.id === snackbarState.todoCompletion!.id
+		)!
+		setTimeout(snackbarCleanup, Delays.TodoCompletion - 250)
+		setSnackbarOpen(true)
+		setSnackbarProps({
+			message: `Undo todo ${
+				todoToBeCompleted.type === "completed" ? "" : "un"
+			}completion?`,
+			variant: "Notification",
+			timeout: Delays.TodoCompletion - 250,
+			action: {
+				handler: () => {
+					toggleCompletion(user, todoToBeCompleted)
+					dispatch(setTodoCompletion(null))
+					snackbarCleanup()
+				},
+				message: "undo",
+			},
+		})
+	}, [snackbarState, dispatch, p.todos, user])
 
 	let projectId = params.projectId
 	if (location.pathname.includes("tags") && !projectId) projectId = "tags"

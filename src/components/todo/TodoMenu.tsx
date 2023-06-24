@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks"
 import { FirestoreColl, TagProject, Todo, User } from "../../types"
 import { Dialog } from "../Dialog"
 import { Menu, MenuType } from "../Menu"
-import { setTodoDeletion } from "../../slices/deletionSlice"
+import { setTodoDeletion } from "../../slices/snackbarSlice"
 
 interface P {
 	todo: Todo

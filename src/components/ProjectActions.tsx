@@ -12,7 +12,7 @@ import {
 } from "../types"
 import { Dialog } from "./Dialog"
 import { Menu, MenuType } from "./Menu"
-import { setProjectDeletion } from "../slices/deletionSlice"
+import { setProjectDeletion } from "../slices/snackbarSlice"
 import { useNavigate } from "react-router-dom"
 
 interface P {

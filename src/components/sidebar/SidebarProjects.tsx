@@ -10,7 +10,7 @@ export function SidebarProjects() {
 	const [projectListExpanded, setProjectListExpanded] = useState(true)
 	let { projectId: selectedProjectId } = useParams()
 	const dispatch = useAppDispatch()
-	const deletionState = useAppSelector((s) => s.deletion)
+	const snackbarState = useAppSelector((s) => s.snackbar)
 
 	if (location.pathname.includes("tags")) selectedProjectId = "tags"
 	if (!selectedProjectId) throw new Error("no project id found")
@@ -34,7 +34,10 @@ export function SidebarProjects() {
 						)
 						.map((proj) => {
 							if (proj.isInbox) return null
-							if (deletionState.project && proj.id === deletionState.project.id)
+							if (
+								snackbarState.projectDeletion &&
+								proj.id === snackbarState.projectDeletion.id
+							)
 								return null
 							return (
 								<Link

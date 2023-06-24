@@ -23,7 +23,7 @@ export function Todolist(p: P) {
 	>(null)
 	const [selectedSection, setSelectedSection] = useState<Section | null>(null)
 	const user = useAppSelector((s) => s.user.user as User)
-	const deletionState = useAppSelector((s) => s.deletion)
+	const snackbarState = useAppSelector((s) => s.snackbar)
 
 	const defSection = p.currentProject.sections[0]
 
@@ -82,7 +82,10 @@ export function Todolist(p: P) {
 				sectionUsed = true
 			}
 			function renderTodo() {
-				if (!deletionState.todo || todo.id !== deletionState.todo.id) {
+				if (
+					!snackbarState.todoDeletion ||
+					todo.id !== snackbarState.todoDeletion.id
+				) {
 					if (todo.type !== "completed" || p.showCompleted)
 						return (
 							<>

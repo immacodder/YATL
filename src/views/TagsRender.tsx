@@ -12,7 +12,7 @@ import { useState } from "react"
 import Popup from "reactjs-popup"
 import { deleteDoc, doc, updateDoc } from "firebase/firestore"
 import { db } from "../firebase"
-import { setProjectDeletion } from "../slices/deletionSlice"
+import { setProjectDeletion } from "../slices/snackbarSlice"
 
 interface P {
 	todos: Todo[]
@@ -29,7 +29,7 @@ export function TagsRender(p: P) {
 	) as TagProject[]
 	const [selectedColor, setSelectedColor] = useState(Colors.Slate)
 	const dispatch = useAppDispatch()
-	const deletionState = useAppSelector((s) => s.deletion)
+	const snackbarState = useAppSelector((s) => s.snackbar)
 
 	function onTagDelete(tagId: string, deleteAssignedTodos: boolean) {
 		const selectedTag = tags.find((t) => t.id === selectedTagId)!
@@ -204,7 +204,10 @@ export function TagsRender(p: P) {
 
 			<div className="m-4">
 				{tags.map((tag) => {
-					if (!deletionState.project || tag.id !== deletionState.project.id)
+					if (
+						!snackbarState.projectDeletion ||
+						tag.id !== snackbarState.projectDeletion.id
+					)
 						return (
 							<Link
 								to={`/tags/${tag.id}`}
