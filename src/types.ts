@@ -121,6 +121,7 @@ export enum UserState {
 export enum Delays {
 	ProjectDeletion = 3000,
 	ProjectChange = 2000,
+	TagDeletion = 2000,
 	TodoDeletion = 2000,
 	TodoChange = 2000
 }

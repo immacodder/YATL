@@ -52,15 +52,21 @@ export function MainView(p: P) {
 			timeout: Delays.ProjectDeletion,
 			action: {
 				handler: () => {
+					const projectToBeDeleted = p.projects.find(
+						(p) => deletionState.project!.id === p.id
+					)!
 					clearTimeout(deletionState.project!.timeoutId)
 					dispatch(setProjectDeletion(null))
 					snackbarCleanup()
-					navigate(`/project/${deletionState.project!.id}`)
+					if (projectToBeDeleted.type === "tag") {
+						if (location.pathname !== "/tags")
+							navigate(`/tags/${projectToBeDeleted.id}`)
+					} else navigate(`/project/${deletionState.project!.id}`)
 				},
 				message: "undo",
 			},
 		})
-	}, [deletionState.project, navigate, dispatch])
+	}, [deletionState.project, navigate, dispatch, p.projects])
 
 	useEffect(() => {
 		if (!deletionState.todo) {
