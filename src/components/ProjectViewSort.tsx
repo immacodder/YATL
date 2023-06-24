@@ -26,10 +26,19 @@ export function ProjectViewSort(p: { currentProject: Project }) {
 				value={selected}
 				onChange={(e) => setSelected(e.target.value as any)}
 			>
-				{Object.keys(SortBy).map((key) => {
+				{Object.keys(SortBy).map((k) => {
+					const key = k as keyof typeof SortBy
+					if (
+						key === "project" &&
+						!(
+							p.currentProject.name === "Today" ||
+							p.currentProject.name === "Inbox"
+						)
+					)
+						return null
 					return (
 						<option key={key} value={key}>
-							{SortBy[key as keyof typeof SortBy]}
+							{SortBy[key]}
 						</option>
 					)
 				})}

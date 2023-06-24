@@ -6,6 +6,7 @@ import { useAppSelector } from "../hooks"
 import { FirestoreColl, GeneratedProject, Todo, User } from "../types"
 import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { TodoRender } from "../components/todo/TodoRender"
+import { sortTodos } from "../helpers/sortTodos"
 
 interface P {
 	todos: Todo[]
@@ -21,60 +22,8 @@ export function TodayTodolist(p: P) {
 			todo.scheduledAt &&
 			(isToday(todo.scheduledAt) || isBefore(todo.scheduledAt, new Date()))
 	)
-	if (Object.keys(user.preferences.sortBy).includes(p.currentProject.id)) {
-		const getProject = (sectionId: string) =>
-			projects.find(
-				(proj) =>
-					proj.type === "regular" &&
-					proj.sections.find((section) => section.id === sectionId)
-			)!
 
-		function getFilteredByProject(todos: Todo[]) {
-			let projectList = new Set<string>()
-			const sortedTodos: Todo[] = []
-
-			filteredTodos.forEach((todo) =>
-				projectList.add(getProject(todo.sectionId).id)
-			)
-
-			// order by alphabet
-			projectList = new Set(
-				[...projectList].sort((a, b) => {
-					const getProjectById = (id: string) =>
-						projects.find((proj) => proj.id === id)!
-					return getProjectById(a).name.localeCompare(getProjectById(b).name)
-				})
-			)
-
-			for (let projectId of projectList) {
-				todos.forEach((todo) => {
-					if (getProject(todo.sectionId).id === projectId)
-						sortedTodos.push(todo)
-				})
-			}
-
-			return sortedTodos
-		}
-
-		filteredTodos.sort((a, b) => {
-			switch (user.preferences.sortBy[p.currentProject.id]) {
-				case "alphabetically":
-					return a.title.localeCompare(b.title)
-				case "date_added":
-					return b.createdAt - a.createdAt
-				case "due_date":
-					return (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0)
-				case "priority":
-					return a.priority - b.priority
-				case "project":
-					filteredTodos = getFilteredByProject(filteredTodos)
-					return 0
-
-				default:
-					throw new Error("Case not handled")
-			}
-		})
-	}
+	sortTodos(user, filteredTodos, p.currentProject, p.todos, projects)
 
 	let overdueSectionShowed = false
 	let regularSectionShowed = false

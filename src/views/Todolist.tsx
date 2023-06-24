@@ -4,6 +4,7 @@ import { TodoForm } from "../components/todo/todo_form/TodoForm"
 import { useAppSelector } from "../hooks"
 import { RegularProject, Section, TagProject, Todo, User } from "../types"
 import { TodoEditForm } from "../components/todo/todo_form/TodoEditForm"
+import { sortTodos } from "../helpers/sortTodos"
 
 interface P {
 	currentProject: RegularProject | TagProject
@@ -24,6 +25,7 @@ export function Todolist(p: P) {
 	const [selectedSection, setSelectedSection] = useState<Section | null>(null)
 	const user = useAppSelector((s) => s.user.user as User)
 	const snackbarState = useAppSelector((s) => s.snackbar)
+	const projects = useAppSelector((s) => s.projects)
 
 	const defSection = p.currentProject.sections[0]
 
@@ -47,22 +49,13 @@ export function Todolist(p: P) {
 		} else
 			filteredTodos = p.todos.filter((todo) => todo.sectionId === section.id)
 
-		if (Object.keys(user.preferences.sortBy).includes(p.currentProject.id)) {
-			filteredTodos.sort((a, b) => {
-				switch (user.preferences.sortBy[p.currentProject.id]) {
-					case "alphabetically":
-						return a.title.localeCompare(b.title)
-					case "date_added":
-						return b.createdAt - a.createdAt
-					case "due_date":
-						return (b.scheduledAt ?? 0) - (a.scheduledAt ?? 0)
-					case "priority":
-						return a.priority - b.priority
-					default:
-						throw new Error("Case not handled")
-				}
-			})
-		}
+		filteredTodos = sortTodos(
+			user,
+			filteredTodos,
+			p.currentProject,
+			p.todos,
+			projects
+		)
 
 		newSectionMap.set(section, filteredTodos)
 	})
