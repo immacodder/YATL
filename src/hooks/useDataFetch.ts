@@ -6,6 +6,7 @@ import {
 	collection,
 	orderBy,
 	onSnapshot,
+	updateDoc,
 } from "firebase/firestore"
 import { useState, useEffect } from "react"
 import { v4 } from "uuid"
@@ -23,8 +24,19 @@ import {
 	Colors,
 	DefaultProjectsIcons,
 	GeneratedProject,
-	TagProject,
+	GroupBy,
+	SortBy,
 } from "../types"
+export async function setDefaultProjectConfiguration(
+	userId: string,
+	projectId: string
+) {
+	await updateDoc(doc(db, `${FirestoreColl.Users}/${userId}`), {
+		[`preferences.groupBy.${projectId}`]: GroupBy.none,
+		[`preferences.sortBy.${projectId}`]: SortBy.date_added,
+		[`preferences.showCompleted.${projectId}`]: false,
+	})
+}
 
 export function useDataFetch() {
 	const [userId, setUserUid] = useState<null | string>(null)
@@ -36,7 +48,10 @@ export function useDataFetch() {
 		if (!userId) return
 
 		const ref = query(
-			collection(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}`),
+			collection(
+				db,
+				`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}`
+			),
 			orderBy("createdAt", "asc")
 		)
 		return onSnapshot(ref, async (snap) => {
@@ -70,16 +85,24 @@ export function useDataFetch() {
 					createdAt: Date.now(),
 					icon: DefaultProjectsIcons.Tags,
 					id: v4(),
-					type: "generated"
+					type: "generated",
 				}
 				await setDoc(
-					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${inbox.id}`),
+					doc(
+						db,
+						`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${inbox.id}`
+					),
 					inbox
 				)
+				await setDefaultProjectConfiguration(userId, inbox.id)
 				await setDoc(
-					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${today.id}`),
+					doc(
+						db,
+						`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${today.id}`
+					),
 					today
 				)
+				await setDefaultProjectConfiguration(userId, today.id)
 				await setDoc(
 					doc(
 						db,
@@ -87,10 +110,15 @@ export function useDataFetch() {
 					),
 					upcoming
 				)
+				await setDefaultProjectConfiguration(userId, upcoming.id)
 				await setDoc(
-					doc(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${tags.id}`),
+					doc(
+						db,
+						`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${tags.id}`
+					),
 					tags
 				)
+				await setDefaultProjectConfiguration(userId, tags.id)
 				return console.log("Default projects generated")
 			}
 			dispatch(setProjects(projects))
@@ -116,7 +144,10 @@ export function useDataFetch() {
 
 	useEffect(() => {
 		if (!userId) return
-		const ref = collection(db, `${FirestoreColl.Users}/${userId}/${FirestoreColl.Todos}`)
+		const ref = collection(
+			db,
+			`${FirestoreColl.Users}/${userId}/${FirestoreColl.Todos}`
+		)
 		return onSnapshot(ref, (snap) =>
 			setTodos(snap.docs.map((doc) => doc.data() as Todo))
 		)

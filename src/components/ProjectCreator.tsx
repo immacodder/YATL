@@ -5,12 +5,13 @@ import { v4 } from "uuid"
 import { db } from "../firebase"
 import { useAppDispatch, useAppSelector } from "../hooks"
 import { uiStateActions } from "../slices/uiStateSlice"
-import { FirestoreColl, Colors, RegularProject, User } from "../types"
+import { FirestoreColl, Colors, RegularProject } from "../types"
+import { setDefaultProjectConfiguration } from "../hooks/useDataFetch"
 
 export function ProjectCreator() {
 	const [projectName, setProjectName] = useState("")
 	const [projectColor, setProjectColor] = useState(Colors.Cyan)
-	const { id: userId } = useAppSelector((s) => s.user.user as User)
+	const user = useAppSelector((s) => s.user.user!)
 	const projectCreatorOpen = useAppSelector((s) => s.uiState.projectCreatorOpen)
 	const dispatch = useAppDispatch()
 
@@ -21,11 +22,12 @@ export function ProjectCreator() {
 		)
 			return
 
+		const projectId = v4()
 		const newProject: RegularProject = {
 			type: "regular",
 			color: projectColor,
 			createdAt: new Date().getTime(),
-			id: v4(),
+			id: projectId,
 			name: projectName.trim(),
 			sections: [{ id: v4(), type: "default" }],
 		}
@@ -33,10 +35,11 @@ export function ProjectCreator() {
 		await setDoc(
 			doc(
 				db,
-				`${FirestoreColl.Users}/${userId}/${FirestoreColl.Projects}/${newProject.id}`
+				`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${newProject.id}`
 			),
 			newProject
 		)
+		setDefaultProjectConfiguration(user.id, projectId)
 		resetNewProject()
 	}
 

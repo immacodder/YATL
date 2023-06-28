@@ -1,6 +1,7 @@
 import Popup from "reactjs-popup"
 import { Project } from "../types"
 import { ProjectViewSort } from "./ProjectViewSort"
+import { ProjectViewGroup } from "./ProjectViewGroup"
 
 interface P {
 	currentProject: Project
@@ -14,6 +15,7 @@ export function ProjectView(p: P) {
 		>
 			<div className="flex flex-row items-start">
 				<ProjectViewSort currentProject={p.currentProject} />
+				<ProjectViewGroup currentProject={p.currentProject} />
 			</div>
 		</Popup>
 	)

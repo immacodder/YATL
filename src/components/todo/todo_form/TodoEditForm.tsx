@@ -19,7 +19,7 @@ export function TodoEditForm({ todo, setGlobalFormOpen }: P) {
 				updateId={todo.id}
 				defValues={{
 					submitButtonText: "Update",
-					checked: tagsFiltered.map((tag) => tag.id),
+					tags: tagsFiltered.map((tag) => tag.id),
 					priority: todo.priority,
 					originalTodo: todo,
 					todoState: { description: todo.description ?? "", title: todo.title },

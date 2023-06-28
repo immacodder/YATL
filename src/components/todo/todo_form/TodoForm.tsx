@@ -1,4 +1,10 @@
-import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore"
+import {
+	arrayRemove,
+	arrayUnion,
+	doc,
+	setDoc,
+	updateDoc,
+} from "firebase/firestore"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 } from "uuid"
@@ -11,6 +17,7 @@ import {
 	Section,
 	RegularProject,
 	DefaultSection,
+	TagProject,
 } from "../../../types"
 import { DateSelector } from "./DateSelector"
 import { PrioritySelector } from "./PrioritySelector"
@@ -23,7 +30,7 @@ export interface DefValues {
 	remind?: PopupState
 	todoState?: TodoState
 	priority?: Todo["priority"]
-	checked?: string[]
+	tags?: string[]
 	submitButtonText?: string
 	sectionId?: string
 	originalTodo?: Todo
@@ -103,13 +110,13 @@ export function TodoForm(p: P) {
 		p.defValues?.priority ?? 4
 	)
 
-	const [checkedTags, setCheckedTags] = useState<string[]>(
-		p.defValues?.checked ?? []
+	const [selectedTags, setSelectedTags] = useState<string[]>(
+		p.defValues?.tags ?? []
 	)
 
 	const [tagName, setTagName] = useState("")
 
-	const onCreateTodo = async () => {
+	async function onCreateTodo() {
 		let dueUntil: number | null = null
 		let remindAt: number | null = null
 
@@ -145,22 +152,40 @@ export function TodoForm(p: P) {
 
 		await setDoc(todoRef, newTodo)
 		await updateTags()
+		await cleanupTags(newTodo.id)
+
+		async function updateTags() {
+			const promiseArray = selectedTags.map(async (tagId) => {
+				await updateDoc(
+					doc(
+						db,
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tagId}`
+					),
+					{ todoIds: arrayUnion(newTodo.id) }
+				)
+			})
+			await Promise.all(promiseArray)
+		}
+
+		async function cleanupTags(todoId: string) {
+			const tags = projects.filter((p) => p.type === "tag") as TagProject[]
+			const filteredTags = tags.filter(
+				(tag) => tag.todoIds.includes(todoId) && !selectedTags.includes(tag.id)
+			)
+			return await Promise.all(
+				filteredTags.map(async (tag) => {
+					const ref = doc(
+						db,
+						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tag.id}`
+					)
+					return await updateDoc(ref, { todoIds: arrayRemove(todoId) })
+				})
+			)
+		}
 
 		resetState()
 
 		if (p.updateId) p.setOpen(false)
-
-		async function updateTags() {
-			await Promise.all(
-				checkedTags.map(async (tagId) => {
-					const tagRef = doc(
-						db,
-						`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tagId}`
-					)
-					await updateDoc(tagRef, { todoIds: arrayUnion(newTodo.id) })
-				})
-			)
-		}
 
 		function resetState() {
 			setSchedule({ ...popupStateDefault })
@@ -168,6 +193,7 @@ export function TodoForm(p: P) {
 			setTodo({ description: "", title: "" })
 			setPriority(4)
 			setTagName("")
+			setSelectedTags([])
 		}
 	}
 
@@ -227,8 +253,8 @@ export function TodoForm(p: P) {
 							defValues={p.defValues}
 						/>
 						<TagSelector
-							selectedCheckboxes={checkedTags}
-							setSelectedCheckboxes={setCheckedTags}
+							selectedTags={selectedTags}
+							setSelectedTags={setSelectedTags}
 							currentTodoId={todoId}
 							tagName={tagName}
 							setTagName={setTagName}

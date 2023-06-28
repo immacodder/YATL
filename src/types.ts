@@ -19,11 +19,11 @@ export enum SortBy {
 	project = "Project",
 }
 export enum GroupBy {
-	default = "Default",
+	none = "None",
 	date_added = "Date added",
 	due_date = "Due date",
 	priority = "Priority",
-	label = "Label",
+	tag = "Tag",
 	project = "Project",
 }
 
@@ -37,8 +37,8 @@ export interface User {
 }
 
 export interface UserPrefs {
-	sortBy: { [projectId: string]: keyof typeof SortBy }
-	groupBy: { [projectId: string]: keyof typeof GroupBy }
+	sortBy: { [projectId: string]: SortBy }
+	groupBy: { [projectId: string]: GroupBy }
 	showCompleted: { [projectId: string]: boolean }
 }
 
@@ -51,7 +51,7 @@ export interface Todo {
 	title: string
 	description: string | null
 	sectionId: string
-	priority: 1 | 2 | 3 | 4
+	priority: Priorities
 	parentTodo: null | string
 	indentation: 0 | 1 | 2 | 3
 	remindAt: number | null
@@ -74,7 +74,7 @@ export enum DefaultProjectsIcons {
 	Inbox = "inbox",
 	Today = "today",
 	Upcoming = "date_range",
-	Tags = "sell"
+	Tags = "sell",
 }
 
 interface BaseProject {
@@ -122,5 +122,12 @@ export enum Delays {
 	ProjectDeletion = 3000,
 	TagDeletion = 2000,
 	TodoDeletion = 2000,
-	TodoCompletion = 2000
+	TodoCompletion = 2000,
+}
+
+export enum Priorities {
+	None = 4,
+	P1 = 1,
+	P2,
+	P3,
 }

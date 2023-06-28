@@ -6,8 +6,8 @@ import { FirestoreColl, Project, SortBy, User } from "../types"
 
 export function ProjectViewSort(p: { currentProject: Project }) {
 	const user = useAppSelector((s) => s.user.user as User)
-	const [selected, setSelected] = useState<keyof typeof SortBy>(
-		user.preferences.sortBy[p.currentProject.id] ?? "date_added"
+	const [selected, setSelected] = useState<SortBy>(
+		user.preferences.sortBy[p.currentProject.id]
 	)
 
 	useEffect(() => {
@@ -37,7 +37,7 @@ export function ProjectViewSort(p: { currentProject: Project }) {
 					)
 						return null
 					return (
-						<option key={key} value={key}>
+						<option key={key} value={SortBy[key]}>
 							{SortBy[key]}
 						</option>
 					)

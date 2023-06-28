@@ -1,11 +1,5 @@
-import {
-	arrayRemove,
-	arrayUnion,
-	doc,
-	setDoc,
-	updateDoc,
-} from "firebase/firestore"
-import React, { useRef } from "react"
+import { doc, setDoc } from "firebase/firestore"
+import React from "react"
 import Popup from "reactjs-popup"
 import { db } from "../../../firebase"
 import { useAppSelector } from "../../../hooks"
@@ -16,8 +10,8 @@ interface P {
 	tagName: string
 	setTagName: (name: string) => void
 	currentTodoId: string
-	selectedCheckboxes: string[]
-	setSelectedCheckboxes: React.Dispatch<React.SetStateAction<string[]>>
+	selectedTags: string[]
+	setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 export function TagSelector(p: P) {
@@ -27,22 +21,11 @@ export function TagSelector(p: P) {
 	) as TagProject[]
 
 	const onCheckboxClick = (tagId: string) => {
-		let firestoreData: object
-		if (p.selectedCheckboxes.includes(tagId)) {
-			p.setSelectedCheckboxes(p.selectedCheckboxes.filter((v) => v !== tagId))
-			firestoreData = { todoIds: arrayRemove(p.currentTodoId) }
+		if (p.selectedTags.includes(tagId)) {
+			p.setSelectedTags(p.selectedTags.filter((v) => v !== tagId))
 		} else {
-			p.setSelectedCheckboxes([...p.selectedCheckboxes, tagId])
-			firestoreData = { todoIds: arrayUnion(p.currentTodoId) }
+			p.setSelectedTags([...p.selectedTags, tagId])
 		}
-
-		updateDoc(
-			doc(
-				db,
-				`${FirestoreColl.Users}/${user.id}/${FirestoreColl.Projects}/${tagId}`
-			),
-			firestoreData
-		)
 	}
 
 	const onCreateTag = async () => {
@@ -82,7 +65,7 @@ export function TagSelector(p: P) {
 								type="checkbox"
 								id={tag.id}
 								onChange={() => onCheckboxClick(tag.id)}
-								checked={p.selectedCheckboxes.includes(tag.id)}
+								checked={p.selectedTags.includes(tag.id)}
 								className="mr-2"
 							/>
 							<label htmlFor={tag.id}>{tag.name}</label>
